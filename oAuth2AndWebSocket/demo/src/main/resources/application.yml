@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+        #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+token:
+  expiration_time: 600000
+  secret: thisIsSecretKey
