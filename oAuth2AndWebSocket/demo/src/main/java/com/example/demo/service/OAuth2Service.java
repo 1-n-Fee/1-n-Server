@@ -68,7 +68,7 @@ public class OAuth2Service {
             log.info("JsonProcessingException", e);
         }
 
-        log.info("카카오 엑세스 토큰={}", oAuthToken.getAccess_token());
+        //log.info("카카오 엑세스 토큰={}", oAuthToken.getAccess_token());
         return oAuthToken;
     }
 
@@ -97,7 +97,7 @@ public class OAuth2Service {
         } catch (JsonProcessingException e) {
             log.info("JsonProcessingException", e);
         }
-        log.info("id={}, email={}", kakaoProfile.getId(), kakaoProfile.getKakao_account().getEmail());
+        //log.info("id={}, email={}", kakaoProfile.getId(), kakaoProfile.getKakao_account().getEmail());
 
         return kakaoProfile;
     }

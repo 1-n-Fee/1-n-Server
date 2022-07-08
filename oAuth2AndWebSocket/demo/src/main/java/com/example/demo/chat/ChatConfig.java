@@ -25,6 +25,7 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     // RabbitMQ 설정
+    /*
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/pub")
@@ -34,9 +35,9 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
                 .setRelayPort(61613)
                 .setClientLogin("guest")
                 .setClientPasscode("guest");
-    }
+    }*/
 
-    /*
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
          // 메시지 받을 때 관련 경로 설정
@@ -48,6 +49,6 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app"); // 메시지 보낼 때 관련 경로 설정
         // 클라이언트가 메시지를 보낼 때 경로 맨앞에 "/app"이 붙어있으면 Broker로 보내짐.
     }
-    */
+
 
 }

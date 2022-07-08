@@ -32,6 +32,9 @@ public class UserController {
         String ret = "로그인 API 테스트 홈 화면입니다.(데이터는 JSON으로 보내주세요.)\n";
         ret += "1. 로그인(POST, /login) : email, password\n";
         ret += "2. 회원가입(POST, /signup) : name, email, password, role(USER 또는 ADMIN)\n";
+        ret += "3. User와 Admin이 접근 가능한 서비스(GET, /user)\n";
+        ret += "4. Admin만 접근 가능한 서비스(GET, /admin)\n";
+        ret += "5. oAuth 관련 서비스 (자료 참고)\n";
         return ret;
     }
 
@@ -68,7 +71,8 @@ public class UserController {
 
     @GetMapping("/auth/kakao/callback")
     public String kakaoCallback(String code, HttpServletResponse response, Authentication authentication) {
-        log.info("카카오 oAuth2 인증 성공. code={}", code);
+        //log.info("카카오 oAuth2 인증 성공. code={}", code);
+        log.info("카카오 oAuth2 인증 성공");
 
         OAuthToken kakaoToken = oAuth2Service.getKakaoToken(code);
         KakaoProfile kakaoProfile = oAuth2Service.getKakaoProfile(kakaoToken.getAccess_token());
