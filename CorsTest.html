@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>CorsTest</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <button onclick="e()">testButton</button>
+
+
+  <script>
+    async function e() {
+
+      fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers:{"Content-Type": "application/json",},
+        body: JSON.stringify({
+          email: "asdf@asdf.com",
+          password: "asdf@",
+        }),
+      })
+      .then((res)=>{
+          console.log(res.headers)
+          let jwtToken = res.headers.get("Authorization")
+          console.log(jwtToken)
+      })
+    }
+  </script>
+</body>
+
+</html>
