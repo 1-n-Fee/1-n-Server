@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <title>CorsTest</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js">
+
+  </script>
+</head>
+
+<body>
+  <p>
+  <h3>로그인하기</h3>
+  <button onclick="login()">로그인</button>
+  <br />
+  <span class="jwtToken">로그인 성공시 여기에 jwt Token이 표시됩니다.</span><br />
+  <span class="jwtToken">로그인 성공시 JS 전역변수 'jwtToken'에 토큰값이 담아집니다.</span>
+  </p>
+  <br />
+
+  <p>
+  <h3>접근 권한이 필요한 서비스 이용</h3>
+  <button onclick="enterUserPage()">user과 admin 사용 가능</button>
+  <br />
+  <span class="userPageResult">유저페이지 접근 결과</span>
+  </p>
+
+  <p>
+  <h3>oAuth2 계정 연동</h3>
+  <button onclick="InterOauth2()">현재 로그인 계정과 카카오 계정 연동하기</button>
+  <input type="button" value="카카오 로그인" onclick="login_oauth()">
+  <br />
+  <span class="userPageResult">유저페이지 접근 결과</span>
+  </p>
+
+  <script>
+    let jwtToken = '';
+
+    async function login() {
+      fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", },
+        body: JSON.stringify({
+          email: "asdf@asdf.com",
+          password: "asdf@",
+        }),
+      })
+        .then((res) => {
+          jwtToken = res.headers.get("Authorization")
+          console.log(jwtToken)
+          let x = document.getElementsByClassName("jwtToken")[0];
+          x.innerText = jwtToken;
+          x.style.color = "red";
+        })
+        .catch((error) => {
+          console.error("로그인 실패: ", error);
+        })
+    }
+
+    function enterUserPage() {
+      fetch("http://localhost:8080/user", {
+        method: "GET",
+        headers: { "Authorization": jwtToken },
+      })
+        .then((res) => {
+          let x = document.getElementsByClassName("userPageResult")[0];
+          if (!res.ok) {
+            x.innerText = 'userPage 접근 실패';
+            x.style.color = "red";
+            throw new Error("userPage 접근 실패")
+          }
+          else {
+            x.innerText = 'userPage 접근 성공';
+            x.style.color = "green";
+          }
+        })
+        .catch((error) => {
+          console.error("userPage 접근 실패: ", error);
+        })
+    }
+    function login_oauth() {
+      var url = "https://kauth.kakao.com/oauth/authorize?client_id=437bc2fb95b24ca5a80d5763e4619f54&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code"
+      var opt = "width=" + 460 + ",height=" + 517 + ",left=0,top=0,scrollbars=1,toolbars=no,resizable=yes";
+      window.open(url, "social_login", opt);
+    }
+
+    $(document).ready(function () {
+
+      window.history.forward();
+
+
+    });
+
+  </script>
+</body>
+
+</html>

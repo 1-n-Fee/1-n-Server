@@ -34,32 +34,11 @@ spring:
         #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
 
 logging.level:
-  org.hibernate.SQL: info #debug
-  #org.apache.coyote.http11: debug # http 요청 메시지 보기
+  org.hibernate.SQL: debug #info
+  org.apache.coyote.http11: debug # http 요청 메시지 보기
 
 spring.servlet.multipart.maxFileSize: 10MB
 spring.servlet.multipart.maxRequestSize: 10MB
-
-image:
-  review: /Users/hongseungtaeg/Desktop/toyproject/toyProject5/back-end/shop/src/main/resources/static/reviewImage/
-  item: /Users/hongseungtaeg/Desktop/toyproject/toyProject5/back-end/shop/src/main/resources/static/itemImage/
-  detail: /Users/hongseungtaeg/Desktop/toyproject/toyProject5/back-end/shop/src/main/resources/static/detailImage/
-  thumbnail: /Users/hongseungtaeg/Desktop/toyproject/toyProject5/back-end/shop/src/main/resources/static/thumbnail/
-
-  #review: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\reviewImage\
-  #item: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\itemImage\
-  #detail: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\detailImage\
-  #thumbnail: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\thumbnail\
-
-  #review: /image/review/
-  #item: /image/item/
-  #detail: /image/detail/
-  #thumbnail: /image/thumbnail/
-
-init:
-  item: /Users/hongseungtaeg/Desktop/toyproject/toyProject5/back-end/shop/initItem.txt
-  #item: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\initItem.txt
-  #item: /initItem.txt
 
 token:
   expiration_time: 600000
