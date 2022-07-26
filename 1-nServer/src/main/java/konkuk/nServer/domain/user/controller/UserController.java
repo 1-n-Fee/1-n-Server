@@ -6,9 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -17,11 +22,27 @@ import java.util.HashMap;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/posts")
+    public String controllerTest(){
+        return "Hello World";
+    }
+
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody RequestSignupForm form) {
+    public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form, BindingResult result) {
         /**
          * 인가 코드 사용해서 oAuth 로그인 해줘야?
          */
+        if(result.hasErrors()){
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            FieldError firstFieldError = fieldErrors.get(0);
+            String fieldName = firstFieldError.getField(); // title
+            String errorMessage = firstFieldError.getDefaultMessage();// 에러 메시지
+
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, errorMessage);
+            //return error;
+        }
+
         userService.signup(form);
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
         return ResponseEntity.status(HttpStatus.CREATED).build();

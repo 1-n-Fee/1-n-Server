@@ -10,12 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
-    @ExceptionHandler({ApiException.class})
-    public ResponseEntity<ApiExceptionEntity> exceptionHandler(HttpServletRequest request, final ApiException e) {
+    @ExceptionHandler({ApiException.class}) // catch할 exception
+    public ResponseEntity<ApiExceptionResponse> exceptionHandler(HttpServletRequest request, final ApiException e) {
         e.printStackTrace();
         return ResponseEntity
                 .status(e.getError().getStatus())
-                .body(new ApiExceptionEntity(e.getError().getCode(), e.getError().getMessage()));
+                .body(new ApiExceptionResponse(e.getError().getCode(), e.getError().getMessage()));
     }
 
     /*
@@ -32,10 +32,10 @@ public class ApiExceptionAdvice {
      */
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ApiExceptionEntity> exceptionHandler(HttpServletRequest request, final Exception e) {
+    public ResponseEntity<ApiExceptionResponse> exceptionHandler(HttpServletRequest request, final Exception e) {
         e.printStackTrace();
         return ResponseEntity
                 .status(UserExceptionEnum.INTERNAL_SERVER_ERROR.getStatus())
-                .body(new ApiExceptionEntity(UserExceptionEnum.INTERNAL_SERVER_ERROR.getCode(), e.getMessage()));
+                .body(new ApiExceptionResponse(UserExceptionEnum.INTERNAL_SERVER_ERROR.getCode(), e.getMessage()));
     }
 }
