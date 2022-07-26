@@ -17,7 +17,12 @@ import java.util.Map;
  */
 @Data
 @RequiredArgsConstructor
-public class ApiExceptionResponse {
+public class ValidationExceptionResponse {
     private final String errorCode;
     private final String message;
+    private final Map<String, String> validation = new HashMap<>();
+
+    public void addValidation(String fieldName, String errorMessage) {
+        this.validation.put(fieldName, errorMessage);
+    }
 }

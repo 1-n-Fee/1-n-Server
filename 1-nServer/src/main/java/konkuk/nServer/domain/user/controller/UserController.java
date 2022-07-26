@@ -28,21 +28,10 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form, BindingResult result) {
+    public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form) {
         /**
          * 인가 코드 사용해서 oAuth 로그인 해줘야?
          */
-        if(result.hasErrors()){
-            List<FieldError> fieldErrors = result.getFieldErrors();
-            FieldError firstFieldError = fieldErrors.get(0);
-            String fieldName = firstFieldError.getField(); // title
-            String errorMessage = firstFieldError.getDefaultMessage();// 에러 메시지
-
-            Map<String, String> error = new HashMap<>();
-            error.put(fieldName, errorMessage);
-            //return error;
-        }
-
         userService.signup(form);
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
         return ResponseEntity.status(HttpStatus.CREATED).build();

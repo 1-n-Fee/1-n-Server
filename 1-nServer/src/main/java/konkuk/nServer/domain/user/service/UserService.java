@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
@@ -104,3 +104,4 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 }
+
