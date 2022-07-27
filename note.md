@@ -171,6 +171,8 @@ public Map<String, String> signup(@RequestBody @Valid RequestSignupForm form, Bi
 
 안좋은 케이스는 "서버에서 반드시 이렇게 할겁니다!" 라고 fix 해버리는거! 서버에서는 유연하게 대응할 수 있도록 코드를 짜야한다. 실제로 한 번에 잘 처리되는 케이스는 없다. 잘 관리하는 형태가 중요하다.
 
+Petch도 대부분 주진 않지만, 클라이언트의 요구에 따라 코딩하면 된다.
+
 
 
 
@@ -378,3 +380,12 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 
 
 
+
+
+
+
+### Entity 수정할 때, Builder 이용하는 방법
+
+https://www.inflearn.com/course/%ED%98%B8%EB%8F%8C%EB%A7%A8-%EC%9A%94%EC%A0%88%EB%B3%B5%ED%86%B5-%EA%B0%9C%EB%B0%9C%EC%87%BC/unit/111160?tab=community&q=584082
+
+15분?

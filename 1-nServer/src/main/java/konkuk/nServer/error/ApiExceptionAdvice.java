@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ApiExceptionAdvice {
 
+    /**
+     * Request 받을 때, @Valid 에서 검증 실패할 때 발생
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class) // catch 할 exception
     public ValidationExceptionResponse invalidRequestHandler(MethodArgumentNotValidException e) {
@@ -25,12 +28,15 @@ public class ApiExceptionAdvice {
         return response;
     }
 
+    /**
+     * 로직 수행 중 오류
+     */
     @ExceptionHandler({ApiException.class}) // catch 할 exception
     public ResponseEntity<ApiExceptionResponse> exceptionHandler(HttpServletRequest request, final ApiException e) {
         e.printStackTrace();
         return ResponseEntity
-                .status(e.getError().getStatus())
-                .body(new ApiExceptionResponse(e.getError().getCode(), e.getError().getMessage()));
+                .status(e.getSecurityError().getStatus())
+                .body(new ApiExceptionResponse(e.getSecurityError().getCode(), e.getSecurityError().getMessage()));
     }
 
     /*
