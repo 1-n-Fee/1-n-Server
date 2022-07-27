@@ -128,10 +128,7 @@ class UserControllerTest {
 
 ```java
 @PostMapping("/signup")
-public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form, BindingResult result) {
-  /**
-         * 인가 코드 사용해서 oAuth 로그인 해줘야?
-         */
+public Map<String, String> signup(@RequestBody @Valid RequestSignupForm form, BindingResult result) {
   if(result.hasErrors()){
     List<FieldError> fieldErrors = result.getFieldErrors();
     FieldError firstFieldError = fieldErrors.get(0);
@@ -146,14 +143,8 @@ public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form, Bind
 }
 ```
 
-
-
-
-
-1. 매번 메서드마다 값을 검증 해야한다. 
-2. 응답값에 HashMap -> 응답 클래스를 만들어주는게 좋다.
-3. 여러개의 에러 처리는 힘들다
-4. 세 번이상의 반복적인 작업은 피해야 한다. -> 다른 방법이 있지 않을까?
+1. 응답값에 HashMap -> 응답 클래스를 만들어서, 분리하는게 좋다.
+2. 세 번이상의 반복적인 작업은 피해야 한다. -> 다른 방법이 있지 않을까?
 
 
 
@@ -179,6 +170,34 @@ public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form, Bind
 물론 이를 요청하는 client 개발자도 존재. 예를 들어 회원가입을 한 경우, 회원ID를 리턴해달라던지..
 
 안좋은 케이스는 "서버에서 반드시 이렇게 할겁니다!" 라고 fix 해버리는거! 서버에서는 유연하게 대응할 수 있도록 코드를 짜야한다. 실제로 한 번에 잘 처리되는 케이스는 없다. 잘 관리하는 형태가 중요하다.
+
+
+
+
+
+### Entity 클래스 내부에 서비스 정책은 넣지 않도록 한다.
+
+절대로 서비스 정책이 entity에 영향을 주지 않도록 해야 한다.
+
+
+
+
+
+### 응답을 위한 Response 객체는 어디서 변환해야 하는가?
+
+의견이 좀 갈리는듯. 서비스 계층에서 변환 후 리턴이 맞는가? 아니면 controller에서 변환을 하는게 맞는가?
+
+호돌맨의 경우, 서비스가 작은 땐 service에서 변환 후 리턴함.
+
+
+
+### Request DTO, Response DTO는 분리해주자
+
+Request DTO에는 validation을, Response DTO에는 서비스 정책을 녹여주자
+
+
+
+
 
 
 

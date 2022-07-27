@@ -32,48 +32,46 @@ public class UserService {
         User user = null;
         if (role == Role.ROLE_STUDENT) {
             user = Student.builder()
-                    .email(form.getEmail())
                     .accountType(accountType)
-                    .nickname(form.getNickname())
                     .name(form.getName())
                     .phone(form.getPhone())
                     .role(role)
-                    .major(form.getMajor())
-                    .sexType(convertSexType(form.getSexType()))
+                    .nickname(form.getStudent().getNickname())
+                    .email(form.getStudent().getEmail())
+                    .major(form.getStudent().getMajor())
+                    .sexType(convertSexType(form.getStudent().getSexType()))
                     .build();
 
             studentRepository.save((Student) user);
         } else if (role == Role.ROLE_STOREMANAGER) {
             user = Storemanager.builder()
-                    .email(form.getEmail())
                     .accountType(accountType)
-                    .nickname(form.getNickname())
                     .name(form.getName())
                     .phone(form.getPhone())
                     .role(role)
-                    .storeName(form.getStoreName())
-                    .storePhone(form.getStorePhone())
-                    .storeAddress(form.getStoreAddress())
-                    .storeRegistrationNumber(form.getStoreRegistrationNumber())
+                    .storeName(form.getStoremanager().getStoreName())
+                    .storePhone(form.getStoremanager().getStorePhone())
+                    .storeAddress(form.getStoremanager().getStoreAddress())
+                    .storeRegistrationNumber(form.getStoremanager().getStoreRegistrationNumber())
                     .build();
 
             storemanagerRepository.save((Storemanager) user);
         }
 
         if (accountType == AccountType.KAKAO) {
-            Kakao kakao = new Kakao(form.getKakaoId(), user);
+            Kakao kakao = new Kakao(form.getAccount().getKakaoId(), user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            Naver naver = new Naver(form.getNaverId(), user);
+            Naver naver = new Naver(form.getAccount().getNaverId(), user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            Google google = new Google(form.getGoogleId(), user);
+            Google google = new Google(form.getAccount().getGoogleId(), user);
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
-            Password password = new Password(form.getPassword(), user);
+            Password password = new Password(form.getAccount().getPassword(), user);
             user.setPassword(password);
             passwordRepository.save(password);
         }
@@ -101,7 +99,7 @@ public class UserService {
     }
 
     public boolean isDuplicateNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
+        return studentRepository.existsByNickname(nickname);
     }
 }
 

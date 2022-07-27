@@ -6,13 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -22,27 +18,26 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/posts")
-    public String controllerTest(){
-        return "Hello World";
+    @GetMapping("/health")
+    public String controllerTest() {
+        return "Spring server is running...";
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid RequestSignupForm form) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signup(@RequestBody @Valid RequestSignupForm form) {
         /**
          * 인가 코드 사용해서 oAuth 로그인 해줘야?
          */
         userService.signup(form);
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @GetMapping("/duplication/nickname/{nickname}")
-    public HashMap<String, Object> isDuplicationEmail(@PathVariable String nickname) {
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("isDuplication", userService.isDuplicateNickname(nickname));
-        return result;
+    public Map<String, Boolean> isDuplicationEmail(@PathVariable String nickname) {
+        // 가능하면 map 말고, 클래스 분리해서 리턴하기
+        return Map.of("isDuplication", userService.isDuplicateNickname(nickname));
     }
 
     /*

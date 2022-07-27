@@ -25,9 +25,9 @@ public class Storemanager extends User {
     private String storeRegistrationNumber;
 
     @Builder
-    public Storemanager(String email, String nickname, String name, String phone, AccountType accountType, Role role,
+    public Storemanager(String name, String phone, AccountType accountType, Role role,
                         String storeName, String storePhone, String storeAddress, String storeRegistrationNumber) {
-        super(email, nickname, name, phone, accountType, role);
+        super(name, phone, accountType, role);
         this.storeName = storeName;
         this.storePhone = storePhone;
         this.storeAddress = storeAddress;

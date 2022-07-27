@@ -18,12 +18,6 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String nickname;
-
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -49,9 +43,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Password password;
 
-    public User(String email, String nickname, String name, String phone, AccountType accountType, Role role) {
-        this.email = email;
-        this.nickname = nickname;
+    public User(String name, String phone, AccountType accountType, Role role) {
         this.name = name;
         this.phone = phone;
         this.accountType = accountType;
