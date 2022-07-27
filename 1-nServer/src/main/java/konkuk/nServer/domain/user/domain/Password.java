@@ -24,4 +24,8 @@ public class Password {
         this.password = password;
         this.user = user;
     }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

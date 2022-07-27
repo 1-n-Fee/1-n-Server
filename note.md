@@ -199,9 +199,182 @@ Request DTO에는 validation을, Response DTO에는 서비스 정책을 녹여�
 
 
 
+### findAll 후 class DTO로 변환
+
+```java
+public List<PostResponse> getList(){
+    return postRepository.findAll().stream()
+            .map(post -> PostResponse.builder()
+                 .id(post.getId())
+                 .title(post.getTitle())
+                 .content(post.getContent())
+                 .build())
+            .collect(Collectors.toList());
+}
+
+
+만약 해당 DTO가 반복 사용된다면, 클래스 내부에 entity를 받는 생성자를 만들어서 사용할 수 있음.  
+public class PostResponse{
+  ...
+    // 생성자 오버로딩
+    public PostResponse(Post post){
+    	this.title = post.getTitle();
+    	this.content = post.getContent();
+  	}
+}
+```
 
 
 
+
+
+
+
+### saveAll할 때는 List로
+
+```java
+repository.save(List.of(user1, user2))
+```
+
+
+
+
+
+
+
+### FindAll의 문제점
+
+1. 데이터가 너무 많은 경우, 비용이 너무 많이 든다.
+2. 데이터가 10000000개라면, DB를 모두 조회했다간 DB가 뻗을 수 있다.
+3. DB에서 서버로 전달하는 시간, 트래픽 비용 등이 많이 발생할 수 있다.
+
+4. 그래서 실제로도 전부 조회하는 경우는 많지 않다.
+
+
+
+**해결법 : 페이징 처리**
+
+```java
+// /posts?page={페이지번호}&sort=id,desc&size=5
+// 기본값(@PageableDefault, 파라미터로 수정 가능): sort는 오름차순, 한 페이지에 10개 출력
+// 주로 size는 서버에서 세팅하는 경우가 많다.
+@GetMapping("/posts")
+public List<PostResponse> getList(Pageable pageable) {
+  return postService.getList(pageable);
+}
+
+/*
+관련 설정
+spring.data.web.pageable.one-indexed-parameters: true # 페이지 번호 1부터 시작
+spring.data.web.pageable.default-page-size: 5 # 한 페이지에 몇 개?
+*/
+
+public class postService{
+  // jpa의 pageable 사용하기(spring data jpa domain?)
+  
+  public List<PostResponse> getList(int page){
+    // 한 페이지당 넘어올 데이터 개수 = 5
+    // 페이지는 0부터 계산이 됨
+    // Sort.by(정렬방식, 정렬기준)
+    // Sort.by(정렬기준): 기본적으로 오름차순으로 정렬
+    Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
+    return postRepository.findAll(pageable).stream()
+            //.map(post -> PostResponse(post.getId(), post.getTitle(), post.getContent())
+            .map(PostResponse::new)
+            .collect(Collectors.toList());
+  }
+  
+  public List<PostResponse> getList(Pageable pageable){
+    // 한 페이지당 넘어올 데이터 개수 = 5
+    // spring.data.web.pageable.one-indexed-parameters: true
+    //                   -> Controller에서 @PageableDefault로 받을 때 index 자동 수정
+    // !web!에서 넘어올 때 page-1로 받아줌. 직접 숫자 써서 사용하면 작동 안함
+    return postRepository.findAll(pageable).stream()
+            //.map(post -> PostResponse(post.getId(), post.getTitle(), post.getContent())
+            .map(PostResponse::new)
+            .collect(Collectors.toList());
+  }
+}
+
+List<Post> requestPosts = IntStream.range(0, 30)
+  .mapToObj(i -> {
+    return new Post("title"+i, "content"+i)
+      .collect(Collector.toList());
+  });
+  
+repository.saveAll(requestPosts);
+
+List<PostResponse> posts = postService.getList(pageNum);
+```
+
+
+
+**QueryDsl을 이용한 페이징**
+
+```java
+@Data
+@Builder
+public class PostSearch {
+  
+  private static final int MAX_SIZE = 2000;
+  
+  @Builder.Default // 빌더를 사용할 때 값이 안들어오면 default 값 사용
+  private Integer page = 1;
+  
+  @Builder.Default
+  private Integer size = 10;
+  
+  public long getOffset(){
+    return (long) (Math.max(1, page) - 1) * Math.min(size, MAX_SIZE);
+  }
+}
+```
+
+```java
+@GetMapping("/post")
+// /post?page=1&size=10
+public List<PostResponse> paging(@ModelAttribute PostSearch postSearch){
+  return postService.getList(postSearch)
+}
+```
+
+```java
+public class PostService {
+  ...
+  public List<PostResponse> getList(PostSearch postSearch){
+  		return postRepository.getList(postSearch).stream()
+        			.map(PostResponse::new)
+        			.collect(Collectors.toList());
+  }
+}
+```
+
+```java
+@RequiredArgsConstructor
+public class UserRepositoryImpl implements UserRepositoryCustom {
+
+    private final JPAQueryFactory jpaQueryFactory;
+
+    @Override
+    public List<User> getList(PostSearch postSearch) {
+        return jpaQueryFactory.selectFrom(QPost.post)
+                .limit(postSearch.getSize())
+          			.orderBy(QPosst.post.id.desc())
+                .offset(postSearch.getOffset())
+                .fetch();
+    }
+}
+```
+
+```java
+public interface UserRepositoryCustom {
+    public List<User> getList(int page);
+}
+```
+
+```java
+public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom { }
+```
 
 
 

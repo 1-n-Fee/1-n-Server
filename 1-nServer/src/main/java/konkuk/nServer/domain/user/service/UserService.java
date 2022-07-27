@@ -1,7 +1,7 @@
 package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
-import konkuk.nServer.domain.user.dto.requestForm.RequestSignupForm;
+import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
 import konkuk.nServer.domain.user.error.UserExceptionEnum;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.error.ApiException;
@@ -17,64 +17,77 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-    private final StudentRepository studentRepository;
     private final UserRepository userRepository;
-    private final StoremanagerRepository storemanagerRepository;
     private final KakaoRepository kakaoRepository;
     private final NaverRepository naverRepository;
     private final GoogleRepository googleRepository;
     private final PasswordRepository passwordRepository;
 
-    public void signup(RequestSignupForm form) {
+    public void signup(RequestUserSignup form) {
         Role role = convertRole(form.getRole());
         AccountType accountType = convertAccountType(form.getAccountType());
 
-        User user = null;
-        if (role == Role.ROLE_STUDENT) {
-            user = Student.builder()
-                    .accountType(accountType)
-                    .name(form.getName())
-                    .phone(form.getPhone())
-                    .role(role)
-                    .nickname(form.getStudent().getNickname())
-                    .email(form.getStudent().getEmail())
-                    .major(form.getStudent().getMajor())
-                    .sexType(convertSexType(form.getStudent().getSexType()))
-                    .build();
+        if (role != Role.ROLE_STUDENT) throw new ApiException(UserExceptionEnum.INCORRECT_ROLE);
+        User user = User.builder()
+                .accountType(accountType)
+                .name(form.getName())
+                .phone(form.getPhone())
+                .role(role)
+                .nickname(form.getNickname())
+                .email(form.getEmail())
+                .major(form.getMajor())
+                .sexType(convertSexType(form.getSexType()))
+                .build();
 
-            studentRepository.save((Student) user);
-        } else if (role == Role.ROLE_STOREMANAGER) {
-            user = Storemanager.builder()
-                    .accountType(accountType)
-                    .name(form.getName())
-                    .phone(form.getPhone())
-                    .role(role)
-                    .storeName(form.getStoremanager().getStoreName())
-                    .storePhone(form.getStoremanager().getStorePhone())
-                    .storeAddress(form.getStoremanager().getStoreAddress())
-                    .storeRegistrationNumber(form.getStoremanager().getStoreRegistrationNumber())
-                    .build();
-
-            storemanagerRepository.save((Storemanager) user);
-        }
+        userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {
-            Kakao kakao = new Kakao(form.getAccount().getKakaoId(), user);
+            Kakao kakao = new Kakao(form.getKakaoId(), user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            Naver naver = new Naver(form.getAccount().getNaverId(), user);
+            Naver naver = new Naver(form.getNaverId(), user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            Google google = new Google(form.getAccount().getGoogleId(), user);
+            Google google = new Google(form.getGoogleId(), user);
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
-            Password password = new Password(form.getAccount().getPassword(), user);
+            Password password = new Password(form.getPassword(), user);
             user.setPassword(password);
             passwordRepository.save(password);
         }
+
+    }
+
+    public void changePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_MEMBER));
+
+        if (user.getAccountType() != AccountType.PASSWORD)
+            throw new ApiException(UserExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+
+        user.getPassword().changePassword(newPassword);
+    }
+
+    private String randomPw() {
+        char[] pwCollectionSpCha = new char[]{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
+        char[] pwCollectionNum = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',};
+        char[] pwCollectionAll = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
+        return getRandPw(1, pwCollectionSpCha) + getRandPw(8, pwCollectionAll) + getRandPw(1, pwCollectionNum);
+    }
+
+    private String getRandPw(int size, char[] pwCollection) {
+        StringBuilder ranPw = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            int selectRandomPw = (int) (Math.random() * (pwCollection.length));
+            ranPw.append(pwCollection[selectRandomPw]);
+        }
+        return ranPw.toString();
     }
 
     private SexType convertSexType(String sexType) {
@@ -99,7 +112,7 @@ public class UserService {
     }
 
     public boolean isDuplicateNickname(String nickname) {
-        return studentRepository.existsByNickname(nickname);
+        return userRepository.existsByNickname(nickname);
     }
 }
 

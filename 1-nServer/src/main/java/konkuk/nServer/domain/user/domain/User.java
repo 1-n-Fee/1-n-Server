@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 @Entity
 @NoArgsConstructor
 @Getter
 @Table(name = "USERS")
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +30,19 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    @Email
+    private String email;
+
+    @Column(nullable = false)
+    private String nickname;
+
+
+    private String major;
+
+    @Enumerated(EnumType.STRING)
+    private SexType SexType;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Kakao kakao;
 
@@ -42,13 +54,6 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Password password;
-
-    public User(String name, String phone, AccountType accountType, Role role) {
-        this.name = name;
-        this.phone = phone;
-        this.accountType = accountType;
-        this.role = role;
-    }
 
     public void setKakao(Kakao kakao) {
         this.kakao = kakao;
@@ -64,5 +69,19 @@ public class User {
 
     public void setPassword(Password password) {
         this.password = password;
+    }
+
+    @Builder
+
+    public User(String name, String phone, AccountType accountType, Role role, String email, String nickname,
+                String major, konkuk.nServer.domain.user.domain.SexType sexType) {
+        this.name = name;
+        this.phone = phone;
+        this.accountType = accountType;
+        this.role = role;
+        this.email = email;
+        this.nickname = nickname;
+        this.major = major;
+        this.SexType = sexType;
     }
 }

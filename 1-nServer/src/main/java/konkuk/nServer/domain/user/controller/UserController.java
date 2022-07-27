@@ -1,11 +1,10 @@
 package konkuk.nServer.domain.user.controller;
 
-import konkuk.nServer.domain.user.dto.requestForm.RequestSignupForm;
+import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
 import konkuk.nServer.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +24,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void signup(@RequestBody @Valid RequestSignupForm form) {
+    public void signup(@RequestBody @Valid RequestUserSignup form) {
         /**
          * 인가 코드 사용해서 oAuth 로그인 해줘야?
          */
