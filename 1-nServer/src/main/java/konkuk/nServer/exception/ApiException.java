@@ -1,11 +1,11 @@
-package konkuk.nServer.error;
+package konkuk.nServer.exception;
 
-import konkuk.nServer.domain.user.error.UserExceptionEnum;
+import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import konkuk.nServer.security.error.SecurityExceptionEnum;
 import lombok.Getter;
 
 @Getter
-public class ApiException extends IllegalArgumentException {
+public class ApiException extends RuntimeException {
     private UserExceptionEnum userError;
     private SecurityExceptionEnum securityError;
 

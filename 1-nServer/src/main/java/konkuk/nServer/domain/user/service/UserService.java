@@ -2,9 +2,9 @@ package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
-import konkuk.nServer.domain.user.error.UserExceptionEnum;
+import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import konkuk.nServer.domain.user.repository.*;
-import konkuk.nServer.error.ApiException;
+import konkuk.nServer.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package konkuk.nServer.domain.user.error;
+package konkuk.nServer.domain.user.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

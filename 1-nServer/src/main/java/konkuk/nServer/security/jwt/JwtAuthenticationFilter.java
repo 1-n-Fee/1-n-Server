@@ -1,7 +1,7 @@
 package konkuk.nServer.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.error.ApiException;
+import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.security.PrincipalDetails;
 import konkuk.nServer.security.error.SecurityExceptionEnum;
 import lombok.Data;

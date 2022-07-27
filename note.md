@@ -197,6 +197,25 @@ Petch도 대부분 주진 않지만, 클라이언트의 요구에 따라 코딩�
 
 Request DTO에는 validation을, Response DTO에는 서비스 정책을 녹여주자
 
+```java
+@Data
+public class ReqeustDto{
+    
+    @NotBlank
+    private String title;
+    @NotBlank
+    private String content;
+    
+    public void validate(){ // 컨트롤러에서는 이거 호출
+        if(title.contatins("바보")){
+            throw new InvalidRequest("잘못된 요청입니다.");
+        }
+    }
+}
+```
+
+
+
 
 
 
@@ -389,3 +408,36 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 https://www.inflearn.com/course/%ED%98%B8%EB%8F%8C%EB%A7%A8-%EC%9A%94%EC%A0%88%EB%B3%B5%ED%86%B5-%EA%B0%9C%EB%B0%9C%EC%87%BC/unit/111160?tab=community&q=584082
 
 15분?
+
+
+
+
+
+
+
+### 예외 테스트
+
+```java
+@Test
+void test(){
+    ...
+    IllegalArgumentException e =
+        Assertions.assertThrows(IllegalArgumentException.class, () -> { 
+            postService.get(post.getId()+1L);
+    });
+    
+    assertEquals("예외 message검증하기", e.getMessage());
+    
+    // 근데 위처럼 사용하기 보단, 예외 클래스를 따로 만들어서 메시지는 검증 안함
+    assertThrows(PostNotFound.class, () -> { 
+            postService.get(post.getId()+1L);
+    });
+}
+```
+
+
+
+
+
+
+
