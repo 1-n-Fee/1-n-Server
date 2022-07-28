@@ -60,4 +60,4 @@ jobs:
 
       # copy로 S3에 업로드
       - name: Upload to S3
-        run: aws s3 cp --recursive --region ap-northeast-2 build s3://playkuround-server-deploy
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://playkuround-server-deploy/$GITHUB_SHA.zip
