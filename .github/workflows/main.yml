@@ -19,6 +19,8 @@ jobs:
   build:
     # 해당 workflow를 어떤 OS 환경에서 실행할 것인가?
     runs-on: ubuntu-latest
+ #   env: 
+ #     working-directory: ./1-nServer
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -36,10 +38,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         shell: bash
+        working-directory: ./1-nServer
 
       - name: Build with Gradle
         run: ./gradlew build
         shell: bash
+        working-directory: ./1-nServer
 
       # 현재 workflow를 실행시키는 커밋의 해쉬값
       - name: Make zip file
