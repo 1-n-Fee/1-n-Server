@@ -1,7 +1,6 @@
 package konkuk.nServer.config;
 
-import com.example.demo.repository.EmailPasswordRepository;
-import com.example.demo.security.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.security.jwt.JwtAuthenticationFilter;
 import konkuk.nServer.security.jwt.JwtAuthorizationFilter;
@@ -27,10 +26,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig {
 
     private final UserRepository userRepository;
-    private final EmailPasswordRepository emailPasswordRepository;
     private final JwtTokenProvider tokenProvider;
-    private final UserOAuth2Service userOAuth2Service;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final ObjectMapper objectMapper;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -67,8 +64,8 @@ public class WebSecurityConfig {
         @Override
         public void configure(HttpSecurity http) {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-            http.addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, emailPasswordRepository, tokenProvider));
+            http.addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider, objectMapper))
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, tokenProvider));
         }
     }
 
