@@ -1,10 +1,11 @@
 package konkuk.nServer.security.jwt;
 
-import com.example.demo.domain.EmailPassword;
-import com.example.demo.domain.User;
-import com.example.demo.repository.EmailPasswordRepository;
-import com.example.demo.repository.UserRepository;
+import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.repository.UserRepository;
+import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.security.PrincipalDetails;
+import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,15 +30,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private String SECRET;
 
     private final UserRepository userRepository;
-    private final EmailPasswordRepository emailPasswordRepository;
     private final JwtTokenProvider tokenProvider;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
-                                  EmailPasswordRepository emailPasswordRepository, JwtTokenProvider tokenProvider) {
+                                  JwtTokenProvider tokenProvider) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
-        this.emailPasswordRepository = emailPasswordRepository;
     }
 
     // 인증이나 권한이 필요한 주소 요청이 있을 때 해당 필터를 타게 됨
@@ -60,11 +59,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         // 서명이 정상적으로 됨
         if (userId != null) {
-            User user = userRepository.findById(userId).get();
-            EmailPassword emailPassword = emailPasswordRepository.findByUser(user);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ApiException(SecurityExceptionEnum.USER_NOT_FOUND));
             log.info("인가 성공 userId={}", user.getId());
 
-            PrincipalDetails principalDetails = new PrincipalDetails(emailPassword, user);
+            PrincipalDetails principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
             Authentication authentication

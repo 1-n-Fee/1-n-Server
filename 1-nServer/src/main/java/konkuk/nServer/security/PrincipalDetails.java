@@ -1,7 +1,7 @@
 package konkuk.nServer.security;
 
-import com.example.demo.domain.EmailPassword;
-import com.example.demo.domain.User;
+import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.user.domain.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +12,11 @@ import java.util.Collection;
 @Data
 public class PrincipalDetails implements UserDetails {
     private User user;
-    private EmailPassword emailPassword;
+    private Password password;
 
-    public PrincipalDetails(EmailPassword emailPassword, User user) {
+    public PrincipalDetails(User user, Password password) {
         this.user = user;
-        this.emailPassword = emailPassword;
+        this.password = password;
     }
 
     //계정이 갖고있는 권한 목록은 리턴
@@ -30,12 +30,12 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return emailPassword.getPassword();
+        return password.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return emailPassword.getEmail();
+        return user.getEmail();
     }
 
     //계정이 만료되지 않았는지 리턴 (true: 만료안됨)

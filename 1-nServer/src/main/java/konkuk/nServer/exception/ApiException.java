@@ -1,7 +1,7 @@
 package konkuk.nServer.exception;
 
 import konkuk.nServer.domain.user.exception.UserExceptionEnum;
-import konkuk.nServer.security.error.SecurityExceptionEnum;
+import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.Getter;
 
 @Getter
