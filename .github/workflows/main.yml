@@ -61,3 +61,7 @@ jobs:
       # copy로 S3에 업로드
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://playkuround-server-deploy/$GITHUB_SHA.zip
+
+      ### 새로 추가한 부분 ###
+      - name: Code Deploy
+        run: aws deploy create-deployment --application-name logging-system-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=playkuround-server-deploy,bundleType=zip,key=$GITHUB_SHA.zip
