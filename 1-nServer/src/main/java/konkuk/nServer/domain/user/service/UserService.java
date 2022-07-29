@@ -24,6 +24,7 @@ public class UserService {
     private final GoogleRepository googleRepository;
     private final PasswordRepository passwordRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final OAuth2Provider oAuth2Provider;
 
 
     public void signup(UserSignup form) {
@@ -45,15 +46,18 @@ public class UserService {
         userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {
-            Kakao kakao = new Kakao(form.getKakaoId(), user);
+            String kakaoId = oAuth2Provider.getKakaoId(form.getKakaoCode());
+            Kakao kakao = new Kakao(kakaoId, user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            Naver naver = new Naver(form.getNaverId(), user);
+            String naverId = oAuth2Provider.getKakaoId(form.getNaverCode());
+            Naver naver = new Naver(naverId, user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            Google google = new Google(form.getGoogleId(), user);
+            String googleId = oAuth2Provider.getKakaoId(form.getGoogleCode());
+            Google google = new Google(googleId, user);
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {

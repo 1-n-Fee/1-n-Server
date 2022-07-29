@@ -31,14 +31,14 @@ public class UserSignup {
     private String major;
     private String sexType;
 
-    private String kakaoId;
-    private String naverId;
-    private String googleId;
+    private String kakaoCode;
+    private String naverCode;
+    private String googleCode;
     private String password;
 
     @Builder
     public UserSignup(String accountType, String name, String phone, String role, String email, String nickname,
-                      String major, String sexType, String kakaoId, String naverId, String googleId, String password) {
+                      String major, String sexType, String kakaoCode, String naverCode, String googleCode, String password) {
         this.accountType = accountType;
         this.name = name;
         this.phone = phone;
@@ -47,9 +47,9 @@ public class UserSignup {
         this.nickname = nickname;
         this.major = major;
         this.sexType = sexType;
-        this.kakaoId = kakaoId;
-        this.naverId = naverId;
-        this.googleId = googleId;
+        this.kakaoCode = kakaoCode;
+        this.naverCode = naverCode;
+        this.googleCode = googleCode;
         this.password = password;
     }
 }
