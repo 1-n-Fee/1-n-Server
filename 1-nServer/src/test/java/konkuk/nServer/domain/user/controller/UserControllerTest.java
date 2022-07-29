@@ -1,11 +1,14 @@
 package konkuk.nServer.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.domain.*;
+import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
-import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +18,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -38,6 +44,9 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void clean() {
@@ -211,6 +220,53 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isDuplication").value(false))
                 .andDo(print()); // http 요청 로그 남기기
+    }
+
+    @Test
+    @DisplayName("로그인(password)")
+    void loginByPassword() throws Exception {
+        // given
+        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("testPassword")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
+                .build();
+
+        userService.signup(requestUserSignup);
+
+        Map<String, String> map = Map.of("email", "asdf@konkuk.ac.kr", "password", "testPassword");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        MvcResult response = mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Authorization"))
+                .andDo(print())
+                .andReturn();
+
+        String jwt = response.getResponse().getHeader("Authorization");
+
+        Long userId = jwtTokenProvider.validateAndGetUserId(jwt.replace("Bearer ", ""));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+
+        assertEquals(AccountType.PASSWORD, user.getAccountType());
+        assertEquals(Role.ROLE_STUDENT, user.getRole());
+        assertEquals("asdf@konkuk.ac.kr", user.getEmail());
+        assertEquals("ithinkso", user.getNickname());
+        assertEquals("tester", user.getName());
+        assertEquals("01012345678", user.getPhone());
+        assertEquals(SexType.MAN, user.getSexType());
+        assertEquals("CS", user.getMajor());
     }
 
 

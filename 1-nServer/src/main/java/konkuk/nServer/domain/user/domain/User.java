@@ -72,7 +72,6 @@ public class User {
     }
 
     @Builder
-
     public User(String name, String phone, AccountType accountType, Role role, String email, String nickname,
                 String major, konkuk.nServer.domain.user.domain.SexType sexType) {
         this.name = name;

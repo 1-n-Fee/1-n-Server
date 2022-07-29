@@ -6,7 +6,6 @@ import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
 import konkuk.nServer.domain.user.repository.PasswordRepository;
-import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -2,9 +2,11 @@ package konkuk.nServer.domain.user.controller;
 
 import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
 import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -38,6 +40,13 @@ public class UserController {
         // 가능하면 map 말고, 클래스 분리해서 리턴하기
         return Map.of("isDuplication", userService.isDuplicateNickname(nickname));
     }
+
+    @PostMapping("/change/password")
+    public void changePassword(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        log.info("email={}", userDetail.getUsername());
+        log.info("userId={}", userDetail.getUser().getId());
+    }
+
 
     /*
 

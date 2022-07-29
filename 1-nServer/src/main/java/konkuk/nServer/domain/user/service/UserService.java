@@ -7,6 +7,7 @@ import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,8 @@ public class UserService {
     private final NaverRepository naverRepository;
     private final GoogleRepository googleRepository;
     private final PasswordRepository passwordRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
 
     public void signup(RequestUserSignup form) {
         Role role = convertRole(form.getRole());
@@ -54,7 +57,7 @@ public class UserService {
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
-            Password password = new Password(form.getPassword(), user);
+            Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
             user.setPassword(password);
             passwordRepository.save(password);
         }

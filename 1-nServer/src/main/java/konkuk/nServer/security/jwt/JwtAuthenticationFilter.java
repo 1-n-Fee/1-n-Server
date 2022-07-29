@@ -13,11 +13,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StreamUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -33,21 +36,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Value("${token.secret}")
     private String SECRET_KEY;
 
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";
+    private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
+    private static final String CONTENT_TYPE = "application/json";//json 타입의 데이터로만 로그인을 진행한다.
+
+
     // login 요청을 하면 로그인 시도를 위해 실행
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         // 1. username, password 받아서
-        LoginRequest loginRequest;
+        String email = null, password = null;
         try {
-            loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+            String messageBody = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
+            Map<String, String> emailPasswordMap = objectMapper.readValue(messageBody, Map.class);
+            email = emailPasswordMap.get("email");
+            password = emailPasswordMap.get("password");
         } catch (IOException e) {
             throw new ApiException(SecurityExceptionEnum.INCORRECT_LOGIN);
         }
 
-        log.info("로그인 요청 email={}, password={}", loginRequest.getEmail(), loginRequest.getPassword());
+
+        log.info("로그인 요청 email={}, password={}", email, password);
 
         UsernamePasswordAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+                = new UsernamePasswordAuthenticationToken(email, password);
 
         // 정상인지 로그인 시도를 해보기
         // authenticationManager로 로그인 시도를 하면 PrincipalDetailsService.loadUserByUsername()이 실행됨
