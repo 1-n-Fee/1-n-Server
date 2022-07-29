@@ -56,6 +56,7 @@ public class WebSecurityConfig {
                 //.antMatchers("/home", "/signup", "/login", "/h2-console/**").permitAll()
                 //.anyRequest().authenticated() //이외의 모든 경로는 인증 해야 함
                 //.and().build();
+
                 .build();
 
     }

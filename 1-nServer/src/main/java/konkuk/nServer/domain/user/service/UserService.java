@@ -44,7 +44,6 @@ public class UserService {
                 .major(form.getMajor())
                 .sexType(convertSexType(form.getSexType()))
                 .build();
-
         userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {

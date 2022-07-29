@@ -66,6 +66,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 정상실행 된다는 건, 로그인 성공이라는 뜻 (인증 성공)
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
+
         // authentication 에는 로그인 정보가 담김
         log.info("로그인 성공 name={}", authentication.getName());
         return authentication; // return 되면 세션에 저장됨 (권한 관리를 위해 세션에 저장. 필요 없다면 안해도 괜찮다)
