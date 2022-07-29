@@ -10,10 +10,9 @@ public enum UserExceptionEnum {
     INCORRECT_ROLE(HttpStatus.BAD_REQUEST, "M001", "올바르지 않은 Role입니다."),
     INCORRECT_ACCOUNT_TYPE(HttpStatus.BAD_REQUEST, "M002", "올바르지 않은 accountType입니다."),
     INCORRECT_SEX_TYPE(HttpStatus.BAD_REQUEST, "M003", "올바르지 않은 sexType입니다."),
-    INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "M003", "올바르지 않은 password입니다."),
+    INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "M004", "올바르지 않은 password입니다."),
 
-    NO_FIND_MEMBER(HttpStatus.BAD_REQUEST, "M004", "존재하지 않는 회원ID입니다."),
-
+    NO_FIND_USER(HttpStatus.BAD_REQUEST, "M005", "존재하지 않는 회원ID입니다."),
     ;
     private final HttpStatus status;
     private final String code;

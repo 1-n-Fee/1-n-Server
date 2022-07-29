@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -33,6 +34,12 @@ public class UserController {
          */
         userService.signup(form);
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @GetMapping("/oauth/{oauth}")
+    public void loginByOauth(@PathVariable String oauth, @RequestParam String code, HttpServletResponse response) {
+        String jwtToken = userService.oAuthLogin(oauth, code);
+        response.addHeader("Authorization", "Bearer " + jwtToken);
     }
 
 

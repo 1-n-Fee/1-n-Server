@@ -5,6 +5,7 @@ import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +26,7 @@ public class UserService {
     private final PasswordRepository passwordRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final OAuth2Provider oAuth2Provider;
+    private final JwtTokenProvider tokenProvider;
 
 
     public void signup(UserSignup form) {
@@ -70,7 +72,7 @@ public class UserService {
 
     public void changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_MEMBER));
+                .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
 
         if (user.getAccountType() != AccountType.PASSWORD)
             throw new ApiException(UserExceptionEnum.INCORRECT_ACCOUNT_TYPE);
@@ -121,5 +123,30 @@ public class UserService {
     public boolean isDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
-}
 
+    public String oAuthLogin(String oauth, String code) {
+        AccountType accountType = convertAccountType(oauth);
+        User user = null;
+        if (accountType == AccountType.KAKAO) {
+            String kakaoId = oAuth2Provider.getKakaoId(code);
+            Kakao kakao = kakaoRepository.findByKakaoId(kakaoId)
+                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
+            user = kakao.getUser();
+        } else if (accountType == AccountType.NAVER) {
+            String naverId = oAuth2Provider.getNaverId(code);
+            Naver naver = naverRepository.findByNaverId(naverId)
+                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
+            user = naver.getUser();
+        } else if (accountType == AccountType.GOOGLE) {
+            String googleId = oAuth2Provider.getGoogleId(code);
+            Google google = googleRepository.findByGoogleId(googleId)
+                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
+            user = google.getUser();
+        } else throw new ApiException(UserExceptionEnum.NO_FIND_USER);
+
+        String jwtToken = tokenProvider.createJwt(user);
+        log.info("Token = {}", jwtToken);
+
+        return jwtToken;
+    }
+}
