@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.user.controller;
 
-import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
+import konkuk.nServer.domain.user.dto.requestForm.ChangePassword;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void signup(@RequestBody @Valid RequestUserSignup form) {
+    public void signup(@RequestBody @Valid UserSignup form) {
         /**
          * 인가 코드 사용해서 oAuth 로그인 해줘야?
          */
@@ -42,9 +43,10 @@ public class UserController {
     }
 
     @PostMapping("/change/password")
-    public void changePassword(@AuthenticationPrincipal PrincipalDetails userDetail) {
-        log.info("email={}", userDetail.getUsername());
-        log.info("userId={}", userDetail.getUser().getId());
+    public void changePassword(@AuthenticationPrincipal PrincipalDetails userDetail,
+                               @RequestBody @Valid ChangePassword changePassword) {
+        changePassword.validate();
+        userService.changePassword(userDetail.getUserId(), changePassword.getNewPassword());
     }
 
 

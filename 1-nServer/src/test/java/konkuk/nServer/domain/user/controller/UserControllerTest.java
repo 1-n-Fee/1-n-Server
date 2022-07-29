@@ -1,13 +1,11 @@
 package konkuk.nServer.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.domain.AccountType;
-import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.SexType;
-import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
+import konkuk.nServer.domain.user.domain.*;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.security.PrincipalDetails;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,6 +50,9 @@ class UserControllerTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeEach
     void clean() {
@@ -89,7 +95,7 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(필수 항목 안채우기)")
     void studentSignupNotFillRequired() throws Exception {
         // given
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -97,7 +103,7 @@ class UserControllerTest {
                 .name("tester")
                 .role("student")
                 .build();
-        String content = objectMapper.writeValueAsString(requestUserSignup);
+        String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
         mockMvc.perform(post("/user/signup")
@@ -117,7 +123,7 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(선택 항목 안채우기)")
     void studentSignupNotFillOptional() throws Exception {
         // given
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -126,7 +132,7 @@ class UserControllerTest {
                 .role("student")
                 .phone("01012345678")
                 .build();
-        String content = objectMapper.writeValueAsString(requestUserSignup);
+        String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
         mockMvc.perform(post("/user/signup")
@@ -153,7 +159,7 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(모든 항목 채우기)")
     void studentSignupAllFill() throws Exception {
         // given
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -164,7 +170,7 @@ class UserControllerTest {
                 .major("CS")
                 .sexType("man")
                 .build();
-        String content = objectMapper.writeValueAsString(requestUserSignup);
+        String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
         mockMvc.perform(post("/user/signup")
@@ -192,7 +198,7 @@ class UserControllerTest {
     @DisplayName("닉네임 중복 검사")
     void nickNameDuplicate() throws Exception {
         // given
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -204,7 +210,7 @@ class UserControllerTest {
                 .sexType("man")
                 .build();
 
-        userService.signup(requestUserSignup);
+        userService.signup(userSignup);
 
         // expected
         mockMvc.perform(get("/user/duplication/nickname/{nickname}", "ithinkso")
@@ -226,7 +232,7 @@ class UserControllerTest {
     @DisplayName("로그인(password)")
     void loginByPassword() throws Exception {
         // given
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -238,7 +244,7 @@ class UserControllerTest {
                 .sexType("man")
                 .build();
 
-        userService.signup(requestUserSignup);
+        userService.signup(userSignup);
 
         Map<String, String> map = Map.of("email", "asdf@konkuk.ac.kr", "password", "testPassword");
         String content = objectMapper.writeValueAsString(map);
@@ -269,5 +275,40 @@ class UserControllerTest {
         assertEquals("CS", user.getMajor());
     }
 
+    @Test
+    @DisplayName("비밀번호 변경")
+    void changePassword() throws Exception {
+        // given
+        UserSignup userSignup = UserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("testPassword")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
+                .build();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+
+        Map<String, String> map = Map.of("newPassword", "password!123");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        mockMvc.perform(post("/user/change/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print()); // http 요청 로그 남기기
+
+        user = userRepository.findAll().get(0);
+        assertTrue(passwordEncoder.matches("password!123", user.getPassword().getPassword()));
+    }
 
 }

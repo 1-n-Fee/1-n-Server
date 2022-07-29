@@ -4,7 +4,7 @@ import konkuk.nServer.domain.user.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.PasswordRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원가입")
     void test1() {
-        RequestUserSignup requestUserSignup = RequestUserSignup.builder()
+        UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
                 .password("testPassword")
@@ -48,7 +48,7 @@ class UserServiceTest {
                 .sexType("man")
                 .build();
 
-        userService.signup(requestUserSignup);
+        userService.signup(userSignup);
 
 
         assertEquals(1L, userRepository.count());

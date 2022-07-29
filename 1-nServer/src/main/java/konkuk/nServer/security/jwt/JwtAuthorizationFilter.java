@@ -8,14 +8,11 @@ import konkuk.nServer.security.PrincipalDetails;
 import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -68,24 +65,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .orElseThrow(() -> new ApiException(SecurityExceptionEnum.USER_NOT_FOUND));
             log.info("인가 성공 userId={}", user.getId());
 
-
-            /*
-            // 인증 완료. SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
-            AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    Long.parseLong(userId), //인증된 사용자 정보. 문자열이 아니어도 아무것이나 넣을 수 있다. 보통 UserDetails라는 오브젝트를 넣는다.
-                    null, AuthorityUtils.NO_AUTHORITIES
-            );
-
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            // SecurityContext에 authentication을 넣기 위해 생성 -> set -> 컨텍스트로 등록
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
-            */
-
-
-
             PrincipalDetails principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
@@ -93,9 +72,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
 
             // SecurityContext에 authentication을 넣기 위해 생성 -> set -> 컨텍스트로 등록
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
-            SecurityContextHolder.setContext(securityContext);
 
             // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장
             //SecurityContextHolder.getContext().setAuthentication(authentication);

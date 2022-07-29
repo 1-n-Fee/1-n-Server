@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
-public class RequestUserSignup {
+public class UserSignup {
 
     @NotBlank(message = "accountType은 필수항목입니다.")
     private String accountType;
@@ -37,8 +37,8 @@ public class RequestUserSignup {
     private String password;
 
     @Builder
-    public RequestUserSignup(String accountType, String name, String phone, String role, String email, String nickname,
-                             String major, String sexType, String kakaoId, String naverId, String googleId, String password) {
+    public UserSignup(String accountType, String name, String phone, String role, String email, String nickname,
+                      String major, String sexType, String kakaoId, String naverId, String googleId, String password) {
         this.accountType = accountType;
         this.name = name;
         this.phone = phone;

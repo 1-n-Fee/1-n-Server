@@ -1,7 +1,7 @@
 package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
-import konkuk.nServer.domain.user.dto.requestForm.RequestUserSignup;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
@@ -26,7 +26,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public void signup(RequestUserSignup form) {
+    public void signup(UserSignup form) {
         Role role = convertRole(form.getRole());
         AccountType accountType = convertAccountType(form.getAccountType());
 
@@ -71,7 +71,7 @@ public class UserService {
         if (user.getAccountType() != AccountType.PASSWORD)
             throw new ApiException(UserExceptionEnum.INCORRECT_ACCOUNT_TYPE);
 
-        user.getPassword().changePassword(newPassword);
+        user.getPassword().changePassword(passwordEncoder.encode(newPassword));
     }
 
     private String randomPw() {
