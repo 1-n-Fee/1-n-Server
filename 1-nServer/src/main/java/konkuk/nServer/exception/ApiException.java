@@ -1,21 +1,13 @@
 package konkuk.nServer.exception;
 
-import konkuk.nServer.domain.user.exception.UserExceptionEnum;
-import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.Getter;
 
 @Getter
 public class ApiException extends RuntimeException {
-    private UserExceptionEnum userError;
-    private SecurityExceptionEnum securityError;
+    private ExceptionEnum error;
 
-    public ApiException(UserExceptionEnum e) {
+    public ApiException(ExceptionEnum e) {
         super(e.getMessage());
-        this.userError = e;
-    }
-
-    public ApiException(SecurityExceptionEnum e) {
-        super(e.getMessage());
-        this.securityError = e;
+        this.error = e;
     }
 }

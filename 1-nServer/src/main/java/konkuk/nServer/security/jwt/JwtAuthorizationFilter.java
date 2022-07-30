@@ -2,10 +2,10 @@ package konkuk.nServer.security.jwt;
 
 import konkuk.nServer.domain.user.domain.Password;
 import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.security.PrincipalDetails;
-import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,7 +62,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 서명이 정상적으로 됨
         if (userId != null) {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ApiException(SecurityExceptionEnum.USER_NOT_FOUND));
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
             log.info("인가 성공 userId={}", user.getId());
 
             PrincipalDetails principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음

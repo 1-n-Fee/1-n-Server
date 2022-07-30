@@ -1,11 +1,14 @@
 package konkuk.nServer.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.domain.*;
+import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
-import konkuk.nServer.security.PrincipalDetails;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -309,6 +307,113 @@ class UserControllerTest {
 
         user = userRepository.findAll().get(0);
         assertTrue(passwordEncoder.matches("password!123", user.getPassword().getPassword()));
+    }
+
+
+    @Test
+    @DisplayName("임시 비밀번호 발급")
+    void getTempPassword() throws Exception {
+        // given
+        UserSignup userSignup = UserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("testPassword")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
+                .build();
+        userService.signup(userSignup);
+
+        Map<String, String> map =
+                Map.of("name", "tester",
+                        "email", "asdf@konkuk.ac.kr",
+                        "phone", "01012345678");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        MvcResult result = mockMvc.perform(post("/user/find/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tempPassword").exists())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        String tempPassword = (String) objectMapper.readValue(responseBody, Map.class)
+                .get("tempPassword");
+
+        User user = userRepository.findAll().get(0);
+
+        assertEquals(1L, userRepository.count());
+        assertTrue(passwordEncoder.matches(tempPassword, user.getPassword().getPassword()));
+
+
+        // 회원 찾기 실패
+        map = Map.of("name", "tester1",
+                "email", "asdf@konkuk.ac.kr",
+                "phone", "01012345678");
+        content = objectMapper.writeValueAsString(map);
+
+        mockMvc.perform(post("/user/find/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ExceptionEnum.NO_FOUND_USER.getCode()))
+                .andExpect(jsonPath("$.message").value(ExceptionEnum.NO_FOUND_USER.getMessage()))
+                .andDo(print())
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("이메일 찾기")
+    void findEmail() throws Exception {
+        // given
+        UserSignup userSignup = UserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("testPassword")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
+                .build();
+        userService.signup(userSignup);
+
+        Map<String, String> map =
+                Map.of("name", "tester",
+                        "phone", "01012345678");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        mockMvc.perform(post("/user/find/email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("asdf@konkuk.ac.kr"))
+                .andDo(print());
+
+        // 회원 찾기 실패
+        map = Map.of("name", "tester1", "phone", "01012345678");
+        content = objectMapper.writeValueAsString(map);
+
+        mockMvc.perform(post("/user/find/email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(ExceptionEnum.NO_FOUND_USER.getCode()))
+                .andExpect(jsonPath("$.message").value(ExceptionEnum.NO_FOUND_USER.getMessage()))
+                .andDo(print())
+                .andReturn();
     }
 
 }

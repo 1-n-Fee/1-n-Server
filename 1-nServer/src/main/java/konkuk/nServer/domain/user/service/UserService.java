@@ -2,9 +2,9 @@ package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
-import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class UserService {
         Role role = convertRole(form.getRole());
         AccountType accountType = convertAccountType(form.getAccountType());
 
-        if (role != Role.ROLE_STUDENT) throw new ApiException(UserExceptionEnum.INCORRECT_ROLE);
+        if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
         User user = User.builder()
                 .accountType(accountType)
                 .name(form.getName())
@@ -71,12 +71,77 @@ public class UserService {
 
     public void changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
         if (user.getAccountType() != AccountType.PASSWORD)
-            throw new ApiException(UserExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+            throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
 
         user.getPassword().changePassword(passwordEncoder.encode(newPassword));
+    }
+
+    private SexType convertSexType(String sexType) {
+        if (Objects.equals(sexType, "man")) return SexType.MAN;
+        else if (Objects.equals(sexType, "woman")) return SexType.WOMAN;
+        else if (sexType == null) return null;
+        else throw new ApiException(ExceptionEnum.INCORRECT_SEX_TYPE);
+    }
+
+    private Role convertRole(String role) {
+        if (Objects.equals(role, "student")) return Role.ROLE_STUDENT;
+        else if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
+        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+    }
+
+    private AccountType convertAccountType(String accountType) {
+        if (Objects.equals(accountType, "kakao")) return AccountType.KAKAO;
+        else if (Objects.equals(accountType, "naver")) return AccountType.NAVER;
+        else if (Objects.equals(accountType, "google")) return AccountType.GOOGLE;
+        else if (Objects.equals(accountType, "password")) return AccountType.PASSWORD;
+        else throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isDuplicateNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
+    public String oAuthLogin(String oauth, String code) {
+        AccountType accountType = convertAccountType(oauth);
+        User user = null;
+        if (accountType == AccountType.KAKAO) {
+            String kakaoId = oAuth2Provider.getKakaoId(code);
+            Kakao kakao = kakaoRepository.findByKakaoId(kakaoId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = kakao.getUser();
+        } else if (accountType == AccountType.NAVER) {
+            String naverId = oAuth2Provider.getNaverId(code);
+            Naver naver = naverRepository.findByNaverId(naverId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = naver.getUser();
+        } else if (accountType == AccountType.GOOGLE) {
+            String googleId = oAuth2Provider.getGoogleId(code);
+            Google google = googleRepository.findByGoogleId(googleId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = google.getUser();
+        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+
+        String jwtToken = tokenProvider.createJwt(user);
+        log.info("Token = {}", jwtToken);
+
+        return jwtToken;
+    }
+
+    public String findPassword(String email, String name, String phone) {
+        User user = userRepository.findUserForPassword(email, name, phone)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        if (user.getAccountType() != AccountType.PASSWORD)
+            throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+
+        String newPassword = randomPw();
+        user.getPassword().changePassword(passwordEncoder.encode(newPassword));
+
+        return newPassword;
     }
 
     private String randomPw() {
@@ -98,54 +163,9 @@ public class UserService {
         return ranPw.toString();
     }
 
-    private SexType convertSexType(String sexType) {
-        if (Objects.equals(sexType, "man")) return SexType.MAN;
-        else if (Objects.equals(sexType, "woman")) return SexType.WOMAN;
-        else if (sexType == null) return null;
-        else throw new ApiException(UserExceptionEnum.INCORRECT_SEX_TYPE);
-    }
-
-    private Role convertRole(String role) {
-        if (Objects.equals(role, "student")) return Role.ROLE_STUDENT;
-        else if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
-        else throw new ApiException(UserExceptionEnum.INCORRECT_ROLE);
-    }
-
-    private AccountType convertAccountType(String accountType) {
-        if (Objects.equals(accountType, "kakao")) return AccountType.KAKAO;
-        else if (Objects.equals(accountType, "naver")) return AccountType.NAVER;
-        else if (Objects.equals(accountType, "google")) return AccountType.GOOGLE;
-        else if (Objects.equals(accountType, "password")) return AccountType.PASSWORD;
-        else throw new ApiException(UserExceptionEnum.INCORRECT_ACCOUNT_TYPE);
-    }
-
-    public boolean isDuplicateNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
-    }
-
-    public String oAuthLogin(String oauth, String code) {
-        AccountType accountType = convertAccountType(oauth);
-        User user = null;
-        if (accountType == AccountType.KAKAO) {
-            String kakaoId = oAuth2Provider.getKakaoId(code);
-            Kakao kakao = kakaoRepository.findByKakaoId(kakaoId)
-                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
-            user = kakao.getUser();
-        } else if (accountType == AccountType.NAVER) {
-            String naverId = oAuth2Provider.getNaverId(code);
-            Naver naver = naverRepository.findByNaverId(naverId)
-                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
-            user = naver.getUser();
-        } else if (accountType == AccountType.GOOGLE) {
-            String googleId = oAuth2Provider.getGoogleId(code);
-            Google google = googleRepository.findByGoogleId(googleId)
-                    .orElseThrow(() -> new ApiException(UserExceptionEnum.NO_FIND_USER));
-            user = google.getUser();
-        } else throw new ApiException(UserExceptionEnum.NO_FIND_USER);
-
-        String jwtToken = tokenProvider.createJwt(user);
-        log.info("Token = {}", jwtToken);
-
-        return jwtToken;
+    public String findEmail(String name, String phone) {
+        User user = userRepository.findByNameAndPhone(name, phone)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        return user.getEmail();
     }
 }

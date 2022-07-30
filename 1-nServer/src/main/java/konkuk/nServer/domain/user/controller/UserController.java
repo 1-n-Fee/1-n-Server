@@ -1,6 +1,8 @@
 package konkuk.nServer.domain.user.controller;
 
 import konkuk.nServer.domain.user.dto.requestForm.ChangePassword;
+import konkuk.nServer.domain.user.dto.requestForm.FindEmail;
+import konkuk.nServer.domain.user.dto.requestForm.FindPassword;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.PrincipalDetails;
@@ -56,40 +58,19 @@ public class UserController {
         userService.changePassword(userDetail.getUserId(), changePassword.getNewPassword());
     }
 
-
-    /*
-
-    @PostMapping("/login")
-    public ResponseEntity<LoginDto> login(@RequestBody RequestLoginForm form) {
-        LoginDto result = userService.login(form.getEmail(), form.getPassword());
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    @PostMapping("/find/password")
+    public Map<String, Object> findPassword(@RequestBody @Valid FindPassword form) {
+        String tempPassword = userService.findPassword(form.getEmail(), form.getName(), form.getPhone());
+        return Map.of("tempPassword", tempPassword);
     }
 
     @PostMapping("/find/email")
-    public HashMap<String, Object> findEmail(@RequestBody RequestFindEmailForm form) {
+    public Map<String, Object> findEmail(@RequestBody FindEmail form) {
         String email = userService.findEmail(form.getName(), form.getPhone());
-
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("email", email);
-        return result;
+        return Map.of("email", email);
     }
 
-    @PostMapping("/find/password")
-    public HashMap<String, Object> findPassword(@RequestBody RequestFindPasswordForm form) {
-        String tempPassword = userService.findPassword(form.getEmail(), form.getName(), form.getPhone());
-
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("tempPassword", tempPassword);
-        return result;
-    }
-
-    @PostMapping("/change/password")
-    public void changePassword(@AuthenticationPrincipal Long userId,
-                               @RequestBody RequestChangePasswordForm form) {
-        userService.changePassword(userId, form.getNewPassword());
-    }
-
+/*
     @GetMapping("/point")
     public HashMap<String, Object> findPoint(@AuthenticationPrincipal Long userId) {
         Integer point = userService.findPointByMemberId(userId);

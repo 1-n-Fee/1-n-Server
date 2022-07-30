@@ -1,9 +1,9 @@
 package konkuk.nServer.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.security.PrincipalDetails;
-import konkuk.nServer.security.exception.SecurityExceptionEnum;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             email = emailPasswordMap.get("email");
             password = emailPasswordMap.get("password");
         } catch (IOException e) {
-            throw new ApiException(SecurityExceptionEnum.INCORRECT_LOGIN);
+            throw new ApiException(ExceptionEnum.INCORRECT_LOGIN);
         }
 
 

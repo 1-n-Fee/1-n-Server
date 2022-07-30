@@ -1,6 +1,5 @@
 package konkuk.nServer.exception;
 
-import konkuk.nServer.domain.user.exception.UserExceptionEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,8 +34,8 @@ public class ApiExceptionAdvice {
     public ResponseEntity<ApiExceptionResponse> exceptionHandler(HttpServletRequest request, final ApiException e) {
         e.printStackTrace();
         return ResponseEntity
-                .status(e.getSecurityError().getStatus())
-                .body(new ApiExceptionResponse(e.getSecurityError().getCode(), e.getSecurityError().getMessage()));
+                .status(e.getError().getStatus())
+                .body(new ApiExceptionResponse(e.getError().getCode(), e.getError().getMessage()));
     }
 
     /*
@@ -56,7 +55,7 @@ public class ApiExceptionAdvice {
     public ResponseEntity<ApiExceptionResponse> exceptionHandler(HttpServletRequest request, final Exception e) {
         e.printStackTrace();
         return ResponseEntity
-                .status(UserExceptionEnum.INTERNAL_SERVER_ERROR.getStatus())
-                .body(new ApiExceptionResponse(UserExceptionEnum.INTERNAL_SERVER_ERROR.getCode(), e.getMessage()));
+                .status(ExceptionEnum.INTERNAL_SERVER_ERROR.getStatus())
+                .body(new ApiExceptionResponse(ExceptionEnum.INTERNAL_SERVER_ERROR.getCode(), e.getMessage()));
     }
 }
