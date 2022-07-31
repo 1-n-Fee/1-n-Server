@@ -25,8 +25,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -93,14 +92,8 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(필수 항목 안채우기)")
     void studentSignupNotFillRequired() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
+        userSignup.setPhone(null);
         String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
@@ -121,15 +114,9 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(선택 항목 안채우기)")
     void studentSignupNotFillOptional() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
+        userSignup.setMajor(null);
+        userSignup.setSexType(null);
         String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
@@ -157,17 +144,7 @@ class UserControllerTest {
     @DisplayName("학생 회원가입(모든 항목 채우기)")
     void studentSignupAllFill() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
         String content = objectMapper.writeValueAsString(userSignup);
 
         // expected
@@ -196,17 +173,7 @@ class UserControllerTest {
     @DisplayName("닉네임 중복 검사")
     void nickNameDuplicate() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
 
         userService.signup(userSignup);
 
@@ -230,17 +197,7 @@ class UserControllerTest {
     @DisplayName("로그인(password)")
     void loginByPassword() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
 
         userService.signup(userSignup);
 
@@ -277,17 +234,7 @@ class UserControllerTest {
     @DisplayName("비밀번호 변경")
     void changePassword() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
         userService.signup(userSignup);
 
         User user = userRepository.findAll().get(0);
@@ -297,7 +244,7 @@ class UserControllerTest {
         String content = objectMapper.writeValueAsString(map);
 
         // expected
-        mockMvc.perform(post("/user/change/password")
+        mockMvc.perform(patch("/user/change/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer " + jwt)
@@ -314,17 +261,7 @@ class UserControllerTest {
     @DisplayName("임시 비밀번호 발급")
     void getTempPassword() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
         userService.signup(userSignup);
 
         Map<String, String> map =
@@ -374,17 +311,7 @@ class UserControllerTest {
     @DisplayName("이메일 찾기")
     void findEmail() throws Exception {
         // given
-        UserSignup userSignup = UserSignup.builder()
-                .email("asdf@konkuk.ac.kr")
-                .accountType("password")
-                .password("testPassword")
-                .nickname("ithinkso")
-                .name("tester")
-                .role("student")
-                .phone("01012345678")
-                .major("CS")
-                .sexType("man")
-                .build();
+        UserSignup userSignup = getUserSignupDto();
         userService.signup(userSignup);
 
         Map<String, String> map =
@@ -415,5 +342,99 @@ class UserControllerTest {
                 .andDo(print())
                 .andReturn();
     }
+
+    @Test
+    @DisplayName("닉네임 변경")
+    void changeNickname() throws Exception {
+        // given
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+
+        Map<String, String> map = Map.of("nickname", "newNick");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        mockMvc.perform(patch("/user/change/nickname")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print()); // http 요청 로그 남기기
+
+        user = userRepository.findAll().get(0);
+        assertEquals(user.getNickname(), "newNick");
+    }
+
+    @Test
+    @DisplayName("성별 변경")
+    void changeSexType() throws Exception {
+        // given
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+
+        Map<String, String> map = Map.of("sexType", "woman");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        mockMvc.perform(patch("/user/change/sexType")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print()); // http 요청 로그 남기기
+
+        user = userRepository.findAll().get(0);
+        assertEquals(user.getSexType(), SexType.WOMAN);
+    }
+
+    @Test
+    @DisplayName("사용자 정보 조회")
+    void getUserInfo() throws Exception {
+        // given
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+
+        // expected
+        mockMvc.perform(get("/user/info")
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("asdf@konkuk.ac.kr"))
+                .andExpect(jsonPath("$.accountType").value("PASSWORD"))
+                .andExpect(jsonPath("$.nickname").value("ithinkso"))
+                .andExpect(jsonPath("$.name").value("tester"))
+                .andExpect(jsonPath("$.role").value("ROLE_STUDENT"))
+                .andExpect(jsonPath("$.phone").value("01012345678"))
+                .andExpect(jsonPath("$.major").value("CS"))
+                .andExpect(jsonPath("$.sexType").value("MAN"))
+                .andDo(print()); // http 요청 로그 남기기
+    }
+
+    private UserSignup getUserSignupDto(){
+        return UserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("testPassword")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
+                .build();
+    }
+
+
 
 }

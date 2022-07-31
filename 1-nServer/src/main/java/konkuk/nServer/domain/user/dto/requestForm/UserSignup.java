@@ -3,6 +3,7 @@ package konkuk.nServer.domain.user.dto.requestForm;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
@@ -26,6 +27,7 @@ public class UserSignup {
     private String email;
 
     @NotBlank(message = "nickname은 필수항목입니다.")
+    @Length(min=2, max=8, message = "닉네임의 길이는 2~8 입니다.")
     private String nickname;
 
     private String major;

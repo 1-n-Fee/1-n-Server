@@ -46,7 +46,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
-    public final EnumPath<SexType> SexType = createEnum("SexType", SexType.class);
+    public final EnumPath<SexType> sexType = createEnum("sexType", SexType.class);
 
     public QUser(String variable) {
         this(User.class, forVariable(variable), INITS);

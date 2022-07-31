@@ -41,7 +41,7 @@ public class User {
     private String major;
 
     @Enumerated(EnumType.STRING)
-    private SexType SexType;
+    private SexType sexType;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Kakao kakao;
@@ -81,6 +81,14 @@ public class User {
         this.email = email;
         this.nickname = nickname;
         this.major = major;
-        this.SexType = sexType;
+        this.sexType = sexType;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeSexType(SexType sexType) {
+        this.sexType = sexType;
     }
 }

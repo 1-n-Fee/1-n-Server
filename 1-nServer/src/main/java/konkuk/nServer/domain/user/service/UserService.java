@@ -2,6 +2,7 @@ package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
+import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
@@ -76,7 +77,27 @@ public class UserService {
         if (user.getAccountType() != AccountType.PASSWORD)
             throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
 
+        if (passwordEncoder.matches(user.getPassword().getPassword(), newPassword))
+            throw new ApiException(ExceptionEnum.INCORRECT_PASSWORD);
+
         user.getPassword().changePassword(passwordEncoder.encode(newPassword));
+    }
+
+    public void changeNickname(Long userId, String nickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        if (userRepository.existsByNickname(nickname))
+            throw new ApiException(ExceptionEnum.INCORRECT_NICKNAME);
+
+        user.changeNickname(nickname);
+    }
+
+    public void changeSexType(Long userId, String sexType) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        user.changeSexType(convertSexType(sexType));
     }
 
     private SexType convertSexType(String sexType) {
@@ -167,5 +188,21 @@ public class UserService {
         User user = userRepository.findByNameAndPhone(name, phone)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
         return user.getEmail();
+    }
+
+    public UserInfo findInfoByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        return UserInfo.builder()
+                .accountType(user.getAccountType().toString())
+                .phone(user.getPhone())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
+                .nickname(user.getNickname())
+                .major(user.getMajor())
+                .sexType(user.getSexType() != null ? user.getSexType().toString() : null)
+                .build();
     }
 }

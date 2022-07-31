@@ -1,14 +1,14 @@
 package konkuk.nServer.domain.user.controller;
 
-import konkuk.nServer.domain.user.dto.requestForm.ChangePassword;
-import konkuk.nServer.domain.user.dto.requestForm.FindEmail;
-import konkuk.nServer.domain.user.dto.requestForm.FindPassword;
-import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.dto.requestForm.*;
+import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +31,6 @@ public class UserController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@RequestBody @Valid UserSignup form) {
-        /**
-         * 인가 코드 사용해서 oAuth 로그인 해줘야?
-         */
         userService.signup(form);
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
@@ -51,12 +48,27 @@ public class UserController {
         return Map.of("isDuplication", userService.isDuplicateNickname(nickname));
     }
 
-    @PostMapping("/change/password")
+    @PatchMapping("/change/password")
     public void changePassword(@AuthenticationPrincipal PrincipalDetails userDetail,
                                @RequestBody @Valid ChangePassword changePassword) {
         changePassword.validate();
         userService.changePassword(userDetail.getUserId(), changePassword.getNewPassword());
     }
+
+    @PatchMapping("/change/nickname")
+    public void changeNickname(@AuthenticationPrincipal PrincipalDetails userDetail,
+                               @RequestBody @Valid ChangeNickname changeNickname) {
+        changeNickname.validate();
+        userService.changeNickname(userDetail.getUserId(), changeNickname.getNickname());
+    }
+
+
+    @PatchMapping("/change/sexType")
+    public void changeSexType(@AuthenticationPrincipal PrincipalDetails userDetail,
+                               @RequestBody @Valid ChangeSexType changeSexType) {
+        userService.changeSexType(userDetail.getUserId(), changeSexType.getSexType());
+    }
+
 
     @PostMapping("/find/password")
     public Map<String, Object> findPassword(@RequestBody @Valid FindPassword form) {
@@ -70,6 +82,13 @@ public class UserController {
         return Map.of("email", email);
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<UserInfo> findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        UserInfo result = userService.findInfoByUserId(userDetail.getUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
 /*
     @GetMapping("/point")
     public HashMap<String, Object> findPoint(@AuthenticationPrincipal Long userId) {
@@ -78,13 +97,6 @@ public class UserController {
         HashMap<String, Object> result = new HashMap<String, Object>();
         result.put("point", point);
         return result;
-    }
-
-    @GetMapping("/info")
-    public ResponseEntity<FindMemberInfoByUserIdDto> findLoginMemberInfo(@AuthenticationPrincipal Long userId) {
-        FindMemberInfoByUserIdDto result = userService.findInfoByUserId(userId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @GetMapping("/isLogin")
