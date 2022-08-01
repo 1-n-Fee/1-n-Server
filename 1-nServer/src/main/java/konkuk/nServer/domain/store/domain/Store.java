@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.store.domain;
 
+import konkuk.nServer.domain.user.domain.Storemanager;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,13 @@ public class Store {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menus = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storemanager_id")
+    private Storemanager storemanager;
+
+    public void addMenu(Menu menu) {
+        this.menus.add(menu);
+        menu.setStore(this);
+    }
 }

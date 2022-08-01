@@ -19,13 +19,13 @@ public class QStoremanager extends EntityPathBase<Storemanager> {
 
     public static final QStoremanager storemanager = new QStoremanager("storemanager");
 
-    public final EnumPath<AccountType> accountType = createEnum("accountType", AccountType.class);
-
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath name = createString("name");
+
+    public final StringPath password = createString("password");
 
     public final StringPath phone = createString("phone");
 

@@ -1,0 +1,89 @@
+package konkuk.nServer.domain.user.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
+import konkuk.nServer.domain.user.repository.StoremanagerRepository;
+import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.security.jwt.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+@Slf4j
+@AutoConfigureMockMvc //MockMvc 사용
+@SpringBootTest
+class StoremanagerControllerTest {
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private StoremanagerRepository storemanagerRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper; // 스프링에서 자동으로 주입해줌
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void clean() {
+        storemanagerRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("가게 관리자 회원가입")
+    void studentSignupNotFillRequired() throws Exception {
+        // given
+        StoremanagerSignup storemanagerSignup = getStoremanagerForm();
+        String content = objectMapper.writeValueAsString(storemanagerSignup);
+
+        // expected
+        mockMvc.perform(post("/manager/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        assertEquals(1L, storemanagerRepository.count());
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
+
+        assertEquals("01087654321", storemanager.getPhone());
+        assertEquals("storemanager@google.com", storemanager.getEmail());
+        assertEquals("홍길동", storemanager.getName());
+        assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
+        assertTrue(passwordEncoder.matches("pwpw!", storemanager.getPassword()));
+    }
+
+    private StoremanagerSignup getStoremanagerForm() {
+        return StoremanagerSignup.builder()
+                .email("storemanager@google.com")
+                .name("홍길동")
+                .phone("01087654321")
+                .password("pwpw!")
+                .storeRegistrationNumber("20-70006368")
+                .build();
+    }
+}

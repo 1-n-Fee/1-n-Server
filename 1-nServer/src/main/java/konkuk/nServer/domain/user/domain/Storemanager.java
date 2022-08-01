@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.user.domain;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,7 +30,15 @@ public class Storemanager {
     @Column(nullable = false)
     private String storeRegistrationNumber;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AccountType accountType;
+    private String password;
+
+    @Builder
+    public Storemanager(String name, String phone, String email, String storeRegistrationNumber, String password) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.storeRegistrationNumber = storeRegistrationNumber;
+        this.password = password;
+    }
 }
