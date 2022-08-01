@@ -1,6 +1,5 @@
 package konkuk.nServer.domain.user.controller;
 
-import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.dto.requestForm.*;
 import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.domain.user.service.UserService;
@@ -65,7 +64,7 @@ public class UserController {
 
     @PatchMapping("/change/sexType")
     public void changeSexType(@AuthenticationPrincipal PrincipalDetails userDetail,
-                               @RequestBody @Valid ChangeSexType changeSexType) {
+                              @RequestBody @Valid ChangeSexType changeSexType) {
         userService.changeSexType(userDetail.getUserId(), changeSexType.getSexType());
     }
 
