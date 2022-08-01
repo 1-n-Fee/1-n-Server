@@ -51,21 +51,21 @@ public class UserController {
     public void changePassword(@AuthenticationPrincipal PrincipalDetails userDetail,
                                @RequestBody @Valid ChangePassword changePassword) {
         changePassword.validate();
-        userService.changePassword(userDetail.getUserId(), changePassword.getNewPassword());
+        userService.changePassword(userDetail.getId(), changePassword.getNewPassword());
     }
 
     @PatchMapping("/change/nickname")
     public void changeNickname(@AuthenticationPrincipal PrincipalDetails userDetail,
                                @RequestBody @Valid ChangeNickname changeNickname) {
         changeNickname.validate();
-        userService.changeNickname(userDetail.getUserId(), changeNickname.getNickname());
+        userService.changeNickname(userDetail.getId(), changeNickname.getNickname());
     }
 
 
     @PatchMapping("/change/sexType")
     public void changeSexType(@AuthenticationPrincipal PrincipalDetails userDetail,
                               @RequestBody @Valid ChangeSexType changeSexType) {
-        userService.changeSexType(userDetail.getUserId(), changeSexType.getSexType());
+        userService.changeSexType(userDetail.getId(), changeSexType.getSexType());
     }
 
 
@@ -83,7 +83,7 @@ public class UserController {
 
     @GetMapping("/info")
     public ResponseEntity<UserInfo> findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
-        UserInfo result = userService.findInfoByUserId(userDetail.getUserId());
+        UserInfo result = userService.findInfoByUserId(userDetail.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

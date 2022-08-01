@@ -9,6 +9,7 @@ import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.exception.ExceptionEnum;
+import konkuk.nServer.security.jwt.JwtClaim;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -216,8 +217,8 @@ class UserControllerTest {
 
         String jwt = response.getResponse().getHeader("Authorization");
 
-        Long userId = jwtTokenProvider.validateAndGetUserId(jwt.replace("Bearer ", ""));
-        User user = userRepository.findById(userId)
+        JwtClaim jwtClaim = jwtTokenProvider.validate(jwt.replace("Bearer ", ""));
+        User user = userRepository.findById(jwtClaim.getId())
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
 
         assertEquals(AccountType.PASSWORD, user.getAccountType());
@@ -421,7 +422,7 @@ class UserControllerTest {
                 .andDo(print()); // http 요청 로그 남기기
     }
 
-    private UserSignup getUserSignupDto(){
+    private UserSignup getUserSignupDto() {
         return UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
@@ -434,7 +435,6 @@ class UserControllerTest {
                 .sexType("man")
                 .build();
     }
-
 
 
 }

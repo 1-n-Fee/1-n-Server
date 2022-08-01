@@ -11,6 +11,7 @@ import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;

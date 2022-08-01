@@ -1,6 +1,8 @@
 package konkuk.nServer.security;
 
 import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,12 +13,20 @@ import java.util.Collection;
 
 @Data
 public class PrincipalDetails implements UserDetails {
-    private User user;
-    private Password password;
+    private User user = null;
+    private Storemanager storemanager = null;
+    private Password password = null;
+    private Role role;
 
     public PrincipalDetails(User user, Password password) {
         this.user = user;
         this.password = password;
+        this.role = Role.ROLE_STUDENT;
+    }
+
+    public PrincipalDetails(Storemanager storemanager) {
+        this.storemanager = storemanager;
+        this.role = Role.ROLE_STOREMANAGER;
     }
 
     //계정이 갖고있는 권한 목록은 리턴
@@ -28,18 +38,21 @@ public class PrincipalDetails implements UserDetails {
         return authorities;
     }
 
-    public Long getUserId() {
-        return user.getId();
+    public Long getId() {
+        if (role == Role.ROLE_STUDENT) return user.getId();
+        else return storemanager.getId();
     }
 
     @Override
     public String getPassword() {
-        return password.getPassword();
+        if (role == Role.ROLE_STUDENT) return password.getPassword();
+        else return storemanager.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        if (role == Role.ROLE_STUDENT) return user.getEmail();
+        else return storemanager.getEmail();
     }
 
     //계정이 만료되지 않았는지 리턴 (true: 만료안됨)

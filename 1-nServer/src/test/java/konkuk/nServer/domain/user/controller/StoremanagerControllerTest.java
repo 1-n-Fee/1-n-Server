@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
 import konkuk.nServer.domain.user.repository.StoremanagerRepository;
@@ -74,6 +75,7 @@ class StoremanagerControllerTest {
         assertEquals("storemanager@google.com", storemanager.getEmail());
         assertEquals("홍길동", storemanager.getName());
         assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
+        assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
         assertTrue(passwordEncoder.matches("pwpw!", storemanager.getPassword()));
     }
 
@@ -84,6 +86,7 @@ class StoremanagerControllerTest {
                 .phone("01087654321")
                 .password("pwpw!")
                 .storeRegistrationNumber("20-70006368")
+                .role("storemanager")
                 .build();
     }
 }

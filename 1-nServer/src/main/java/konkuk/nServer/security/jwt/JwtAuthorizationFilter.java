@@ -1,10 +1,13 @@
 package konkuk.nServer.security.jwt;
 
 import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.exception.ExceptionEnum;
+import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +34,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private String SECRET;
 
     private final UserRepository userRepository;
+    private final StoremanagerRepository storemanagerRepository;
     private final JwtTokenProvider tokenProvider;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
-                                  JwtTokenProvider tokenProvider) {
+                                  StoremanagerRepository storemanagerRepository, JwtTokenProvider tokenProvider) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
+        this.storemanagerRepository = storemanagerRepository;
     }
 
     // 인증이나 권한이 필요한 주소 요청이 있을 때 해당 필터를 타게 됨
@@ -55,28 +60,38 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String jwtToken = request.getHeader("Authorization").replace("Bearer ", "");
-        Long userId = tokenProvider.validateAndGetUserId(jwtToken);
-        log.info("userId={}", userId);
+        JwtClaim jwtClaim = tokenProvider.validate(jwtToken);
+
+        log.info("로그인 회원 id={}", jwtClaim.getId());
 
 
         // 서명이 정상적으로 됨
-        if (userId != null) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            log.info("인가 성공 userId={}", user.getId());
+        if (jwtClaim.getId() != null) {
 
-            PrincipalDetails principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음
+            PrincipalDetails principalDetails = null;
+
+            if (jwtClaim.getRole() == Role.ROLE_STUDENT) {
+                User user = userRepository.findById(jwtClaim.getId())
+                        .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+                log.info("인가 성공 userId={}", user.getId());
+
+                principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음
+
+            } else if (jwtClaim.getRole() == Role.ROLE_STOREMANAGER) {
+                Storemanager storemanager = storemanagerRepository.findById(jwtClaim.getId())
+                        .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+                log.info("인가 성공 storemanagerId={}", storemanager.getId());
+
+                principalDetails = new PrincipalDetails(storemanager);
+            }
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
             Authentication authentication
                     = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
 
-            // SecurityContext에 authentication을 넣기 위해 생성 -> set -> 컨텍스트로 등록
+            // 시큐리티의 세션에 접근하여 Authentication 객체를 저장
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
-
-            // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장
-            //SecurityContextHolder.getContext().setAuthentication(authentication);
         } else log.info("인가 실패. jwtToken={}", jwtToken);
         chain.doFilter(request, response);
     }

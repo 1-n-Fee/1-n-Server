@@ -1,6 +1,7 @@
 package konkuk.nServer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.security.jwt.JwtAuthenticationFilter;
 import konkuk.nServer.security.jwt.JwtAuthorizationFilter;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig {
 
     private final UserRepository userRepository;
+    private final StoremanagerRepository storemanagerRepository;
     private final JwtTokenProvider tokenProvider;
     private final ObjectMapper objectMapper;
 
@@ -66,7 +68,7 @@ public class WebSecurityConfig {
         public void configure(HttpSecurity http) {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http.addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider, objectMapper))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, tokenProvider));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, storemanagerRepository, tokenProvider));
         }
     }
 
