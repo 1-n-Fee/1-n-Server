@@ -10,18 +10,14 @@ import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
 import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.service.StoremanagerService;
-import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -38,9 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc //MockMvc 사용
 @SpringBootTest
 class StoreControllerTest {
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private StoreRepository storeRepository;
@@ -63,12 +56,13 @@ class StoreControllerTest {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @BeforeEach
+    @AfterEach
     void clean() {
+        log.info("delete menu");
+        menuRepository.deleteAll();
+        log.info("delete store");
         storeRepository.deleteAll();
+        log.info("delete storemanager");
         storemanagerRepository.deleteAll();
     }
 
@@ -78,6 +72,10 @@ class StoreControllerTest {
         // given
         StoremanagerSignup storemanagerSignup = getStoremanagerForm();
         storemanagerService.signup(storemanagerSignup);
+
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(storemanager);
+
 
         RegistryStore registryStore = RegistryStore.builder()
                 .address("서울특별시 성동구 ~")
@@ -93,9 +91,6 @@ class StoreControllerTest {
                         new RegistryStore.MenuDto(2000, "사이다(500ml)", "default")))
                 .build();
         String content = objectMapper.writeValueAsString(registryStore);
-
-        Storemanager storemanager = storemanagerRepository.findAll().get(0);
-        String jwt = jwtTokenProvider.createJwt(storemanager);
 
         // expected
         mockMvc.perform(post("/store")

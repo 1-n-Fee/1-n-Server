@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -32,6 +33,8 @@ public class QStoremanager extends EntityPathBase<Storemanager> {
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
     public final StringPath storeRegistrationNumber = createString("storeRegistrationNumber");
+
+    public final ListPath<konkuk.nServer.domain.store.domain.Store, konkuk.nServer.domain.store.domain.QStore> stores = this.<konkuk.nServer.domain.store.domain.Store, konkuk.nServer.domain.store.domain.QStore>createList("stores", konkuk.nServer.domain.store.domain.Store.class, konkuk.nServer.domain.store.domain.QStore.class, PathInits.DIRECT2);
 
     public QStoremanager(String variable) {
         super(Storemanager.class, forVariable(variable));

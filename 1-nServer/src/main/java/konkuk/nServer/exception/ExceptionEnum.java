@@ -21,6 +21,8 @@ public enum ExceptionEnum {
     INCORRECT_CATEGORY(HttpStatus.BAD_REQUEST, "P002", "올바르지 않은 category입니다."),
     NO_FOUND_STORE(HttpStatus.BAD_REQUEST, "P003", "store을 찾을 수 없습니다."),
 
+    FAIL_STORE_IMAGE(HttpStatus.BAD_REQUEST, "I001", "이미지 저장에 실패했습니다."),
+
     ;
     private final HttpStatus status;
     private final String code;

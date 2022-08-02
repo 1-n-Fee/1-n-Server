@@ -7,6 +7,7 @@ import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.PasswordRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ class UserServiceTest {
     @Autowired
     private PasswordRepository passwordRepository;
 
-    @BeforeEach
+    @AfterEach
     void clean() {
         userRepository.deleteAll();
         passwordRepository.deleteAll();

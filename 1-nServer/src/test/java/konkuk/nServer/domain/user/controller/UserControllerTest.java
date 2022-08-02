@@ -12,6 +12,7 @@ import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.jwt.JwtClaim;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class UserControllerTest {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @BeforeEach
+    @AfterEach
     void clean() {
         userRepository.deleteAll();
     }
