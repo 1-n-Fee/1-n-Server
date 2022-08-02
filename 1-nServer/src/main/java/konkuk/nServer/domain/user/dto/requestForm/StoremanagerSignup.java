@@ -1,6 +1,5 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
-import konkuk.nServer.domain.user.domain.Role;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

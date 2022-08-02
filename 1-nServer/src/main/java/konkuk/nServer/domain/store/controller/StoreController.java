@@ -1,8 +1,6 @@
 package konkuk.nServer.domain.store.controller;
 
 
-import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
-import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStore;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.security.PrincipalDetails;
@@ -25,7 +23,7 @@ public class StoreController {
     @ResponseStatus(HttpStatus.CREATED)
     public void registryPost(@AuthenticationPrincipal PrincipalDetails userDetail,
                              @RequestBody RegistryStore registryStore) {
-        //storeService.registryStore(userDetail.getUserId(), registryStore);
+        storeService.registryStore(userDetail.getStoremanager(), registryStore);
     }
 
 

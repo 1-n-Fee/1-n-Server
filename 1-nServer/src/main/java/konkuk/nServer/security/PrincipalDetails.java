@@ -24,17 +24,23 @@ public class PrincipalDetails implements UserDetails {
         this.role = Role.ROLE_STUDENT;
     }
 
-    public PrincipalDetails(Storemanager storemanager) {
+    public PrincipalDetails(Storemanager storemanager, Password password) {
         this.storemanager = storemanager;
         this.role = Role.ROLE_STOREMANAGER;
+        this.password = password;
     }
 
     //계정이 갖고있는 권한 목록은 리턴
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        String role = user.getRole().toString();
-        authorities.add(() -> role);
+        if (user != null) {
+            String role = user.getRole().toString();
+            authorities.add(() -> role);
+        } else if (storemanager != null) {
+            String role = storemanager.getRole().toString();
+            authorities.add(() -> role);
+        }
         return authorities;
     }
 

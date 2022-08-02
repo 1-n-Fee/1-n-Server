@@ -82,7 +82,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
                 log.info("인가 성공 storemanagerId={}", storemanager.getId());
 
-                principalDetails = new PrincipalDetails(storemanager);
+                principalDetails = new PrincipalDetails(storemanager, new Password()); // 여기서 password는 의미없음
             }
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.

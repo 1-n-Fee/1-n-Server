@@ -29,6 +29,8 @@ public class QStoremanager extends EntityPathBase<Storemanager> {
 
     public final StringPath phone = createString("phone");
 
+    public final EnumPath<Role> role = createEnum("role", Role.class);
+
     public final StringPath storeRegistrationNumber = createString("storeRegistrationNumber");
 
     public QStoremanager(String variable) {

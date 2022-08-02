@@ -25,6 +25,10 @@ public class Password {
         this.user = user;
     }
 
+    public Password(String password) {
+        this.password = password;
+    }
+
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }

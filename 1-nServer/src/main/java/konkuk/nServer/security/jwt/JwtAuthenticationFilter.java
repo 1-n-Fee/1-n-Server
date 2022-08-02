@@ -1,8 +1,9 @@
 package konkuk.nServer.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.exception.ExceptionEnum;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -75,15 +76,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("successfulAuthentication 실행");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        String jwtToken = tokenProvider.createJwt(principalDetails.getUser());
+        String jwtToken = null;
+        if (principalDetails.getRole() == Role.ROLE_STUDENT) {
+            jwtToken = tokenProvider.createJwt(principalDetails.getUser());
+        } else if (principalDetails.getRole() == Role.ROLE_STOREMANAGER) {
+            jwtToken = tokenProvider.createJwt(principalDetails.getStoremanager());
+        }
 
         response.addHeader("Authorization", "Bearer " + jwtToken);
         log.info("Token = {}", jwtToken);
-    }
-
-    @Data
-    private static class LoginRequest {
-        String email;
-        String password;
     }
 }

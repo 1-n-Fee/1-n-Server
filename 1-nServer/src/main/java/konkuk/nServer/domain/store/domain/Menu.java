@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.store.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +30,12 @@ public class Menu {
 
     public void setStore(Store store) {
         this.store = store;
+    }
+
+    @Builder
+    public Menu(String name, Integer price, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
     }
 }

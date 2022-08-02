@@ -37,7 +37,6 @@ public class User {
     @Column(nullable = false)
     private String nickname;
 
-
     private String major;
 
     @Enumerated(EnumType.STRING)
