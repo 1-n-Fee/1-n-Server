@@ -7,7 +7,7 @@ import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.PostService;
-import konkuk.nServer.domain.store.dto.requestForm.RegistryStore;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
@@ -20,7 +20,6 @@ import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +87,7 @@ class PostControllerTest {
         storemanagerService.signup(getStoremanagerForm());
         Storemanager storemanager = storemanagerRepository.findAll().get(0);
 
-        storeService.registryStore(storemanager.getId(), getRegistryStore());
+        storeService.registryStoreByStoremanager(storemanager.getId(), getRegistryStore());
 
         UserSignup userSignup = getUserSignupDto();
         userService.signup(userSignup);
@@ -121,19 +120,19 @@ class PostControllerTest {
         assertEquals(5, post.getLimitNumber());
     }
 
-    private RegistryStore getRegistryStore() {
-        return RegistryStore.builder()
+    private RegistryStoreByStoremanager getRegistryStore() {
+        return RegistryStoreByStoremanager.builder()
                 .address("서울특별시 성동구 ~")
                 .phone("024991312")
                 .breakTime("1500-1630")
                 .businessHours("1000-2100")
                 .deliveryFee(5000)
                 .name("든든한 국BOB")
-                .menus(List.of(new RegistryStore.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
-                        new RegistryStore.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
-                        new RegistryStore.MenuDto(10000, "소머리 국밥", "ldjfe"),
-                        new RegistryStore.MenuDto(2000, "콜라(500ml)", "default"),
-                        new RegistryStore.MenuDto(2000, "사이다(500ml)", "default")))
+                .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
+                        new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
+                        new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "콜라(500ml)", "default"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "사이다(500ml)", "default")))
                 .build();
     }
 

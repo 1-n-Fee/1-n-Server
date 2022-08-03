@@ -31,7 +31,7 @@ public class UserService {
 
 
     public void signup(UserSignup form) {
-        Role role = convertRole(form.getRole());
+        Role role = convertStudentRole(form.getRole());
         AccountType accountType = convertAccountType(form.getAccountType());
 
         if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
@@ -107,9 +107,8 @@ public class UserService {
         else throw new ApiException(ExceptionEnum.INCORRECT_SEX_TYPE);
     }
 
-    private Role convertRole(String role) {
+    private Role convertStudentRole(String role) {
         if (Objects.equals(role, "student")) return Role.ROLE_STUDENT;
-        else if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
         else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
     }
 

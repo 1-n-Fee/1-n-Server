@@ -3,7 +3,7 @@ package konkuk.nServer.domain.store.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
-import konkuk.nServer.domain.store.dto.requestForm.RegistryStore;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.Storemanager;
@@ -77,20 +77,20 @@ class StoreControllerTest {
         String jwt = jwtTokenProvider.createJwt(storemanager);
 
 
-        RegistryStore registryStore = RegistryStore.builder()
+        RegistryStoreByStoremanager registryStoreByStoremanager = RegistryStoreByStoremanager.builder()
                 .address("서울특별시 성동구 ~")
                 .phone("024991312")
                 .breakTime("1500-1630")
                 .businessHours("1000-2100")
                 .deliveryFee(5000)
                 .name("든든한 국BOB")
-                .menus(List.of(new RegistryStore.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
-                        new RegistryStore.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
-                        new RegistryStore.MenuDto(10000, "소머리 국밥", "ldjfe"),
-                        new RegistryStore.MenuDto(2000, "콜라(500ml)", "default"),
-                        new RegistryStore.MenuDto(2000, "사이다(500ml)", "default")))
+                .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
+                        new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
+                        new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "콜라(500ml)", "default"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "사이다(500ml)", "default")))
                 .build();
-        String content = objectMapper.writeValueAsString(registryStore);
+        String content = objectMapper.writeValueAsString(registryStoreByStoremanager);
 
         // expected
         mockMvc.perform(post("/store")

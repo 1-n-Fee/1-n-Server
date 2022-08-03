@@ -2,7 +2,7 @@ package konkuk.nServer.domain.store.service;
 
 import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
-import konkuk.nServer.domain.store.dto.requestForm.RegistryStore;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.Storemanager;
@@ -35,7 +35,7 @@ public class StoreService {
     @Value("${image.menu}")
     private String menuImagePath;
 
-    public void registryStore(Long storemanagerId, RegistryStore form) {
+    public void registryStoreByStoremanager(Long storemanagerId, RegistryStoreByStoremanager form) {
         Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
@@ -49,16 +49,20 @@ public class StoreService {
                 .storemanager(storemanager)
                 .build();
 
-        form.getMenus().forEach(menuDto -> {
+        storemanager.addStore(store);
+
+        for (RegistryStoreByStoremanager.MenuDto menuDto : form.getMenus()) {
             Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), menuDto.getImageUrl());
             store.addMenu(menu);
             menuRepository.save(menu);
-        });
-
+        }
         storeRepository.save(store);
-
-        storemanager.addStore(store);
     }
+
+    public void registryStoreByStudent(Long id, RegistryStoreByStoremanager registryStoreByStoremanager) {
+
+    }
+
 
     public List<String> registryImage(List<MultipartFile> menuImages) {
         List<String> imageStoreUrl = new ArrayList<>();
@@ -87,4 +91,6 @@ public class StoreService {
         int pos = originalFileName.lastIndexOf(".");
         return originalFileName.substring(pos + 1);
     }
+
+
 }

@@ -1,8 +1,11 @@
 package konkuk.nServer.domain.store.controller;
 
 
-import konkuk.nServer.domain.store.dto.requestForm.RegistryStore;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.service.StoreService;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +28,23 @@ public class StoreController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void registryPost(@AuthenticationPrincipal PrincipalDetails userDetail,
-                             @RequestBody RegistryStore registryStore) {
-        storeService.registryStore(userDetail.getId(), registryStore);
+    public void registryStoreByStoremanager(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                            @RequestBody RegistryStoreByStoremanager registryStore) {
+        if (userDetail.getRole() == Role.ROLE_STOREMANAGER)
+            storeService.registryStoreByStoremanager(userDetail.getId(), registryStore);
+        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+    }
+
+    /**
+     * TODO
+     */
+    @PostMapping("/temp")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registryStoreByStudent(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                       @RequestBody RegistryStoreByStoremanager registryStoreByStoremanager) {
+        if (userDetail.getRole() == Role.ROLE_STUDENT)
+            storeService.registryStoreByStudent(userDetail.getId(), registryStoreByStoremanager);
+        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
     }
 
     @PostMapping("/menu/image")

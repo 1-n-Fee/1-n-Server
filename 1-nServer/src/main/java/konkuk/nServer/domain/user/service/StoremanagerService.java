@@ -24,7 +24,7 @@ public class StoremanagerService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public void signup(StoremanagerSignup form) {
-        Role role = convertRole(form.getRole());
+        Role role = convertStoremanagerRole(form.getRole());
 
         Storemanager storemanager = Storemanager.builder()
                 .password(passwordEncoder.encode(form.getPassword()))
@@ -38,9 +38,8 @@ public class StoremanagerService {
         storemanagerRepository.save(storemanager);
     }
 
-    private Role convertRole(String role) {
-        if (Objects.equals(role, "student")) return Role.ROLE_STUDENT;
-        else if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
+    private Role convertStoremanagerRole(String role) {
+        if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
         else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
     }
 

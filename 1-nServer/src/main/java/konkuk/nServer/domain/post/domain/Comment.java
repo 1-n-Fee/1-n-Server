@@ -28,6 +28,8 @@ public class Comment {
     @Column(nullable = false)
     private int limitNumber;
 
+    private LocalDateTime createDateTime;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -35,5 +37,4 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private User user;
-
 }

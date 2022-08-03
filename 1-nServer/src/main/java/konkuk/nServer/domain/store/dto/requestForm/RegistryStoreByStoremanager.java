@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class RegistryStore {
+public class RegistryStoreByStoremanager {
 
     @NotBlank
     private String name;
@@ -25,9 +25,9 @@ public class RegistryStore {
     private String address;
 
     @NotBlank
-    private String businessHours; // hh.mm-hh.mm
+    private String businessHours; // hhmm-hhmm
 
-    private String breakTime; // hh.mm-hh.mm
+    private String breakTime; // hhmm-hhmm
 
     private List<MenuDto> menus;
 
@@ -41,8 +41,8 @@ public class RegistryStore {
     }
 
     @Builder
-    public RegistryStore(String name, String phone, Integer deliveryFee, String address,
-                         String businessHours, String breakTime, List<MenuDto> menus) {
+    public RegistryStoreByStoremanager(String name, String phone, Integer deliveryFee, String address,
+                                       String businessHours, String breakTime, List<MenuDto> menus) {
         this.name = name;
         this.phone = phone;
         this.deliveryFee = deliveryFee;
