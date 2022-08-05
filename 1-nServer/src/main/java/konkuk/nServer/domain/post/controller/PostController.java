@@ -26,5 +26,10 @@ public class PostController {
         postService.registryPost(userDetail.getId(), registryPost);
     }
 
+    @GetMapping("/{spotId}/{category}")
+    public void findPostByCategory(@PathVariable Long spotId, @PathVariable String category) {
+        postService.findPostByCategory(spotId, category);
+    }
+
 
 }
