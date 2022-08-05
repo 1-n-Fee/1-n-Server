@@ -5,6 +5,7 @@ import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
+import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.proposal.domain.Proposal;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
@@ -108,5 +109,28 @@ public class PostService {
             if (spot.getId() == id) return spot;
         }
         return null;
+    }
+
+    public FindPostDetail findPostDetailById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+
+        List<FindPostDetail.MenuDetail> menus = post.getStore().getMenus().stream()
+                .map(menu ->
+                        new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl())
+                ).toList();
+
+
+        return FindPostDetail.builder()
+                .currentNumber(post.getCurrentNumber())
+                .limitNumber(post.getLimitNumber())
+                .spotId(post.getSpot().getId())
+                .storeName(post.getStore().getName())
+                .closeTime(post.getCloseTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
+                .deliveryFee(post.getStore().getDeliveryFee())
+                .menus(menus)
+                .category(post.getStore().getCategory().name())
+                .content(post.getContent())
+                .build();
     }
 }

@@ -3,6 +3,7 @@ package konkuk.nServer.domain.post.controller;
 
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
+import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
 import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ public class PostController {
 
     private final PostService postService;
 
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void registryPost(@AuthenticationPrincipal PrincipalDetails userDetail,
@@ -29,10 +29,15 @@ public class PostController {
         postService.registryPost(userDetail.getId(), registryPost);
     }
 
-    @GetMapping("/{spotId}")
-    public List<FindPost> findPostByCategory(@AuthenticationPrincipal PrincipalDetails userDetail,
-                                             @PathVariable Long spotId) {
+    @GetMapping("/spot/{spotId}")
+    public List<FindPost> findPostBySpotId(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                           @PathVariable Long spotId) {
         return postService.findPostBySpot(userDetail.getId(), spotId);
+    }
+
+    @GetMapping("/{postId}")
+    public FindPostDetail findPostDetailById(@PathVariable Long postId) {
+        return postService.findPostDetailById(postId);
     }
 
 

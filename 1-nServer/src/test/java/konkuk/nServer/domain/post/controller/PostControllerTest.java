@@ -6,6 +6,7 @@ import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
+import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.store.domain.Store;
@@ -23,7 +24,6 @@ import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -147,7 +144,7 @@ class PostControllerTest {
 
         User user = userRepository.findAll().get(0);
         String jwt = jwtTokenProvider.createJwt(user);
-        Store store= storeRepository.findAll().get(0);
+        Store store = storeRepository.findAll().get(0);
 
         RegistryPost registryPost = getRegistryPost();
         registryPost.setStoreId(store.getId());
@@ -161,7 +158,7 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        MvcResult result = mockMvc.perform(get("/post/1")
+        MvcResult result = mockMvc.perform(get("/post/spot/1")
                         .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk())
@@ -187,25 +184,55 @@ class PostControllerTest {
 
         Post post = postRepository.findAll().get(0);
         assertEquals(post.getId(), findPost.getPostId());
-
-
     }
 
-    private RegistryStoreByStoremanager getRegistryStore() {
-        return RegistryStoreByStoremanager.builder()
-                .address("서울특별시 성동구 ~")
-                .phone("024991312")
-                .breakTime("1500-1630")
-                .businessHours("1000-2100")
-                .deliveryFee(5000)
-                .name("든든한 국BOB")
-                .category("korean")
-                .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
-                        new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
-                        new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
-                        new RegistryStoreByStoremanager.MenuDto(2000, "콜라(500ml)", "default"),
-                        new RegistryStoreByStoremanager.MenuDto(2000, "사이다(500ml)", "default")))
-                .build();
+    @Test
+    @DisplayName("postDetail 조회(By id)")
+    void findPostDetailById() throws Exception {
+        // given
+        storemanagerService.signup(getStoremanagerForm());
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
+
+        storeService.registryStoreByStoremanager(storemanager.getId(), getRegistryStore());
+
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+        Store store = storeRepository.findAll().get(0);
+
+        RegistryPost registryPost = getRegistryPost();
+        registryPost.setStoreId(store.getId());
+        String content = objectMapper.writeValueAsString(registryPost);
+
+        mockMvc.perform(post("/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        MvcResult result = mockMvc.perform(get("/post/1")
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        // expected
+        String responseBody = result.getResponse().getContentAsString();
+        FindPostDetail findPostDetail = objectMapper.readValue(responseBody, FindPostDetail.class);
+
+        assertEquals(store.getCategory().name(), findPostDetail.getCategory());
+        assertEquals("2022.09.01.18.00", findPostDetail.getCloseTime());
+        //assertEquals("든든한 국BOB", findPostDetail.getStoreName()); // 한글 깨짐
+        //assertEquals("알촌 먹고 싶으신 분, 대환영입니다.", findPostDetail.getContent()); // 한글 깨짐
+        assertEquals(store.getDeliveryFee(), findPostDetail.getDeliveryFee());
+        assertEquals(5, findPostDetail.getLimitNumber());
+        assertEquals(0, findPostDetail.getCurrentNumber());
+        assertEquals(1, findPostDetail.getSpotId());
     }
 
     private RegistryPost getRegistryPost() {
@@ -241,6 +268,23 @@ class PostControllerTest {
                 .accountType("password")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")
+                .build();
+    }
+
+    private RegistryStoreByStoremanager getRegistryStore() {
+        return RegistryStoreByStoremanager.builder()
+                .address("서울특별시 성동구 ~")
+                .phone("024991312")
+                .breakTime("1500-1630")
+                .businessHours("1000-2100")
+                .deliveryFee(5000)
+                .name("든든한 국BOB")
+                .category("korean")
+                .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
+                        new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
+                        new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "콜라(500ml)", "default"),
+                        new RegistryStoreByStoremanager.MenuDto(2000, "사이다(500ml)", "default")))
                 .build();
     }
 }
