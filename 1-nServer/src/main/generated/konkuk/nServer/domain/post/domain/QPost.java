@@ -22,8 +22,6 @@ public class QPost extends EntityPathBase<Post> {
 
     public static final QPost post = new QPost("post");
 
-    public final EnumPath<Category> category = createEnum("category", Category.class);
-
     public final DateTimePath<java.time.LocalDateTime> closeTime = createDateTime("closeTime", java.time.LocalDateTime.class);
 
     public final StringPath content = createString("content");
@@ -62,7 +60,7 @@ public class QPost extends EntityPathBase<Post> {
 
     public QPost(Class<? extends Post> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.store = inits.isInitialized("store") ? new konkuk.nServer.domain.store.domain.QStore(forProperty("store")) : null;
+        this.store = inits.isInitialized("store") ? new konkuk.nServer.domain.store.domain.QStore(forProperty("store"), inits.get("store")) : null;
         this.user = inits.isInitialized("user") ? new konkuk.nServer.domain.user.domain.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

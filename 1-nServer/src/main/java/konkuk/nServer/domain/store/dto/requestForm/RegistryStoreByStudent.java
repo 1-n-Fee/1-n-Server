@@ -11,22 +11,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class RegistryStoreByStudent {
-// TODO
     @NotBlank
     private String name;
-
-    @NotBlank
-    private String phone;
 
     @NotBlank
     private Integer deliveryFee;
 
     @NotBlank
-    private String address;
-
-    private String businessHours; // hhmm-hhmm
-
-    private String breakTime; // hhmm-hhmm
+    private String category;
 
     private List<MenuDto> menus;
 
@@ -40,14 +32,10 @@ public class RegistryStoreByStudent {
     }
 
     @Builder
-    public RegistryStoreByStudent(String name, String phone, Integer deliveryFee, String address,
-                                  String businessHours, String breakTime, List<MenuDto> menus) {
+    public RegistryStoreByStudent(String category, String name, Integer deliveryFee, List<MenuDto> menus) {
+        this.category = category;
         this.name = name;
-        this.phone = phone;
         this.deliveryFee = deliveryFee;
-        this.address = address;
-        this.businessHours = businessHours;
-        this.breakTime = breakTime;
         this.menus = menus;
     }
 }

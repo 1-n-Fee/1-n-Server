@@ -84,6 +84,7 @@ class StoreControllerTest {
                 .businessHours("1000-2100")
                 .deliveryFee(5000)
                 .name("든든한 국BOB")
+                .category("korean")
                 .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
                         new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
                         new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
@@ -128,6 +129,7 @@ class StoreControllerTest {
                 .name("홍길동")
                 .phone("01087654321")
                 .password("pwpw!")
+                .accountType("password")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")
                 .build();

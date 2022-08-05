@@ -305,8 +305,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorCode").value(ExceptionEnum.NO_FOUND_USER.getCode()))
                 .andExpect(jsonPath("$.message").value(ExceptionEnum.NO_FOUND_USER.getMessage()))
-                .andDo(print())
-                .andReturn();
+                .andDo(print());
     }
 
     @Test

@@ -15,13 +15,16 @@ public enum ExceptionEnum {
     INCORRECT_NICKNAME(HttpStatus.BAD_REQUEST, "M005", "올바르지 않은 nickname입니다."),
     NO_FOUND_USER(HttpStatus.BAD_REQUEST, "M006", "회원을 찾을 수 없습니다."),
 
-    INCORRECT_LOGIN(HttpStatus.BAD_REQUEST, "S001", "잘못된 로그인 요청입니다."),
+    INCORRECT_LOGIN(HttpStatus.BAD_REQUEST, "L001", "잘못된 로그인 요청입니다."),
 
     INCORRECT_SPOT(HttpStatus.BAD_REQUEST, "P001", "올바르지 않은 spot입니다."),
     INCORRECT_CATEGORY(HttpStatus.BAD_REQUEST, "P002", "올바르지 않은 category입니다."),
     NO_FOUND_STORE(HttpStatus.BAD_REQUEST, "P003", "store을 찾을 수 없습니다."),
 
     FAIL_STORE_IMAGE(HttpStatus.BAD_REQUEST, "I001", "이미지 저장에 실패했습니다."),
+
+
+    INCORRECT_HOUR(HttpStatus.BAD_REQUEST, "S001", "잘못된 hour입니다. (hhmm-hhmm 필요)"),
 
     ;
     private final HttpStatus status;

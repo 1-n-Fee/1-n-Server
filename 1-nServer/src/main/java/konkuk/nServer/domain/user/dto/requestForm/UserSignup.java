@@ -33,14 +33,12 @@ public class UserSignup {
     private String major;
     private String sexType;
 
-    private String kakaoCode;
-    private String naverCode;
-    private String googleCode;
+    private String code;
     private String password;
 
     @Builder
     public UserSignup(String accountType, String name, String phone, String role, String email, String nickname,
-                      String major, String sexType, String kakaoCode, String naverCode, String googleCode, String password) {
+                      String major, String sexType, String code, String password) {
         this.accountType = accountType;
         this.name = name;
         this.phone = phone;
@@ -49,9 +47,7 @@ public class UserSignup {
         this.nickname = nickname;
         this.major = major;
         this.sexType = sexType;
-        this.kakaoCode = kakaoCode;
-        this.naverCode = naverCode;
-        this.googleCode = googleCode;
+        this.code = code;
         this.password = password;
     }
 }

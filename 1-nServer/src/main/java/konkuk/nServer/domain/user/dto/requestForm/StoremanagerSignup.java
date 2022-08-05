@@ -10,8 +10,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class StoremanagerSignup {
 
-    @NotBlank(message = "password은 필수항목입니다.")
-    private String password;
+    @NotBlank(message = "accountType은 필수항목입니다.")
+    private String accountType;
 
     @NotBlank(message = "name은 필수항목입니다.")
     private String name;
@@ -28,15 +28,20 @@ public class StoremanagerSignup {
     @NotBlank(message = "role은 필수항목입니다.")
     private String role;
 
+    private String code;
+    private String password;
+
 
     @Builder
-    public StoremanagerSignup(String password, String name, String phone, String email,
-                              String storeRegistrationNumber, String role) {
-        this.password = password;
+    public StoremanagerSignup(String accountType, String name, String phone, String email,
+                              String storeRegistrationNumber, String role, String code, String password) {
+        this.accountType = accountType;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.storeRegistrationNumber = storeRegistrationNumber;
         this.role = role;
+        this.code = code;
+        this.password = password;
     }
 }

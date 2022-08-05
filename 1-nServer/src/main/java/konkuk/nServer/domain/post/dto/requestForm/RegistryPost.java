@@ -10,21 +10,22 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class RegistryPost {
 
-    private String category;
-
+    @NotBlank
     private Long spotId;
 
     private String content;
 
-    private int limitNumber;
+    @NotBlank
+    private Integer limitNumber;
 
+    @NotBlank
     private Long storeId;
 
+    @NotBlank
     private String closeTime; // yyyy.MM.dd.HH.mm
 
     @Builder
-    public RegistryPost(String category, Long spotId, String content, int limitNumber, Long storeId, String closeTime) {
-        this.category = category;
+    public RegistryPost(Long spotId, String content, Integer limitNumber, Long storeId, String closeTime) {
         this.spotId = spotId;
         this.content = content;
         this.limitNumber = limitNumber;

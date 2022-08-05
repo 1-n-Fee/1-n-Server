@@ -26,6 +26,8 @@ public class QNaver extends EntityPathBase<Naver> {
 
     public final StringPath naverId = createString("naverId");
 
+    public final QStoremanager storemanager;
+
     public final QUser user;
 
     public QNaver(String variable) {
@@ -46,6 +48,7 @@ public class QNaver extends EntityPathBase<Naver> {
 
     public QNaver(Class<? extends Naver> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.storemanager = inits.isInitialized("storemanager") ? new QStoremanager(forProperty("storemanager"), inits.get("storemanager")) : null;
         this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 

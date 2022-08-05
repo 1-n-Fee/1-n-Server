@@ -77,7 +77,7 @@ class StoremanagerControllerTest {
         assertEquals("홍길동", storemanager.getName());
         assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
         assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
-        assertTrue(passwordEncoder.matches("pwpw!", storemanager.getPassword()));
+        assertTrue(passwordEncoder.matches("pwpw!", storemanager.getPassword().getPassword()));
     }
 
     private StoremanagerSignup getStoremanagerForm() {
@@ -85,6 +85,7 @@ class StoremanagerControllerTest {
                 .email("storemanager@google.com")
                 .name("홍길동")
                 .phone("01087654321")
+                .accountType("password")
                 .password("pwpw!")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")

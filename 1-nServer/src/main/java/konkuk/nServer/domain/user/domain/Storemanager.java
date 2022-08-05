@@ -36,23 +36,51 @@ public class Storemanager {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
-    private String password;
+    @Enumerated(EnumType.STRING)
+    private AccountType accountType;
 
     @OneToMany(mappedBy = "storemanager", orphanRemoval = true)
     private List<Store> stores = new ArrayList<>();
 
+    @OneToOne(mappedBy = "storemanager", cascade = CascadeType.ALL)
+    private Kakao kakao;
+
+    @OneToOne(mappedBy = "storemanager", cascade = CascadeType.ALL)
+    private Naver naver;
+
+    @OneToOne(mappedBy = "storemanager", cascade = CascadeType.ALL)
+    private Google google;
+
+    @OneToOne(mappedBy = "storemanager", cascade = CascadeType.ALL)
+    private Password password;
+
     @Builder
-    public Storemanager(String name, String phone, String email, String storeRegistrationNumber, Role role, String password) {
+    public Storemanager(String name, String phone, String email, String storeRegistrationNumber, Role role, AccountType accountType) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.storeRegistrationNumber = storeRegistrationNumber;
         this.role = role;
-        this.password = password;
+        this.accountType = accountType;
     }
 
     public void addStore(Store store) {
         this.stores.add(store);
+    }
+
+    public void setKakao(Kakao kakao) {
+        this.kakao = kakao;
+    }
+
+    public void setNaver(Naver naver) {
+        this.naver = naver;
+    }
+
+    public void setGoogle(Google google) {
+        this.google = google;
+    }
+
+    public void setPassword(Password password) {
+        this.password = password;
     }
 }

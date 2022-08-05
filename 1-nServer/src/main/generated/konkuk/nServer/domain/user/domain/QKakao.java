@@ -26,6 +26,8 @@ public class QKakao extends EntityPathBase<Kakao> {
 
     public final StringPath kakaoId = createString("kakaoId");
 
+    public final QStoremanager storemanager;
+
     public final QUser user;
 
     public QKakao(String variable) {
@@ -46,6 +48,7 @@ public class QKakao extends EntityPathBase<Kakao> {
 
     public QKakao(Class<? extends Kakao> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.storemanager = inits.isInitialized("storemanager") ? new QStoremanager(forProperty("storemanager"), inits.get("storemanager")) : null;
         this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 

@@ -2,6 +2,8 @@ package konkuk.nServer.domain.store.controller;
 
 
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
+import konkuk.nServer.domain.store.dto.responseForm.StoreList;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
@@ -25,26 +27,32 @@ public class StoreController {
 
     private final StoreService storeService;
 
+    @GetMapping("/{category}")
+    public List<StoreList> getStoreList(@PathVariable String category) {
+        return storeService.getStoreListByCategory(category);
+    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void registryStoreByStoremanager(@AuthenticationPrincipal PrincipalDetails userDetail,
                                             @RequestBody RegistryStoreByStoremanager registryStore) {
+        registryStore.validate();
         if (userDetail.getRole() == Role.ROLE_STOREMANAGER)
             storeService.registryStoreByStoremanager(userDetail.getId(), registryStore);
         else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
     }
 
-    /**
-     * TODO
-     */
-    @PostMapping("/temp")
+
+    @PostMapping("/student")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registryStoreByStudent(@AuthenticationPrincipal PrincipalDetails userDetail,
-                                       @RequestBody RegistryStoreByStoremanager registryStoreByStoremanager) {
-        if (userDetail.getRole() == Role.ROLE_STUDENT)
-            storeService.registryStoreByStudent(userDetail.getId(), registryStoreByStoremanager);
-        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+    public Map<String, Object> registryStoreByStudent(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                                      @RequestBody RegistryStoreByStudent registryStore) {
+        if (userDetail.getRole() == Role.ROLE_STUDENT) {
+            Long storeId = storeService.registryStoreByStudent(userDetail.getId(), registryStore);
+            return Map.of("storeId", storeId);
+        } else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+
     }
 
     @PostMapping("/menu/image")

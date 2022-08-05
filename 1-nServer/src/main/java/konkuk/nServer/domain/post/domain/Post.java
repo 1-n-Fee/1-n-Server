@@ -20,10 +20,6 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Spot spot;
 
     @Enumerated(EnumType.STRING)
@@ -40,10 +36,10 @@ public class Post {
     private LocalDateTime registryTime;
 
     @Column(nullable = false)
-    private int currentNumber;
+    private Integer currentNumber;
 
     @Column(nullable = false)
-    private int limitNumber;
+    private Integer limitNumber;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leader_id")
@@ -55,9 +51,8 @@ public class Post {
 
 
     @Builder
-    public Post(Category category, Spot spot, PostProcess process, String content, LocalDateTime closeTime,
+    public Post(Spot spot, PostProcess process, String content, LocalDateTime closeTime,
                 LocalDateTime registryTime, int currentNumber, int limitNumber, User user, Store store) {
-        this.category = category;
         this.spot = spot;
         this.process = process;
         this.content = content;

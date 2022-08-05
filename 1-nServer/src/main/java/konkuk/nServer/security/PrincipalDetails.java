@@ -51,8 +51,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        if (role == Role.ROLE_STUDENT) return password.getPassword();
-        else return storemanager.getPassword();
+        return password.getPassword();
     }
 
     @Override

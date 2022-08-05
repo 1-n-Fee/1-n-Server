@@ -1,12 +1,18 @@
 package konkuk.nServer.domain.store.service;
 
+import konkuk.nServer.domain.post.domain.Category;
 import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
+import konkuk.nServer.domain.store.domain.StoreState;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
+import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
+import konkuk.nServer.domain.store.dto.responseForm.StoreList;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.StoremanagerRepository;
+import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,6 +37,7 @@ import java.util.UUID;
 public class StoreService {
 
     private final StoreRepository storeRepository;
+    private final UserRepository userRepository;
     private final StoremanagerRepository storemanagerRepository;
     private final MenuRepository menuRepository;
 
@@ -39,28 +48,58 @@ public class StoreService {
         Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
+        Category category = convertCategory(form.getCategory());
+
         Store store = Store.builder()
                 .name(form.getName())
                 .phone(form.getPhone())
                 .deliveryFee(form.getDeliveryFee())
                 .address(form.getAddress())
-                .businessHours(form.getBusinessHours()) // TODO 검증 필요
-                .breakTime(form.getBreakTime()) // TODO 검증 필요
+                .businessHours(form.getBusinessHours())
+                .breakTime(form.getBreakTime())
                 .storemanager(storemanager)
+                .category(category)
+                .state(StoreState.ACTIVE)
                 .build();
 
         storemanager.addStore(store);
 
         for (RegistryStoreByStoremanager.MenuDto menuDto : form.getMenus()) {
-            Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), menuDto.getImageUrl());
+            String imageUrl = menuDto.getImageUrl();
+            if (imageUrl == null) imageUrl = "default";
+
+            Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), imageUrl);
             store.addMenu(menu);
             menuRepository.save(menu);
         }
         storeRepository.save(store);
     }
 
-    public void registryStoreByStudent(Long id, RegistryStoreByStoremanager registryStoreByStoremanager) {
+    public Long registryStoreByStudent(Long studentId, RegistryStoreByStudent form) {
+        User user = userRepository.findById(studentId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
+        Category category = convertCategory(form.getCategory());
+
+        Store store = Store.builder()
+                .name(form.getName())
+                .deliveryFee(form.getDeliveryFee())
+                .phone("temp")
+                .category(category)
+                .address("temp")
+                .businessHours("0000-0000")
+                .state(StoreState.TEMPORARY)
+                .build();
+
+        for (RegistryStoreByStudent.MenuDto menuDto : form.getMenus()) {
+            String imageUrl = menuDto.getImageUrl();
+            if (imageUrl == null) imageUrl = "default";
+
+            Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), imageUrl);
+            store.addMenu(menu);
+            menuRepository.save(menu);
+        }
+        return storeRepository.save(store).getId();
     }
 
 
@@ -93,4 +132,39 @@ public class StoreService {
     }
 
 
+    public List<StoreList> getStoreListByCategory(String category) {
+        /**
+         * 원래는 findAll() 을 사용하는 경우가 적음 -> DB 부담 커짐, 비용 너무 큼
+         * 페이징 처리를 하는게 맞다.
+         */
+        if (Objects.equals(category, "all"))
+            return storeRepository.findAll().stream()
+                    .map(store -> StoreList.builder()
+                            .name(store.getName())
+                            .category(store.getCategory().toString())
+                            .deliveryFee(store.getDeliveryFee())
+                            .id(store.getId())
+                            .build())
+                    .collect(Collectors.toList());
+
+        else return storeRepository.findByCategory(convertCategory(category)).stream()
+                .map(store -> StoreList.builder()
+                        .name(store.getName())
+                        .category(store.getCategory().toString())
+                        .deliveryFee(store.getDeliveryFee())
+                        .id(store.getId())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private Category convertCategory(String category) {
+        //KOREAN, CHINESE, WESTERN, JAPANESE, MIDNIGHT, ETC
+        if (Objects.equals(category, "korean")) return Category.KOREAN;
+        else if (Objects.equals(category, "chinese")) return Category.CHINESE;
+        else if (Objects.equals(category, "western")) return Category.WESTERN;
+        else if (Objects.equals(category, "japanese")) return Category.JAPANESE;
+        else if (Objects.equals(category, "midnight")) return Category.MIDNIGHT;
+        else if (Objects.equals(category, "etc")) return Category.ETC;
+        else throw new ApiException(ExceptionEnum.INCORRECT_CATEGORY);
+    }
 }

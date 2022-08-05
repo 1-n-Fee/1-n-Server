@@ -22,15 +22,11 @@ public class QComment extends EntityPathBase<Comment> {
 
     public static final QComment comment = new QComment("comment");
 
-    public final DateTimePath<java.time.LocalDateTime> closeTime = createDateTime("closeTime", java.time.LocalDateTime.class);
-
     public final StringPath content = createString("content");
 
-    public final NumberPath<Integer> currentNumber = createNumber("currentNumber", Integer.class);
+    public final DateTimePath<java.time.LocalDateTime> createDateTime = createDateTime("createDateTime", java.time.LocalDateTime.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    public final NumberPath<Integer> limitNumber = createNumber("limitNumber", Integer.class);
 
     public final QPost post;
 

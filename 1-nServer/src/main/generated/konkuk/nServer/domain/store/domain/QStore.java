@@ -28,6 +28,8 @@ public class QStore extends EntityPathBase<Store> {
 
     public final StringPath businessHours = createString("businessHours");
 
+    public final EnumPath<konkuk.nServer.domain.post.domain.Category> category = createEnum("category", konkuk.nServer.domain.post.domain.Category.class);
+
     public final NumberPath<Integer> deliveryFee = createNumber("deliveryFee", Integer.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -37,6 +39,8 @@ public class QStore extends EntityPathBase<Store> {
     public final StringPath name = createString("name");
 
     public final StringPath phone = createString("phone");
+
+    public final EnumPath<StoreState> state = createEnum("state", StoreState.class);
 
     public final konkuk.nServer.domain.user.domain.QStoremanager storemanager;
 
@@ -58,7 +62,7 @@ public class QStore extends EntityPathBase<Store> {
 
     public QStore(Class<? extends Store> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.storemanager = inits.isInitialized("storemanager") ? new konkuk.nServer.domain.user.domain.QStoremanager(forProperty("storemanager")) : null;
+        this.storemanager = inits.isInitialized("storemanager") ? new konkuk.nServer.domain.user.domain.QStoremanager(forProperty("storemanager"), inits.get("storemanager")) : null;
     }
 
 }

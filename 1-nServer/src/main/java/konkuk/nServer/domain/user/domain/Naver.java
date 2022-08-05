@@ -9,19 +9,27 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 public class Naver {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String naverId;
 
-    @MapsId("id")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storemanager_id")
+    private Storemanager storemanager;
+
     public Naver(String naverId, User user) {
         this.naverId = naverId;
         this.user = user;
+    }
+
+    public Naver(String naverId, Storemanager storemanager) {
+        this.naverId = naverId;
+        this.storemanager = storemanager;
     }
 }

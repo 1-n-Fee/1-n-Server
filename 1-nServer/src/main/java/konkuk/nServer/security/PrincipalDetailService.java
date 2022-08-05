@@ -35,8 +35,8 @@ public class PrincipalDetailService implements UserDetailsService {
             return new PrincipalDetails(user.get(), password);
         } else if (storemanager.isPresent()) {
             log.info("storemanager 로그인 입니다.");
-            String password = storemanager.get().getPassword();
-            return new PrincipalDetails(storemanager.get(), new Password(password));
+            Password password = storemanager.get().getPassword();
+            return new PrincipalDetails(storemanager.get(), password);
         } else throw new UsernameNotFoundException("해당 사용자를 찾을수 없습니다.:" + email);
     }
 

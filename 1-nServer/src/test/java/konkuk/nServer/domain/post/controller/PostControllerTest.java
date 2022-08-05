@@ -112,7 +112,6 @@ class PostControllerTest {
         assertEquals(1L, userRepository.count());
 
         Post post = postRepository.findAll().get(0);
-        assertEquals(Category.KOREAN, post.getCategory());
         assertEquals("알촌 먹고 싶으신 분, 대환영입니다.", post.getContent());
         assertEquals(PostProcess.RECRUITING, post.getProcess());
 
@@ -128,6 +127,7 @@ class PostControllerTest {
                 .businessHours("1000-2100")
                 .deliveryFee(5000)
                 .name("든든한 국BOB")
+                .category("korean")
                 .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8000, "돼지 국밥", "asdjfhae14jlskadf"),
                         new RegistryStoreByStoremanager.MenuDto(9000, "돼지 국밥(특)", "fwefjhsdf31fhu"),
                         new RegistryStoreByStoremanager.MenuDto(10000, "소머리 국밥", "ldjfe"),
@@ -138,7 +138,6 @@ class PostControllerTest {
 
     private RegistryPost getRegistryPost() {
         return RegistryPost.builder()
-                .category("KOREAN")
                 .storeId(1L)
                 .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(5)
@@ -167,6 +166,7 @@ class PostControllerTest {
                 .name("홍길동")
                 .phone("01087654321")
                 .password("pwpw!")
+                .accountType("password")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")
                 .build();

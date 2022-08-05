@@ -26,6 +26,8 @@ public class QPassword extends EntityPathBase<Password> {
 
     public final StringPath password = createString("password");
 
+    public final QStoremanager storemanager;
+
     public final QUser user;
 
     public QPassword(String variable) {
@@ -46,6 +48,7 @@ public class QPassword extends EntityPathBase<Password> {
 
     public QPassword(Class<? extends Password> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.storemanager = inits.isInitialized("storemanager") ? new QStoremanager(forProperty("storemanager"), inits.get("storemanager")) : null;
         this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 

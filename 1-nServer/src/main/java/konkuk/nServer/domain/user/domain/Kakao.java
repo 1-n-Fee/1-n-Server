@@ -9,19 +9,28 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 public class Kakao {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String kakaoId;
 
-    @MapsId("id")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storemanager_id")
+    private Storemanager storemanager;
+
+
     public Kakao(String kakaoId, User user) {
         this.kakaoId = kakaoId;
         this.user = user;
+    }
+
+    public Kakao(String kakaoId, Storemanager storemanager) {
+        this.kakaoId = kakaoId;
+        this.storemanager = storemanager;
     }
 }

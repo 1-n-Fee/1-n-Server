@@ -19,15 +19,6 @@ public class Comment {
     @Lob
     private String content;
 
-    @Column(nullable = false)
-    private LocalDateTime closeTime;
-
-    @Column(nullable = false)
-    private int currentNumber;
-
-    @Column(nullable = false)
-    private int limitNumber;
-
     private LocalDateTime createDateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)

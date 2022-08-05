@@ -37,12 +37,10 @@ public class PostService {
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STORE));
 
         Spot spot = convertSpot(registryPost.getSpotId());
-        Category category = convertCategory(registryPost.getCategory());
 
         Post post = Post.builder()
                 .registryTime(LocalDateTime.now())
                 .closeTime(convertTime(registryPost.getCloseTime()))
-                .category(category)
                 .content(registryPost.getContent())
                 .process(PostProcess.RECRUITING)
                 .currentNumber(0)
@@ -67,10 +65,4 @@ public class PostService {
         throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
     }
 
-    private Category convertCategory(String categoryName) {
-        for (Category category : Category.values()) {
-            if (category.name().equals(categoryName)) return category;
-        }
-        throw new ApiException(ExceptionEnum.INCORRECT_CATEGORY);
-    }
 }

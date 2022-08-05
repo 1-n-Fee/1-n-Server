@@ -1,5 +1,7 @@
 package konkuk.nServer.domain.store.dto.requestForm;
 
+import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +29,9 @@ public class RegistryStoreByStoremanager {
     @NotBlank
     private String businessHours; // hhmm-hhmm
 
+    @NotBlank
+    private String category;
+
     private String breakTime; // hhmm-hhmm
 
     private List<MenuDto> menus;
@@ -41,8 +46,9 @@ public class RegistryStoreByStoremanager {
     }
 
     @Builder
-    public RegistryStoreByStoremanager(String name, String phone, Integer deliveryFee, String address,
+    public RegistryStoreByStoremanager(String category, String name, String phone, Integer deliveryFee, String address,
                                        String businessHours, String breakTime, List<MenuDto> menus) {
+        this.category = category;
         this.name = name;
         this.phone = phone;
         this.deliveryFee = deliveryFee;
@@ -50,5 +56,37 @@ public class RegistryStoreByStoremanager {
         this.businessHours = businessHours;
         this.breakTime = breakTime;
         this.menus = menus;
+
+    }
+
+    public void validate() {
+        if (businessHours.length() != 9)
+            throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+
+        for (int i = 0; i < 4; i++) {
+            if (businessHours.charAt(i) < '0' || businessHours.charAt(i) > '9')
+                throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+        }
+
+        if (businessHours.charAt(4) != '-') throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+
+        for (int i = 5; i < 9; i++) {
+            if (businessHours.charAt(i) < '0' || businessHours.charAt(i) > '9')
+                throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+        }
+
+        if (breakTime != null) {
+            for (int i = 0; i < 4; i++) {
+                if (breakTime.charAt(i) < '0' || breakTime.charAt(i) > '9')
+                    throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+            }
+
+            if (breakTime.charAt(4) != '-') throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+
+            for (int i = 5; i < 9; i++) {
+                if (breakTime.charAt(i) < '0' || breakTime.charAt(i) > '9')
+                    throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
+            }
+        }
     }
 }

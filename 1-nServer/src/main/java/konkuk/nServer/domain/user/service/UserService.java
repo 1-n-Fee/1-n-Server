@@ -35,6 +35,7 @@ public class UserService {
         AccountType accountType = convertAccountType(form.getAccountType());
 
         if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+
         User user = User.builder()
                 .accountType(accountType)
                 .name(form.getName())
@@ -48,17 +49,17 @@ public class UserService {
         userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {
-            String kakaoId = oAuth2Provider.getKakaoId(form.getKakaoCode());
+            String kakaoId = oAuth2Provider.getKakaoId(form.getCode());
             Kakao kakao = new Kakao(kakaoId, user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            String naverId = oAuth2Provider.getKakaoId(form.getNaverCode());
+            String naverId = oAuth2Provider.getKakaoId(form.getCode());
             Naver naver = new Naver(naverId, user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            String googleId = oAuth2Provider.getKakaoId(form.getGoogleCode());
+            String googleId = oAuth2Provider.getKakaoId(form.getCode());
             Google google = new Google(googleId, user);
             user.setGoogle(google);
             googleRepository.save(google);
