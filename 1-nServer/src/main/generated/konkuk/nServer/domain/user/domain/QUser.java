@@ -44,6 +44,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath phone = createString("phone");
 
+    public final ListPath<konkuk.nServer.domain.proposal.domain.Proposal, konkuk.nServer.domain.proposal.domain.QProposal> proposal = this.<konkuk.nServer.domain.proposal.domain.Proposal, konkuk.nServer.domain.proposal.domain.QProposal>createList("proposal", konkuk.nServer.domain.proposal.domain.Proposal.class, konkuk.nServer.domain.proposal.domain.QProposal.class, PathInits.DIRECT2);
+
     public final EnumPath<Role> role = createEnum("role", Role.class);
 
     public final EnumPath<SexType> sexType = createEnum("sexType", SexType.class);

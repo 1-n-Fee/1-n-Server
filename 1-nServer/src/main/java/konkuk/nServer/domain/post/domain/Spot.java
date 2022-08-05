@@ -36,4 +36,9 @@ public enum Spot {
         this.longitude = longitude;
     }
 
+    public int getId() {
+        return id;
+    }
+
+
 }

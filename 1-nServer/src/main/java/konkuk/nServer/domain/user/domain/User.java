@@ -1,11 +1,14 @@
 package konkuk.nServer.domain.user.domain;
 
+import konkuk.nServer.domain.proposal.domain.Proposal;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -54,6 +57,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Password password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Proposal> proposal = new ArrayList<>();
+
     public void setKakao(Kakao kakao) {
         this.kakao = kakao;
     }
@@ -89,5 +95,9 @@ public class User {
 
     public void changeSexType(SexType sexType) {
         this.sexType = sexType;
+    }
+
+    public void addProposal(Proposal proposal) {
+        this.proposal.add(proposal);
     }
 }

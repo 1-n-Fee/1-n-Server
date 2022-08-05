@@ -1,11 +1,13 @@
 package konkuk.nServer.domain.post.service;
 
-import konkuk.nServer.domain.post.domain.Category;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
+import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.repository.PostRepository;
+import konkuk.nServer.domain.proposal.domain.Proposal;
+import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.User;
@@ -19,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
 
@@ -65,4 +71,42 @@ public class PostService {
         throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
     }
 
+
+    public List<FindPost> findPostBySpot(Long userId, Long spotId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        Spot spot = getSpotById(spotId);
+        if (spot == null) throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
+
+        List<Post> posts = postRepository.findBySpot(spot);
+
+        return posts.stream()
+                .map(post -> {
+                    Store store = post.getStore();
+                    FindPost res = FindPost.builder()
+                            .postId(post.getId())
+                            .deliveryFee(store.getDeliveryFee())
+                            .currentNumber(post.getCurrentNumber())
+                            .limitNumber(post.getLimitNumber())
+                            .storeName(store.getName())
+                            .category(store.getCategory().name())
+                            .closeTime(post.getCloseTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
+                            .build();
+
+                    Optional<Proposal> proposal = proposalRepository.findByUserAndPost(user, post);
+                    proposal.ifPresent(value -> res.setState(value.getProposalState()));
+
+                    return res;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public Spot getSpotById(Long id) {
+        Spot[] values = Spot.values();
+        for (Spot spot : values) {
+            if (spot.getId() == id) return spot;
+        }
+        return null;
+    }
 }

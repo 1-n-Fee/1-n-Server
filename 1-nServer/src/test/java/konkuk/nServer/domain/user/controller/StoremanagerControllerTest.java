@@ -32,9 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StoremanagerControllerTest {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private StoremanagerRepository storemanagerRepository;
 
     @Autowired
@@ -42,9 +39,6 @@ class StoremanagerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
