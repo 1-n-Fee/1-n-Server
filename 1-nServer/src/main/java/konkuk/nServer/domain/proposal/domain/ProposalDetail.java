@@ -24,4 +24,13 @@ public class ProposalDetail {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    public ProposalDetail(Integer quantity, Menu menu) {
+        this.quantity = quantity;
+        this.menu = menu;
+    }
+
+    public void setProposal(Proposal proposal) {
+        this.proposal = proposal;
+    }
 }

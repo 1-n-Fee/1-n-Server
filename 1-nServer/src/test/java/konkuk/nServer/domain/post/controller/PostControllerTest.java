@@ -38,7 +38,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -175,7 +174,7 @@ class PostControllerTest {
         FindPost findPost = response.get(0);
 
         assertEquals(store.getCategory().name(), findPost.getCategory());
-        assertNull(findPost.getState());
+        assertEquals("OWNER", findPost.getState());
         assertEquals("2022.09.01.18.00", findPost.getCloseTime());
         //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
         assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());

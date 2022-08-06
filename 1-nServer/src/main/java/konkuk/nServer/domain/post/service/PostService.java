@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -96,7 +97,8 @@ public class PostService {
                             .build();
 
                     Optional<Proposal> proposal = proposalRepository.findByUserAndPost(user, post);
-                    proposal.ifPresent(value -> res.setState(value.getProposalState()));
+                    proposal.ifPresent(value -> res.setState(value.getProposalState().name()));
+                    if (Objects.equals(post.getUser().getId(), userId)) res.setState("OWNER");
 
                     return res;
                 })

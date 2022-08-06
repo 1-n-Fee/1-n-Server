@@ -1,6 +1,5 @@
 package konkuk.nServer.domain.post.dto.responseForm;
 
-import konkuk.nServer.domain.proposal.domain.ProposalState;
 import lombok.Builder;
 import lombok.Data;
 
@@ -28,7 +27,7 @@ public class FindPost {
         this.category = category;
     }
 
-    public void setState(ProposalState state) {
-        this.state = state.name();
+    public void setState(String state) {
+        this.state = state;
     }
 }
