@@ -147,4 +147,17 @@ public class PostService {
                 .comments(commentDtos)
                 .build();
     }
+
+    public void deletePost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+
+        if (!Objects.equals(post.getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+
+        if (post.getProcess() != PostProcess.RECRUITING)
+            throw new ApiException(ExceptionEnum.NOT_DELETE_POST);
+
+        postRepository.deleteById(postId);
+    }
 }

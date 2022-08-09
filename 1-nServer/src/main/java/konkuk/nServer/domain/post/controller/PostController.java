@@ -1,6 +1,5 @@
 package konkuk.nServer.domain.post.controller;
 
-
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
@@ -40,7 +39,11 @@ public class PostController {
         return postService.findPostDetailById(postId);
     }
 
-
+    @DeleteMapping("/{postId}")
+    public void deletePost(@AuthenticationPrincipal PrincipalDetails userDetail,
+                           @PathVariable Long postId) {
+        postService.deletePost(userDetail.getId(), postId);
+    }
 
 
 }
