@@ -2,6 +2,7 @@ package konkuk.nServer.domain.user.service;
 
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignupForApp;
 import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.domain.user.repository.*;
 import konkuk.nServer.exception.ApiException;
@@ -28,7 +29,6 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final OAuth2Provider oAuth2Provider;
     private final JwtTokenProvider tokenProvider;
-
 
     public void signup(UserSignup form) {
         Role role = convertStudentRole(form.getRole());
@@ -68,7 +68,43 @@ public class UserService {
             user.setPassword(password);
             passwordRepository.save(password);
         }
+    }
 
+    public void signupForApp(UserSignupForApp form) {
+        Role role = convertStudentRole(form.getRole());
+        AccountType accountType = convertAccountType(form.getAccountType());
+
+        if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+
+        User user = User.builder()
+                .accountType(accountType)
+                .name(form.getName())
+                .phone(form.getPhone())
+                .role(role)
+                .nickname(form.getNickname())
+                .email(form.getEmail())
+                .major(form.getMajor())
+                .sexType(convertSexType(form.getSexType()))
+                .build();
+        userRepository.save(user);
+
+        if (accountType == AccountType.KAKAO) {
+            Kakao kakao = new Kakao(form.getOauthId(), user);
+            user.setKakao(kakao);
+            kakaoRepository.save(kakao);
+        } else if (accountType == AccountType.NAVER) {
+            Naver naver = new Naver(form.getOauthId(), user);
+            user.setNaver(naver);
+            naverRepository.save(naver);
+        } else if (accountType == AccountType.GOOGLE) {
+            Google google = new Google(form.getOauthId(), user);
+            user.setGoogle(google);
+            googleRepository.save(google);
+        } else if (accountType == AccountType.PASSWORD) {
+            Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
+            user.setPassword(password);
+            passwordRepository.save(password);
+        }
     }
 
     public void changePassword(Long userId, String newPassword) {
@@ -142,6 +178,29 @@ public class UserService {
         } else if (accountType == AccountType.GOOGLE) {
             String googleId = oAuth2Provider.getGoogleId(code);
             Google google = googleRepository.findByGoogleId(googleId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = google.getUser();
+        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+
+        String jwtToken = tokenProvider.createJwt(user);
+        log.info("Token = {}", jwtToken);
+
+        return jwtToken;
+    }
+
+    public String oAuthLoginForApp(String oauth, String oauthId) {
+        AccountType accountType = convertAccountType(oauth);
+        User user = null;
+        if (accountType == AccountType.KAKAO) {
+            Kakao kakao = kakaoRepository.findByKakaoId(oauthId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = kakao.getUser();
+        } else if (accountType == AccountType.NAVER) {
+            Naver naver = naverRepository.findByNaverId(oauthId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            user = naver.getUser();
+        } else if (accountType == AccountType.GOOGLE) {
+            Google google = googleRepository.findByGoogleId(oauthId)
                     .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
             user = google.getUser();
         } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);

@@ -34,9 +34,22 @@ public class UserController {
         //return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @PostMapping("/signup/app")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signupForApp(@RequestBody @Valid UserSignupForApp form) {
+        userService.signupForApp(form);
+        //return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
     @GetMapping("/oauth/{oauth}")
     public void loginByOauth(@PathVariable String oauth, @RequestParam String code, HttpServletResponse response) {
         String jwtToken = userService.oAuthLogin(oauth, code);
+        response.addHeader("Authorization", "Bearer " + jwtToken);
+    }
+
+    @GetMapping("/oauth/app/{oauth}")
+    public void loginByOauthForApp(@PathVariable String oauth, @RequestParam String oauthId, HttpServletResponse response) {
+        String jwtToken = userService.oAuthLoginForApp(oauth, oauthId);
         response.addHeader("Authorization", "Bearer " + jwtToken);
     }
 
