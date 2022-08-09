@@ -6,6 +6,7 @@ import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
+import konkuk.nServer.domain.post.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.proposal.domain.Proposal;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
@@ -122,6 +124,14 @@ public class PostService {
                         new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl())
                 ).toList();
 
+        List<FindPostDetail.CommentDto> commentDtos = commentRepository.findByPost(post).stream()
+                .map(comment -> {
+                    User user = comment.getUser();
+                    return new FindPostDetail.CommentDto(user.getId(), user.getNickname(), comment.getContent(),
+                            comment.getCreateDateTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")));
+                })
+                .toList();
+
 
         return FindPostDetail.builder()
                 .currentNumber(post.getCurrentNumber())
@@ -133,6 +143,7 @@ public class PostService {
                 .menus(menus)
                 .category(post.getStore().getCategory().name())
                 .content(post.getContent())
+                .comments(commentDtos)
                 .build();
     }
 }

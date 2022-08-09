@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,11 +18,13 @@ public class FindPostDetail {
     String storeName;
     Integer deliveryFee;
     String category;
-    List<MenuDetail> menus;
+    List<MenuDetail> menus = new ArrayList<>();
+
+    List<CommentDto> comments = new ArrayList<>();
 
     @Builder
     public FindPostDetail(Integer limitNumber, Integer currentNumber, String closeTime, Integer spotId, String content,
-                          String storeName, Integer deliveryFee, String category, List<MenuDetail> menus) {
+                          String storeName, Integer deliveryFee, String category, List<MenuDetail> menus, List<CommentDto> comments) {
         this.limitNumber = limitNumber;
         this.currentNumber = currentNumber;
         this.closeTime = closeTime;
@@ -39,5 +42,14 @@ public class FindPostDetail {
         String name;
         Integer price;
         String image;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class CommentDto {
+        Long userId;
+        String nickname;
+        String content;
+        String createDateTime;
     }
 }

@@ -6,6 +6,7 @@ import konkuk.nServer.domain.proposal.domain.Proposal;
 import konkuk.nServer.domain.proposal.domain.ProposalDetail;
 import konkuk.nServer.domain.proposal.domain.ProposalState;
 import konkuk.nServer.domain.proposal.dto.requestForm.SaveProposal;
+import konkuk.nServer.domain.proposal.dto.responseForm.FindProposal;
 import konkuk.nServer.domain.proposal.repository.ProposalDetailRepository;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Menu;
@@ -20,6 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -55,5 +59,38 @@ public class ProposalService {
         });
 
         proposalRepository.save(proposal);
+    }
+
+    public List<FindProposal> findProposalByPost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+
+        if (!Objects.equals(post.getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+
+        return proposalRepository.findByPostId(postId).stream()
+                .filter(proposal -> proposal.getProposalState()==ProposalState.AWAITING)
+                .map(proposal -> {
+                    List<FindProposal.Menus> menus = proposalDetailRepository.findByProposal(proposal)
+                            .stream()
+                            .map(proposalDetail -> new FindProposal.Menus(proposalDetail.getMenu().getId(), proposalDetail.getQuantity()))
+                            .toList();
+                    return new FindProposal(proposal.getId(), proposal.getUser().getNickname(), menus);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public void approveProposal(Long userId, Long proposalId, Boolean isApprove) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL_DETAIL));
+
+        if (!Objects.equals(proposal.getPost().getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+
+        if (proposal.getProposalState() == ProposalState.AWAITING) {
+            proposal.changeState(isApprove);
+        } else {
+            throw new ApiException(ExceptionEnum.NO_CHANGE_PROPOSAL);
+        }
     }
 }

@@ -49,4 +49,9 @@ public class Proposal {
         this.post = post;
         this.user = user;
     }
+
+    public void changeState(Boolean isApprove) {
+        if (isApprove) this.proposalState = ProposalState.ACCEPTED;
+        else this.proposalState = ProposalState.REJECTED;
+    }
 }
