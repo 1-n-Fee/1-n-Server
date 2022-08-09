@@ -153,7 +153,7 @@ public class PostService {
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
         if (!Objects.equals(post.getUser().getId(), userId))
-            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+            throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
         if (post.getProcess() != PostProcess.RECRUITING)
             throw new ApiException(ExceptionEnum.NOT_DELETE_POST);

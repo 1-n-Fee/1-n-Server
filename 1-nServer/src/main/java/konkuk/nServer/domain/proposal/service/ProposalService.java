@@ -66,10 +66,10 @@ public class ProposalService {
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
         if (!Objects.equals(post.getUser().getId(), userId))
-            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+            throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
         return proposalRepository.findByPostId(postId).stream()
-                .filter(proposal -> proposal.getProposalState()==ProposalState.AWAITING)
+                .filter(proposal -> proposal.getProposalState() == ProposalState.AWAITING)
                 .map(proposal -> {
                     List<FindProposal.Menus> menus = proposalDetailRepository.findByProposal(proposal)
                             .stream()
@@ -85,12 +85,22 @@ public class ProposalService {
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL_DETAIL));
 
         if (!Objects.equals(proposal.getPost().getUser().getId(), userId))
-            throw new ApiException(ExceptionEnum.NOT_MATCH_OWNER);
+            throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
         if (proposal.getProposalState() == ProposalState.AWAITING) {
             proposal.changeState(isApprove);
         } else {
             throw new ApiException(ExceptionEnum.NO_CHANGE_PROPOSAL);
         }
+    }
+
+    public void deleteProposal(Long userId, Long proposalId) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL));
+
+        if (!Objects.equals(proposal.getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.NOT_OWNER_PROPOSAL);
+
+        proposalRepository.delete(proposal);
     }
 }

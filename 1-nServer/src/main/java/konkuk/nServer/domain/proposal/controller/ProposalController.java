@@ -29,6 +29,12 @@ public class ProposalController {
         proposalService.saveProposal(userDetail.getId(), form);
     }
 
+    @DeleteMapping("/{proposalId}")
+    public void deleteProposal(@AuthenticationPrincipal PrincipalDetails userDetail,
+                               @PathVariable Long proposalId) {
+        proposalService.deleteProposal(userDetail.getId(), proposalId);
+    }
+
     @GetMapping("/post/{postId}")
     public List<FindProposal> findProposalByPost(@AuthenticationPrincipal PrincipalDetails userDetail,
                                                  @PathVariable Long postId) {
