@@ -127,6 +127,7 @@ public class PostService {
         List<FindPostDetail.CommentDto> commentDtos = commentRepository.findByPost(post).stream()
                 .map(comment -> {
                     User user = comment.getUser();
+                    System.out.println(comment);
                     return new FindPostDetail.CommentDto(user.getId(), user.getNickname(), comment.getContent(),
                             comment.getCreateDateTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")));
                 })

@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.post.domain;
 
 import konkuk.nServer.domain.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,12 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private User user;
+
+    @Builder
+    public Comment(String content, LocalDateTime createDateTime, Post post, User user) {
+        this.content = content;
+        this.createDateTime = createDateTime;
+        this.post = post;
+        this.user = user;
+    }
 }

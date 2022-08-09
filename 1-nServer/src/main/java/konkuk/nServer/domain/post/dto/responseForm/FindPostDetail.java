@@ -34,6 +34,7 @@ public class FindPostDetail {
         this.deliveryFee = deliveryFee;
         this.category = category;
         this.menus = menus;
+        this.comments = comments;
     }
 
     @Data
