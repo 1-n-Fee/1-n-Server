@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DB 테이블 보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        th, td {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        function ev(event) {
+            const con = document.getElementById(event.value);
+            if (con.style.display === 'none') {
+                con.style.display = 'block';
+            } else {
+                con.style.display = 'none';
+            }
+        }
+
+        function selectAll(bool) {
+            const checkboxes
+                = document.getElementsByName('table');
+
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = bool;
+                const con = document.getElementById(checkbox.value);
+                if (bool) con.style.display = 'block';
+                else con.style.display = 'none';
+            })
+        }
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <br>
+    <button onClick='selectAll(true)' class="btn btn-primary">모두 보이기</button>
+    <button onClick='selectAll(false)' class="btn btn-primary">모두 숨기기</button>
+    <br>
+
+    <div class="row">
+        <div class="form-group-lg col-xs-5">
+            <div class="form-group-lg">
+                <div th:each="tableName : ${tableName}">
+                    <input type="checkbox" class="form-check-input" name="table" onClick="ev(this)"
+                           th:value="*{tableName}"/>
+                    <label class="checkbox-inline" th:text="*{tableName}"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:none" id="kakao">
+        <h3>Kakao</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">kakaoId</th>
+                <th scope="col">userId</th>
+                <th scope="col">storemanagerId</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="kakao : ${kakaos}">
+                <td th:text="${kakao.id}"></td>
+                <td th:text="${kakao.kakaoId}"></td>
+                <td th:text="${kakao.user==null} ? '' : ${kakao.user.id}"></td>
+                <td th:text="${kakao.storemanager==null} ? '' : ${kakao.storemanager.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="naver">
+        <h3>Naver</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">naverId</th>
+                <th scope="col">userId</th>
+                <th scope="col">storemanagerId</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="naver : ${navers}">
+                <td th:text="${naver.id}"></td>
+                <td th:text="${naver.naverId}"></td>
+                <td th:text="${naver.user==null} ? '' : ${naver.user.id}"></td>
+                <td th:text="${naver.storemanager==null} ? '' : ${naver.storemanager.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="google">
+        <h3>Google</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">googleId</th>
+                <th scope="col">userId</th>
+                <th scope="col">storemanagerId</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="google : ${googles}">
+                <td th:text="${google.id}"></td>
+                <td th:text="${google.googleId}"></td>
+                <td th:text="${google.user==null} ? '' : ${google.user.id}"></td>
+                <td th:text="${google.storemanager==null} ? '' : ${google.storemanager.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="password">
+        <h3>Password</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">password(암호화)</th>
+                <th scope="col">userId</th>
+                <th scope="col">storemanagerId</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="password : ${passwords}">
+                <td th:text="${password.id}"></td>
+                <td th:text="${password.password}"></td>
+                <td th:text="${password.user==null} ? '' : ${password.user.id}"></td>
+                <td th:text="${password.storemanager==null} ? '' : ${password.storemanager.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="user">
+        <h3>User</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">account_type</th>
+                <th scope="col">email</th>
+                <th scope="col">name</th>
+                <th scope="col">nickname</th>
+                <th scope="col">phone</th>
+                <th scope="col">role</th>
+                <th scope="col">major</th>
+                <th scope="col">sex_type</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.accountType.name()}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.nickname}"></td>
+                <td th:text="${user.phone}"></td>
+                <td th:text="${user.role.name()}"></td>
+                <td th:text="${user.major==null} ? '' : ${user.major}"></td>
+                <td th:text="${user.sexType==null} ? '' : ${user.sexType.name()}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="storemanager">
+        <h3>Storemanager</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">account_type</th>
+                <th scope="col">email</th>
+                <th scope="col">name</th>
+                <th scope="col">phone</th>
+                <th scope="col">role</th>
+                <th scope="col">store_registration_number</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="storemanager : ${storemanagers}">
+                <td th:text="${storemanager.id}"></td>
+                <td th:text="${storemanager.accountType.name()}"></td>
+                <td th:text="${storemanager.email}"></td>
+                <td th:text="${storemanager.name}"></td>
+                <td th:text="${storemanager.phone}"></td>
+                <td th:text="${storemanager.role.name()}"></td>
+                <td th:text="${storemanager.storeRegistrationNumber}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="post">
+        <h3>Post</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">close_time</th>
+                <th scope="col">content</th>
+                <th scope="col">current_number</th>
+                <th scope="col">limit_number</th>
+                <th scope="col">process</th>
+                <th scope="col">registry_time</th>
+                <th scope="col">spot</th>
+                <th scope="col">store_id</th>
+                <th scope="col">leader_id(userId)</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="post : ${posts}">
+                <td th:text="${post.id==null} ? '' : ${post.id}"></td>
+                <td th:text="${post.closeTime==null} ? '' : ${post.closeTime}"></td>
+                <td th:text="${post.content==null} ? '' : ${post.content}"></td>
+                <td th:text="${post.currentNumber==null} ? '' : ${post.currentNumber}"></td>
+                <td th:text="${post.limitNumber==null} ? '' : ${post.limitNumber}"></td>
+                <td th:text="${post.process==null} ? '' : ${post.process.name()}"></td>
+                <td th:text="${post.registryTime==null} ? '' : ${post.registryTime}"></td>
+                <td th:text="${post.spot==null} ? '' : ${post.spot.name()}"></td>
+                <td th:text="${post.store==null} ? '' : ${post.store.id}"></td>
+                <td th:text="${post.user==null} ? '' : ${post.user.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="proposal">
+        <h3>Proposal(제안서)</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">create_data_time</th>
+                <th scope="col">proposal_state</th>
+                <th scope="col">post_id</th>
+                <th scope="col">student_id(userId)</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="proposal : ${proposals}">
+                <td th:text="${proposal.id==null} ? '' : ${proposal.id}"></td>
+                <td th:text="${proposal.createDateTime==null} ? '' : ${proposal.createDateTime}"></td>
+                <td th:text="${proposal.proposalState==null} ? '' : ${proposal.proposalState.name()}"></td>
+                <td th:text="${proposal.post==null} ? '' : ${proposal.post.id}"></td>
+                <td th:text="${proposal.user==null} ? '' : ${proposal.user.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="proposalDetail">
+        <h3>ProposalDetail</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">quantity</th>
+                <th scope="col">menu_id</th>
+                <th scope="col">proposal_id</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="proposalDetail : ${proposalDetails}">
+                <td th:text="${proposalDetail.id==null} ? '' : ${proposalDetail.id}"></td>
+                <td th:text="${proposalDetail.quantity==null} ? '' : ${proposalDetail.quantity}"></td>
+                <td th:text="${proposalDetail.menu==null} ? '' : ${proposalDetail.menu.id}"></td>
+                <td th:text="${proposalDetail.proposal==null} ? '' : ${proposalDetail.proposal.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="store">
+        <h3>Store</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">address</th>
+                <th scope="col">break_time</th>
+                <th scope="col">business_hours</th>
+                <th scope="col">category</th>
+                <th scope="col">delivery_fee</th>
+                <th scope="col">name</th>
+                <th scope="col">phone</th>
+                <th scope="col">state</th>
+                <th scope="col">storemanager_id</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="store : ${stores}">
+                <td th:text="${store.id==null} ? '' : ${store.id}"></td>
+                <td th:text="${store.address==null} ? '' : ${store.address}"></td>
+                <td th:text="${store.breakTime==null} ? '' : ${store.breakTime}"></td>
+                <td th:text="${store.businessHours==null} ? '' : ${store.businessHours}"></td>
+                <td th:text="${store.category==null} ? '' : ${store.category.name()}"></td>
+                <td th:text="${store.deliveryFee==null} ? '' : ${store.deliveryFee}"></td>
+                <td th:text="${store.name==null} ? '' : ${store.name}"></td>
+                <td th:text="${store.phone==null} ? '' : ${store.phone}"></td>
+                <td th:text="${store.state==null} ? '' : ${store.state.name()}"></td>
+                <td th:text="${store.storemanager==null} ? '' : ${store.storemanager.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+    <div style="display:none" id="comment">
+        <h3>Comment(댓글)</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">content</th>
+                <th scope="col">create_data_time</th>
+                <th scope="col">post_id</th>
+                <th scope="col">user_id</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="comment : ${comments}">
+                <td th:text="${comment.id==null} ? '' : ${comment.id}"></td>
+                <td th:text="${comment.content==null} ? '' : ${comment.content}"></td>
+                <td th:text="${comment.createDateTime==null} ? '' : ${comment.createDateTime}"></td>
+                <td th:text="${comment.post==null} ? '' : ${comment.post.id}"></td>
+                <td th:text="${comment.user==null} ? '' : ${comment.user.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+
+    <div style="display:none" id="menu">
+        <h3>Menu</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">image_url</th>
+                <th scope="col">name</th>
+                <th scope="col">price</th>
+                <th scope="col">store_id</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="menu : ${menus}">
+                <td th:text="${menu.id==null} ? '' : ${menu.id}"></td>
+                <td th:text="${menu.image_url==null} ? '' : ${menu.image_url}"></td>
+                <td th:text="${menu.name==null} ? '' : ${menu.name}"></td>
+                <td th:text="${menu.price==null} ? '' : ${menu.price}"></td>
+                <td th:text="${menu.store==null} ? '' : ${menu.store.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
+
+</div>
+</body>
+</html>
