@@ -63,4 +63,12 @@ public class Post {
         this.user = user;
         this.store = store;
     }
+
+    public void increaseCurrentNumber() {
+        this.currentNumber += 1;
+    }
+
+    public void decreaseCurrentNumber() {
+        this.currentNumber -= 1;
+    }
 }

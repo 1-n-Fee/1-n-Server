@@ -389,7 +389,7 @@
             <tbody>
             <tr th:each="menu : ${menus}">
                 <td th:text="${menu.id==null} ? '' : ${menu.id}"></td>
-                <td th:text="${menu.image_url==null} ? '' : ${menu.image_url}"></td>
+                <td th:text="${menu.imageUrl==null} ? '' : ${menu.imageUrl}"></td>
                 <td th:text="${menu.name==null} ? '' : ${menu.name}"></td>
                 <td th:text="${menu.price==null} ? '' : ${menu.price}"></td>
                 <td th:text="${menu.store==null} ? '' : ${menu.store.id}"></td>

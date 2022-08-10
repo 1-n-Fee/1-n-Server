@@ -89,6 +89,7 @@ public class ProposalService {
 
         if (proposal.getProposalState() == ProposalState.AWAITING) {
             proposal.changeState(isApprove);
+            if (isApprove) proposal.getPost().increaseCurrentNumber();
         } else {
             throw new ApiException(ExceptionEnum.NO_CHANGE_PROPOSAL);
         }
@@ -101,6 +102,11 @@ public class ProposalService {
         if (!Objects.equals(proposal.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_PROPOSAL);
 
-        proposalRepository.delete(proposal);
+        if (proposal.getProposalState() == ProposalState.AWAITING) {
+            proposal.getPost().decreaseCurrentNumber();
+            proposalRepository.delete(proposal);
+        } else {
+            throw new ApiException(ExceptionEnum.NO_CHANGE_PROPOSAL);
+        }
     }
 }
