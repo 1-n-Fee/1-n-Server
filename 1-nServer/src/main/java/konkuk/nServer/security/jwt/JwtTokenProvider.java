@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
 
@@ -42,6 +43,22 @@ public class JwtTokenProvider {
                 .withClaim("id", storemanager.getId())
                 .withClaim("role", "storemanager")
                 .sign(Algorithm.HMAC512(SECRET_KEY));
+    }
+
+    public String createSocketJwt(Long userId) {
+        return JWT.create()
+                .withSubject("socketToken")
+                .withExpiresAt(new Date(System.currentTimeMillis() + Duration.ofSeconds(30).toMillis()))
+                .withClaim("id", userId)
+                .sign(Algorithm.HMAC512(SECRET_KEY));
+    }
+
+    public Long validateSocketToken(String token) {
+        Long id = JWT.require(Algorithm.HMAC512(SECRET_KEY)).build()
+                .verify(token)
+                .getClaim("id")
+                .asLong();
+        return id;
     }
 
     public JwtClaim validate(String token) {

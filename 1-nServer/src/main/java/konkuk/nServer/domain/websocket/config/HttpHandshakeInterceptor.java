@@ -8,10 +8,8 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-
-import static org.springframework.messaging.simp.stomp.StompHeaders.SESSION;
 
 @RequiredArgsConstructor
 public class HttpHandshakeInterceptor implements HandshakeInterceptor {
@@ -22,9 +20,17 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            HttpSession session = servletRequest.getServletRequest().getSession();
-            attributes.put(SESSION, session);
+            HttpServletRequest httpServletRequest = ((ServletServerHttpRequest) request).getServletRequest();
+            try {
+                String token = httpServletRequest.getParameter("token");
+                Long userId = tokenProvider.validateSocketToken(token);
+                httpServletRequest.getSession();
+                attributes.put("userId", userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
         return true;
     }

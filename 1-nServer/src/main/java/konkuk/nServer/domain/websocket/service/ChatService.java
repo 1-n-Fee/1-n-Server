@@ -70,6 +70,10 @@ public class ChatService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
+        if (MessageType.ENTER.name().equals(requestMessage.getType())) {
+            requestMessage.setContent(user.getNickname() + "님이 입장하였습니다.");
+        }
+
         Message message = Message.builder()
                 .type(convertMessageType(requestMessage.getType()))
                 .content(requestMessage.getContent())

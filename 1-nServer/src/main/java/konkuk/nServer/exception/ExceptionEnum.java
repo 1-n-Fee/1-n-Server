@@ -35,6 +35,7 @@ public enum ExceptionEnum {
     INCORRECT_HOUR(HttpStatus.BAD_REQUEST, "S001", "잘못된 hour입니다. (hhmm-hhmm 필요)"),
 
     INCORRECT_MESSAGE_TYPE(HttpStatus.BAD_REQUEST, "M001", "잘못된 메시지 타입입니다."),
+    NOT_LOGIN_CHAT(HttpStatus.BAD_REQUEST, "M002", "채팅은 로그인 회원만 가능합니다."),
 
     ;
     private final HttpStatus status;
