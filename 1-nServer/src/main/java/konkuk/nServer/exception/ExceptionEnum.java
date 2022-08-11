@@ -7,13 +7,13 @@ import org.springframework.http.HttpStatus;
 public enum ExceptionEnum {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "0001", "예상치 못한 서버 에러입니다."),
 
-    INCORRECT_ROLE(HttpStatus.BAD_REQUEST, "M001", "올바르지 않은 Role입니다."),
-    INCORRECT_ACCOUNT_TYPE(HttpStatus.BAD_REQUEST, "M002", "올바르지 않은 accountType입니다."),
-    INCORRECT_SEX_TYPE(HttpStatus.BAD_REQUEST, "M003", "올바르지 않은 sexType입니다."),
-    INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "M004", "올바르지 않은 password입니다."),
+    INCORRECT_ROLE(HttpStatus.BAD_REQUEST, "U001", "올바르지 않은 Role입니다."),
+    INCORRECT_ACCOUNT_TYPE(HttpStatus.BAD_REQUEST, "U002", "올바르지 않은 accountType입니다."),
+    INCORRECT_SEX_TYPE(HttpStatus.BAD_REQUEST, "U003", "올바르지 않은 sexType입니다."),
+    INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "U004", "올바르지 않은 password입니다."),
 
-    INCORRECT_NICKNAME(HttpStatus.BAD_REQUEST, "M005", "올바르지 않은 nickname입니다."),
-    NO_FOUND_USER(HttpStatus.BAD_REQUEST, "M006", "회원을 찾을 수 없습니다."),
+    INCORRECT_NICKNAME(HttpStatus.BAD_REQUEST, "U005", "올바르지 않은 nickname입니다."),
+    NO_FOUND_USER(HttpStatus.BAD_REQUEST, "U006", "회원을 찾을 수 없습니다."),
 
     INCORRECT_LOGIN(HttpStatus.BAD_REQUEST, "L001", "잘못된 로그인 요청입니다."),
 
@@ -32,8 +32,9 @@ public enum ExceptionEnum {
     FAIL_STORE_IMAGE(HttpStatus.BAD_REQUEST, "I001", "이미지 저장에 실패했습니다."),
     FAIL_CALL_IMAGE(HttpStatus.BAD_REQUEST, "I002", "이미지를 불러오는데 실패했습니다."),
 
-
     INCORRECT_HOUR(HttpStatus.BAD_REQUEST, "S001", "잘못된 hour입니다. (hhmm-hhmm 필요)"),
+
+    INCORRECT_MESSAGE_TYPE(HttpStatus.BAD_REQUEST, "M001", "잘못된 메시지 타입입니다."),
 
     ;
     private final HttpStatus status;
