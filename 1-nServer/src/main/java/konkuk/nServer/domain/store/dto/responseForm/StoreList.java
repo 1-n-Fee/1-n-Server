@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.store.dto.responseForm;
 
+import konkuk.nServer.domain.store.domain.Store;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,5 +17,14 @@ public class StoreList {
         this.name = name;
         this.category = category;
         this.deliveryFee = deliveryFee;
+    }
+
+    public static StoreList of(Store store) {
+        return StoreList.builder()
+                .name(store.getName())
+                .category(store.getCategory().toString())
+                .deliveryFee(store.getDeliveryFee())
+                .id(store.getId())
+                .build();
     }
 }

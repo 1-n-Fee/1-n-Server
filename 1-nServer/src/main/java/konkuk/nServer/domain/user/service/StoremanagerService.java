@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.user.service;
 
+import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
 import konkuk.nServer.domain.user.repository.*;

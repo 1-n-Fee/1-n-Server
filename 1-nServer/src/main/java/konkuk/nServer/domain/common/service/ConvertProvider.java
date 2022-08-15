@@ -1,5 +1,6 @@
-package konkuk.nServer.domain.user.service;
+package konkuk.nServer.domain.common.service;
 
+import konkuk.nServer.domain.post.domain.Category;
 import konkuk.nServer.domain.user.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
@@ -41,4 +42,16 @@ public class ConvertProvider {
         else if (Objects.equals(accountType, "password")) return AccountType.PASSWORD;
         else throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
     }
+
+    public Category convertCategory(String category) {
+        //KOREAN, CHINESE, WESTERN, JAPANESE, MIDNIGHT, ETC
+        if (Objects.equals(category, "korean")) return Category.KOREAN;
+        else if (Objects.equals(category, "chinese")) return Category.CHINESE;
+        else if (Objects.equals(category, "western")) return Category.WESTERN;
+        else if (Objects.equals(category, "japanese")) return Category.JAPANESE;
+        else if (Objects.equals(category, "midnight")) return Category.MIDNIGHT;
+        else if (Objects.equals(category, "etc")) return Category.ETC;
+        else throw new ApiException(ExceptionEnum.INCORRECT_CATEGORY);
+    }
+
 }

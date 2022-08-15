@@ -1,11 +1,15 @@
 package konkuk.nServer.domain.store.dto.requestForm;
 
+import konkuk.nServer.domain.post.domain.Category;
+import konkuk.nServer.domain.store.domain.Store;
+import konkuk.nServer.domain.store.domain.StoreState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -14,7 +18,7 @@ public class RegistryStoreByStudent {
     @NotBlank
     private String name;
 
-    @NotBlank
+    @NotNull
     private Integer deliveryFee;
 
     @NotBlank
@@ -37,5 +41,17 @@ public class RegistryStoreByStudent {
         this.name = name;
         this.deliveryFee = deliveryFee;
         this.menus = menus;
+    }
+
+    public Store toEntity(Category category) {
+        return Store.builder()
+                .name(name)
+                .deliveryFee(deliveryFee)
+                .phone("temp")
+                .category(category)
+                .address("temp")
+                .businessHours("0000-0000")
+                .state(StoreState.TEMPORARY)
+                .build();
     }
 }

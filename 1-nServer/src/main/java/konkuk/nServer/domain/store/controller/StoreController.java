@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class StoreController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void registryStoreByStoremanager(@AuthenticationPrincipal PrincipalDetails userDetail,
-                                            @RequestBody RegistryStoreByStoremanager registryStore) {
+                                            @RequestBody @Valid RegistryStoreByStoremanager registryStore) {
         registryStore.validate();
         if (userDetail.getRole() == Role.ROLE_STOREMANAGER)
             storeService.registryStoreByStoremanager(userDetail.getId(), registryStore);
@@ -49,7 +50,7 @@ public class StoreController {
     public Map<String, Object> registryStoreByStudent(@AuthenticationPrincipal PrincipalDetails userDetail,
                                                       @RequestBody RegistryStoreByStudent registryStore) {
         if (userDetail.getRole() == Role.ROLE_STUDENT) {
-            Long storeId = storeService.registryStoreByStudent(userDetail.getId(), registryStore);
+            Long storeId = storeService.registryStoreByStudent(registryStore);
             return Map.of("storeId", storeId);
         } else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
 

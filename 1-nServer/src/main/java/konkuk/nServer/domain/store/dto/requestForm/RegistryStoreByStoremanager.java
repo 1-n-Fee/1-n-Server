@@ -1,5 +1,9 @@
 package konkuk.nServer.domain.store.dto.requestForm;
 
+import konkuk.nServer.domain.post.domain.Category;
+import konkuk.nServer.domain.store.domain.Store;
+import konkuk.nServer.domain.store.domain.StoreState;
+import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.AllArgsConstructor;
@@ -8,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -20,7 +25,7 @@ public class RegistryStoreByStoremanager {
     @NotBlank
     private String phone;
 
-    @NotBlank
+    @NotNull
     private Integer deliveryFee;
 
     @NotBlank
@@ -88,5 +93,19 @@ public class RegistryStoreByStoremanager {
                     throw new ApiException(ExceptionEnum.INCORRECT_HOUR);
             }
         }
+    }
+
+    public Store toEntity(Storemanager storemanager, Category category) {
+        return Store.builder()
+                .name(name)
+                .phone(phone)
+                .deliveryFee(deliveryFee)
+                .address(address)
+                .businessHours(businessHours)
+                .breakTime(breakTime)
+                .storemanager(storemanager)
+                .category(category)
+                .state(StoreState.ACTIVE)
+                .build();
     }
 }
