@@ -33,6 +33,11 @@ public class RegistryStoreByStudent {
         Integer price;
         String name;
         String imageUrl;
+
+        public MenuDto(Integer price, String name) {
+            this.price = price;
+            this.name = name;
+        }
     }
 
     @Builder
@@ -51,6 +56,7 @@ public class RegistryStoreByStudent {
                 .category(category)
                 .address("temp")
                 .businessHours("0000-0000")
+                .breakTime("0000-0000")
                 .state(StoreState.TEMPORARY)
                 .build();
     }

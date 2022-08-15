@@ -3,8 +3,10 @@ package konkuk.nServer.domain.store.dto.responseForm;
 import konkuk.nServer.domain.store.domain.Store;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class StoreList {
     private Long id;
     private String name;

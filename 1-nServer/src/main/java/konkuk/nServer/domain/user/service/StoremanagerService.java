@@ -54,9 +54,16 @@ public class StoremanagerService {
             storemanager.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
+            validatePassword(form.getPassword());
             Password password = new Password(passwordEncoder.encode(form.getPassword()), storemanager);
             storemanager.setPassword(password);
             passwordRepository.save(password);
+        }
+    }
+
+    private void validatePassword(String password) {
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&])[A-Za-z\\d$@!%*#?&]{8,15}$")) {
+            throw new ApiException(ExceptionEnum.INCORRECT_PASSWORD);
         }
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.Storemanager;
 import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
@@ -71,7 +72,7 @@ class StoremanagerControllerTest {
         assertEquals("홍길동", storemanager.getName());
         assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
         assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
-        assertTrue(passwordEncoder.matches("pwpw!", storemanager.getPassword().getPassword()));
+        assertTrue(passwordEncoder.matches("pwpw!123", storemanager.getPassword().getPassword()));
     }
 
     private StoremanagerSignup getStoremanagerForm() {
@@ -80,9 +81,23 @@ class StoremanagerControllerTest {
                 .name("홍길동")
                 .phone("01087654321")
                 .accountType("password")
-                .password("pwpw!")
+                .password("pwpw!123")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")
+                .build();
+    }
+
+    private UserSignup getUserSignupDto() {
+        return UserSignup.builder()
+                .email("asdf@konkuk.ac.kr")
+                .accountType("password")
+                .password("pwpw!123")
+                .nickname("ithinkso")
+                .name("tester")
+                .role("student")
+                .phone("01012345678")
+                .major("CS")
+                .sexType("man")
                 .build();
     }
 }
