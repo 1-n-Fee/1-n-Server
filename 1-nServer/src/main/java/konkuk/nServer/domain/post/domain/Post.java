@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -49,6 +51,9 @@ public class Post {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
 
     @Builder
     public Post(Spot spot, PostProcess process, String content, LocalDateTime closeTime,
@@ -62,6 +67,10 @@ public class Post {
         this.limitNumber = limitNumber;
         this.user = user;
         this.store = store;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
     }
 
     public void increaseCurrentNumber() {

@@ -1,9 +1,13 @@
 package konkuk.nServer.domain.post.dto.responseForm;
 
+import konkuk.nServer.domain.post.domain.Comment;
+import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.store.domain.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +47,10 @@ public class FindPostDetail {
         String name;
         Integer price;
         String image;
+
+        public static MenuDetail of(Menu menu) {
+            return new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl());
+        }
     }
 
     @Data
@@ -52,5 +60,25 @@ public class FindPostDetail {
         String nickname;
         String content;
         String createDateTime;
+
+        public static CommentDto of(Comment comment) {
+            return new FindPostDetail.CommentDto(comment.getUser().getId(), comment.getUser().getNickname(), comment.getContent(),
+                    comment.getCreateDateTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")));
+        }
+    }
+
+    public static FindPostDetail of(Post post, List<FindPostDetail.MenuDetail> menus, List<FindPostDetail.CommentDto> comments) {
+        return FindPostDetail.builder()
+                .currentNumber(post.getCurrentNumber())
+                .limitNumber(post.getLimitNumber())
+                .spotId(post.getSpot().getId())
+                .storeName(post.getStore().getName())
+                .closeTime(post.getCloseTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
+                .deliveryFee(post.getStore().getDeliveryFee())
+                .menus(menus)
+                .category(post.getStore().getCategory().name())
+                .content(post.getContent())
+                .comments(comments)
+                .build();
     }
 }

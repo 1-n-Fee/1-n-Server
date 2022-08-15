@@ -5,7 +5,6 @@ import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
 import konkuk.nServer.domain.post.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
-import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
@@ -34,12 +33,13 @@ public class CommentService {
         Post post = postRepository.findById(registryComment.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
-        commentRepository.save(Comment.builder()
+        Comment comment = Comment.builder()
                 .createDateTime(LocalDateTime.now())
                 .content(registryComment.getContent())
                 .user(user)
                 .post(post)
-                .build());
-
+                .build();
+        post.addComment(comment);
+        commentRepository.save(comment);
     }
 }

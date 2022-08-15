@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -24,7 +25,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void registryPost(@AuthenticationPrincipal PrincipalDetails userDetail,
-                             @RequestBody RegistryPost registryPost) {
+                             @RequestBody @Valid RegistryPost registryPost) {
         postService.registryPost(userDetail.getId(), registryPost);
     }
 

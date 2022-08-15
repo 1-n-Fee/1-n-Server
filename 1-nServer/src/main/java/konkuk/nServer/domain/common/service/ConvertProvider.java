@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.common.service;
 
 import konkuk.nServer.domain.post.domain.Category;
+import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.user.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Slf4j
@@ -52,6 +55,25 @@ public class ConvertProvider {
         else if (Objects.equals(category, "midnight")) return Category.MIDNIGHT;
         else if (Objects.equals(category, "etc")) return Category.ETC;
         else throw new ApiException(ExceptionEnum.INCORRECT_CATEGORY);
+    }
+
+    public Spot convertSpot(Long spotId) {
+        for (Spot spot : Spot.values()) {
+            if (spot.getId() == spotId) return spot;
+        }
+        throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
+    }
+
+    public LocalDateTime convertTime(String dateTime) {
+        return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm"));
+    }
+
+    public Spot convertSpotById(Long spotId) {
+        Spot[] values = Spot.values();
+        for (Spot spot : values) {
+            if (spot.getId() == spotId) return spot;
+        }
+        throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
     }
 
 }

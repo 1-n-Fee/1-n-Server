@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.post.service;
 
+import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.domain.Spot;
@@ -8,7 +9,6 @@ import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
 import konkuk.nServer.domain.post.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
-import konkuk.nServer.domain.proposal.domain.Proposal;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.StoreRepository;
@@ -22,10 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,67 +37,34 @@ public class PostService {
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
+    private final ConvertProvider convertProvider;
 
     public void registryPost(Long userId, RegistryPost registryPost) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
         Store store = storeRepository.findById(registryPost.getStoreId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STORE));
+        Spot spot = convertProvider.convertSpot(registryPost.getSpotId());
+        LocalDateTime closeTime = convertProvider.convertTime(registryPost.getCloseTime());
 
-        Spot spot = convertSpot(registryPost.getSpotId());
-
-        Post post = Post.builder()
-                .registryTime(LocalDateTime.now())
-                .closeTime(convertTime(registryPost.getCloseTime()))
-                .content(registryPost.getContent())
-                .process(PostProcess.RECRUITING)
-                .currentNumber(0)
-                .limitNumber(registryPost.getLimitNumber())
-                .user(user)
-                .store(store)
-                .spot(spot)
-                .build();
-
+        Post post = registryPost.toEntity(user, store, spot, closeTime);
         postRepository.save(post);
-    }
-
-
-    private LocalDateTime convertTime(String dateTime) {
-        return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm"));
-    }
-
-    private Spot convertSpot(Long spotId) {
-        for (Spot spot : Spot.values()) {
-            if (spot.getId() == spotId) return spot;
-        }
-        throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
     }
 
 
     public List<FindPost> findPostBySpot(Long userId, Long spotId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
-        Spot spot = getSpotById(spotId);
-        if (spot == null) throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
-
+        Spot spot = convertProvider.convertSpot(spotId);
         List<Post> posts = postRepository.findBySpot(spot);
 
         return posts.stream()
                 .map(post -> {
-                    Store store = post.getStore();
-                    FindPost res = FindPost.builder()
-                            .postId(post.getId())
-                            .deliveryFee(store.getDeliveryFee())
-                            .currentNumber(post.getCurrentNumber())
-                            .limitNumber(post.getLimitNumber())
-                            .storeName(store.getName())
-                            .category(store.getCategory().name())
-                            .closeTime(post.getCloseTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
-                            .build();
+                    FindPost res = FindPost.of(post);
 
-                    Optional<Proposal> proposal = proposalRepository.findByUserAndPost(user, post);
-                    proposal.ifPresent(value -> res.setState(value.getProposalState().name()));
+                    proposalRepository.findByUserAndPost(user, post).
+                            ifPresent(value -> res.setState(value.getProposalState().name()));
+
                     if (Objects.equals(post.getUser().getId(), userId)) res.setState("OWNER");
 
                     return res;
@@ -107,45 +72,19 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public Spot getSpotById(Long id) {
-        Spot[] values = Spot.values();
-        for (Spot spot : values) {
-            if (spot.getId() == id) return spot;
-        }
-        return null;
-    }
-
     public FindPostDetail findPostDetailById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
         List<FindPostDetail.MenuDetail> menus = post.getStore().getMenus().stream()
-                .map(menu ->
-                        new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl())
-                ).toList();
-
-        List<FindPostDetail.CommentDto> commentDtos = commentRepository.findByPost(post).stream()
-                .map(comment -> {
-                    User user = comment.getUser();
-                    System.out.println(comment);
-                    return new FindPostDetail.CommentDto(user.getId(), user.getNickname(), comment.getContent(),
-                            comment.getCreateDateTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")));
-                })
+                .map(FindPostDetail.MenuDetail::of)
                 .toList();
 
+        List<FindPostDetail.CommentDto> comments = post.getComments().stream()
+                .map(FindPostDetail.CommentDto::of)
+                .toList();
 
-        return FindPostDetail.builder()
-                .currentNumber(post.getCurrentNumber())
-                .limitNumber(post.getLimitNumber())
-                .spotId(post.getSpot().getId())
-                .storeName(post.getStore().getName())
-                .closeTime(post.getCloseTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
-                .deliveryFee(post.getStore().getDeliveryFee())
-                .menus(menus)
-                .category(post.getStore().getCategory().name())
-                .content(post.getContent())
-                .comments(commentDtos)
-                .build();
+        return FindPostDetail.of(post, menus, comments);
     }
 
     public void deletePost(Long userId, Long postId) {
