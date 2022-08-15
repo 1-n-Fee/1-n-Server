@@ -44,6 +44,9 @@ public class StoreService {
     @Value("${image.menu}")
     private String menuImagePath;
 
+    @Value("${image.default_filename}")
+    private String defaultMenuImage;
+
     public void registryStoreByStoremanager(Long storemanagerId, RegistryStoreByStoremanager form) {
         Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
@@ -66,7 +69,7 @@ public class StoreService {
 
         for (RegistryStoreByStoremanager.MenuDto menuDto : form.getMenus()) {
             String imageUrl = menuDto.getImageUrl();
-            if (imageUrl == null) imageUrl = "default";
+            if (imageUrl == null) imageUrl = defaultMenuImage;
 
             Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), imageUrl);
             store.addMenu(menu);
@@ -93,7 +96,7 @@ public class StoreService {
 
         for (RegistryStoreByStudent.MenuDto menuDto : form.getMenus()) {
             String imageUrl = menuDto.getImageUrl();
-            if (imageUrl == null) imageUrl = "default";
+            if (imageUrl == null) imageUrl = defaultMenuImage;
 
             Menu menu = new Menu(menuDto.getName(), menuDto.getPrice(), imageUrl);
             store.addMenu(menu);

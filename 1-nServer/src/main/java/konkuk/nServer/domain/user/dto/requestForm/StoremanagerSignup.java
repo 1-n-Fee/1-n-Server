@@ -1,5 +1,8 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
+import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.Storemanager;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,5 +46,16 @@ public class StoremanagerSignup {
         this.role = role;
         this.code = code;
         this.password = password;
+    }
+
+    public Storemanager toEntity(Role role, AccountType accountType) {
+        return Storemanager.builder()
+                .accountType(accountType)
+                .storeRegistrationNumber(storeRegistrationNumber)
+                .name(name)
+                .phone(phone)
+                .email(email)
+                .role(role)
+                .build();
     }
 }

@@ -11,8 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,22 +24,16 @@ public class StoremanagerService {
     private final GoogleRepository googleRepository;
     private final PasswordRepository passwordRepository;
     private final OAuth2Provider oAuth2Provider;
+    private final ConvertProvider convertProvider;
 
     public void signup(StoremanagerSignup form) {
+        Role role = convertProvider.convertStoremanagerRole(form.getRole());
+        if (role != Role.ROLE_STOREMANAGER) {
+            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+        }
+        AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
 
-        Role role = convertStoremanagerRole(form.getRole());
-        AccountType accountType = convertAccountType(form.getAccountType());
-
-        if (role != Role.ROLE_STOREMANAGER) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-
-        Storemanager storemanager = Storemanager.builder()
-                .accountType(accountType)
-                .storeRegistrationNumber(form.getStoreRegistrationNumber())
-                .name(form.getName())
-                .phone(form.getPhone())
-                .email(form.getEmail())
-                .role(role)
-                .build();
+        Storemanager storemanager = form.toEntity(role, accountType);
 
         storemanagerRepository.save(storemanager);
 
@@ -65,21 +57,5 @@ public class StoremanagerService {
             storemanager.setPassword(password);
             passwordRepository.save(password);
         }
-
-
     }
-
-    private Role convertStoremanagerRole(String role) {
-        if (Objects.equals(role, "storemanager")) return Role.ROLE_STOREMANAGER;
-        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-    }
-
-    private AccountType convertAccountType(String accountType) {
-        if (Objects.equals(accountType, "kakao")) return AccountType.KAKAO;
-        else if (Objects.equals(accountType, "naver")) return AccountType.NAVER;
-        else if (Objects.equals(accountType, "google")) return AccountType.GOOGLE;
-        else if (Objects.equals(accountType, "password")) return AccountType.PASSWORD;
-        else throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
-    }
-
 }

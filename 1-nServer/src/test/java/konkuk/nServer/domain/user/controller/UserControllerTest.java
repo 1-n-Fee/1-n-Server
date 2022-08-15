@@ -59,10 +59,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("/user/health 확인")
+    @DisplayName("/health 확인")
     void test() throws Exception {
         // expected
-        mockMvc.perform(get("/user/health"))
+        mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Spring server is running..."))
                 .andDo(print()); // http 요청 로그 남기기
@@ -203,7 +203,7 @@ class UserControllerTest {
 
         userService.signup(userSignup);
 
-        Map<String, String> map = Map.of("email", "asdf@konkuk.ac.kr", "password", "testPassword");
+        Map<String, String> map = Map.of("email", "asdf@konkuk.ac.kr", "password", "pwpw!123");
         String content = objectMapper.writeValueAsString(map);
 
         // expected
@@ -426,7 +426,7 @@ class UserControllerTest {
         return UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
-                .password("testPassword")
+                .password("pwpw!123")
                 .nickname("ithinkso")
                 .name("tester")
                 .role("student")

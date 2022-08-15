@@ -1,5 +1,9 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
+import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,4 +54,18 @@ public class UserSignupForApp {
         this.oauthId = oauthId;
         this.password = password;
     }
+
+    public User toEntity(Role role, AccountType accountType, SexType sexType) {
+        return User.builder()
+                .accountType(accountType)
+                .name(name)
+                .phone(phone)
+                .role(role)
+                .nickname(nickname)
+                .email(email)
+                .major(major)
+                .sexType(sexType)
+                .build();
+    }
+
 }

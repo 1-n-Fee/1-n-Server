@@ -22,23 +22,16 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/health")
-    public String controllerTest() {
-        return "Spring server is running...";
-    }
-
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public void signup(@RequestBody @Valid UserSignup form) {
         userService.signup(form);
-        //return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/signup/app")
     @ResponseStatus(HttpStatus.CREATED)
     public void signupForApp(@RequestBody @Valid UserSignupForApp form) {
         userService.signupForApp(form);
-        //return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/oauth/{oauth}")
@@ -97,31 +90,6 @@ public class UserController {
     @GetMapping("/info")
     public ResponseEntity<UserInfo> findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
         UserInfo result = userService.findInfoByUserId(userDetail.getId());
-
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-/*
-    @GetMapping("/point")
-    public HashMap<String, Object> findPoint(@AuthenticationPrincipal Long userId) {
-        Integer point = userService.findPointByMemberId(userId);
-
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("point", point);
-        return result;
-    }
-
-    @GetMapping("/isLogin")
-    public HashMap<String, Object> isLogin(@AuthenticationPrincipal Long userId) {
-        log.info("로그인 여부 요청.");
-        HashMap<String, Object> result = new HashMap<String, Object>();
-
-        if (userId == null) result.put("isLogin", false);
-        else {
-            boolean isLogin = userService.existsMemberById(userId);
-            result.put("isLogin", isLogin);
-        }
-        return result;
-    }
-     */
 }

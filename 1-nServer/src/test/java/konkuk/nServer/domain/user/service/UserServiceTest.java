@@ -40,7 +40,7 @@ class UserServiceTest {
         UserSignup userSignup = UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
-                .password("testPassword")
+                .password("pwpw!123")
                 .nickname("ithinkso")
                 .name("tester")
                 .role("student")

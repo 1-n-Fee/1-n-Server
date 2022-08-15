@@ -1,7 +1,7 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
-import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -13,8 +13,9 @@ public class ChangePassword {
     private String newPassword;
 
     public void validate() {
-        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,15}$")) {
+        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&])[A-Za-z\\d$@!%*#?&]{8,15}$")) {
             throw new ApiException(ExceptionEnum.INCORRECT_PASSWORD);
         }
     }
+
 }

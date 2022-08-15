@@ -1,5 +1,9 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
+import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +31,7 @@ public class UserSignup {
     private String email;
 
     @NotBlank(message = "nickname은 필수항목입니다.")
-    @Length(min=2, max=8, message = "닉네임의 길이는 2~8 입니다.")
+    @Length(min = 2, max = 8, message = "닉네임의 길이는 2~8 입니다.")
     private String nickname;
 
     private String major;
@@ -49,5 +53,18 @@ public class UserSignup {
         this.sexType = sexType;
         this.code = code;
         this.password = password;
+    }
+
+    public User toEntity(Role role, AccountType accountType, SexType sexType) {
+        return User.builder()
+                .accountType(accountType)
+                .name(name)
+                .phone(phone)
+                .role(role)
+                .nickname(nickname)
+                .email(email)
+                .major(major)
+                .sexType(sexType)
+                .build();
     }
 }

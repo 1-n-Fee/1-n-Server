@@ -14,8 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -30,22 +28,17 @@ public class UserService {
     private final OAuth2Provider oAuth2Provider;
     private final JwtTokenProvider tokenProvider;
 
+    private final ConvertProvider convertProvider;
+
     public void signup(UserSignup form) {
-        Role role = convertStudentRole(form.getRole());
-        AccountType accountType = convertAccountType(form.getAccountType());
+        Role role = convertProvider.convertStudentRole(form.getRole());
+        if (role != Role.ROLE_STUDENT)
+            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
 
-        if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+        AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
+        SexType sexType = convertProvider.convertSexType(form.getSexType());
 
-        User user = User.builder()
-                .accountType(accountType)
-                .name(form.getName())
-                .phone(form.getPhone())
-                .role(role)
-                .nickname(form.getNickname())
-                .email(form.getEmail())
-                .major(form.getMajor())
-                .sexType(convertSexType(form.getSexType()))
-                .build();
+        User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {
@@ -54,16 +47,17 @@ public class UserService {
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            String naverId = oAuth2Provider.getKakaoId(form.getCode());
+            String naverId = oAuth2Provider.getNaverId(form.getCode());
             Naver naver = new Naver(naverId, user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            String googleId = oAuth2Provider.getKakaoId(form.getCode());
+            String googleId = oAuth2Provider.getGoogleId(form.getCode());
             Google google = new Google(googleId, user);
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
+            validatePassword(form.getPassword());
             Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
             user.setPassword(password);
             passwordRepository.save(password);
@@ -71,21 +65,14 @@ public class UserService {
     }
 
     public void signupForApp(UserSignupForApp form) {
-        Role role = convertStudentRole(form.getRole());
-        AccountType accountType = convertAccountType(form.getAccountType());
+        Role role = convertProvider.convertStudentRole(form.getRole());
+        if (role != Role.ROLE_STUDENT)
+            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
 
-        if (role != Role.ROLE_STUDENT) throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+        AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
+        SexType sexType = convertProvider.convertSexType(form.getSexType());
 
-        User user = User.builder()
-                .accountType(accountType)
-                .name(form.getName())
-                .phone(form.getPhone())
-                .role(role)
-                .nickname(form.getNickname())
-                .email(form.getEmail())
-                .major(form.getMajor())
-                .sexType(convertSexType(form.getSexType()))
-                .build();
+        User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
 
         if (accountType == AccountType.KAKAO) {
@@ -101,6 +88,7 @@ public class UserService {
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
+            validatePassword(form.getPassword());
             Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
             user.setPassword(password);
             passwordRepository.save(password);
@@ -134,27 +122,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
-        user.changeSexType(convertSexType(sexType));
-    }
-
-    private SexType convertSexType(String sexType) {
-        if (Objects.equals(sexType, "man")) return SexType.MAN;
-        else if (Objects.equals(sexType, "woman")) return SexType.WOMAN;
-        else if (sexType == null) return null;
-        else throw new ApiException(ExceptionEnum.INCORRECT_SEX_TYPE);
-    }
-
-    private Role convertStudentRole(String role) {
-        if (Objects.equals(role, "student")) return Role.ROLE_STUDENT;
-        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-    }
-
-    private AccountType convertAccountType(String accountType) {
-        if (Objects.equals(accountType, "kakao")) return AccountType.KAKAO;
-        else if (Objects.equals(accountType, "naver")) return AccountType.NAVER;
-        else if (Objects.equals(accountType, "google")) return AccountType.GOOGLE;
-        else if (Objects.equals(accountType, "password")) return AccountType.PASSWORD;
-        else throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+        user.changeSexType(convertProvider.convertSexType(sexType));
     }
 
     @Transactional(readOnly = true)
@@ -162,8 +130,9 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
+    @Transactional(readOnly = true)
     public String oAuthLogin(String oauth, String code) {
-        AccountType accountType = convertAccountType(oauth);
+        AccountType accountType = convertProvider.convertAccountType(oauth);
         User user = null;
         if (accountType == AccountType.KAKAO) {
             String kakaoId = oAuth2Provider.getKakaoId(code);
@@ -188,8 +157,9 @@ public class UserService {
         return jwtToken;
     }
 
+    @Transactional(readOnly = true)
     public String oAuthLoginForApp(String oauth, String oauthId) {
-        AccountType accountType = convertAccountType(oauth);
+        AccountType accountType = convertProvider.convertAccountType(oauth);
         User user = null;
         if (accountType == AccountType.KAKAO) {
             Kakao kakao = kakaoRepository.findByKakaoId(oauthId)
@@ -224,6 +194,27 @@ public class UserService {
         return newPassword;
     }
 
+
+    @Transactional(readOnly = true)
+    public String findEmail(String name, String phone) {
+        User user = userRepository.findByNameAndPhone(name, phone)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        return user.getEmail();
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfo findInfoByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        return UserInfo.of(user);
+    }
+
+    private void validatePassword(String password) {
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&])[A-Za-z\\d$@!%*#?&]{8,15}$")) {
+            throw new ApiException(ExceptionEnum.INCORRECT_PASSWORD);
+        }
+    }
+
     private String randomPw() {
         char[] pwCollectionSpCha = new char[]{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
         char[] pwCollectionNum = new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',};
@@ -241,27 +232,5 @@ public class UserService {
             ranPw.append(pwCollection[selectRandomPw]);
         }
         return ranPw.toString();
-    }
-
-    public String findEmail(String name, String phone) {
-        User user = userRepository.findByNameAndPhone(name, phone)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-        return user.getEmail();
-    }
-
-    public UserInfo findInfoByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
-        return UserInfo.builder()
-                .accountType(user.getAccountType().toString())
-                .phone(user.getPhone())
-                .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole().toString())
-                .nickname(user.getNickname())
-                .major(user.getMajor())
-                .sexType(user.getSexType() != null ? user.getSexType().toString() : null)
-                .build();
     }
 }
