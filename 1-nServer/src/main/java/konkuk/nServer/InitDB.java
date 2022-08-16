@@ -217,7 +217,7 @@ public class InitDB {
     }
 
     void initComment() {
-        User user = userRepository.findAll().get(0);
+        User user = userRepository.findAll().get(2);
         Post post = postRepository.findAll().get(0);
         commentService.registryComment(user.getId(),
                 RegistryComment.builder().content("배달 도착 예상 시간이 언제인가요?")
@@ -228,6 +228,10 @@ public class InitDB {
         commentService.registryComment(user.getId(),
                 RegistryComment.builder().content("올 때 메로나 가능한가요?")
                         .postId(post.getId()).build());
+    }
+
+    void initProposal() {
+
     }
 
 
