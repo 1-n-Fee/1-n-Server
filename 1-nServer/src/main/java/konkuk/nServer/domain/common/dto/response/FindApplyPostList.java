@@ -1,5 +1,8 @@
 package konkuk.nServer.domain.common.dto.response;
 
+import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.proposal.domain.Proposal;
+import konkuk.nServer.domain.proposal.domain.ProposalDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,5 +40,26 @@ public class FindApplyPostList {
         String name;
         Integer unitPrice;
         Integer quantity;
+
+        public static MyMenus of(ProposalDetail proposalDetail) {
+            return FindApplyPostList.MyMenus.builder()
+                    .name(proposalDetail.getMenu().getName())
+                    .quantity(proposalDetail.getQuantity())
+                    .unitPrice(proposalDetail.getMenu().getPrice())
+                    .build();
+        }
+    }
+
+    public static FindApplyPostList of(Proposal proposal, List<MyMenus> myMenus) {
+        Post post = proposal.getPost();
+        return FindApplyPostList.builder()
+                .limitNumber(post.getLimitNumber())
+                .currentNumber(post.getCurrentNumber())
+                .postId(post.getId())
+                .proposalState(proposal.getProposalState().name())
+                .spotName(post.getSpot().name())
+                .storeName(post.getStore().getName())
+                .myMenus(myMenus)
+                .build();
     }
 }

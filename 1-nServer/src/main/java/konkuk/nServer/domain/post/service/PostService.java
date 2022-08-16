@@ -7,7 +7,6 @@ import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
-import konkuk.nServer.domain.post.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Store;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;
@@ -51,7 +49,7 @@ public class PostService {
         postRepository.save(post);
     }
 
-
+    @Transactional(readOnly = true)
     public List<FindPost> findPostBySpot(Long userId, Long spotId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
@@ -72,6 +70,7 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public FindPostDetail findPostDetailById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));

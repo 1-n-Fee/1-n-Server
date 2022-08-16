@@ -43,10 +43,13 @@ public class ProposalService {
         Post post = postRepository.findById(form.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
+        if (Objects.equals(post.getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.OWNER_POST_PROPOSAL);
+
         Proposal proposal = Proposal.builder()
                 .proposalState(ProposalState.AWAITING)
-                .post(post)
                 .createDateTime(LocalDateTime.now())
+                .post(post)
                 .user(user)
                 .build();
 
@@ -61,6 +64,7 @@ public class ProposalService {
         proposalRepository.save(proposal);
     }
 
+    @Transactional(readOnly = true)
     public List<FindProposal> findProposalByPost(Long userId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));

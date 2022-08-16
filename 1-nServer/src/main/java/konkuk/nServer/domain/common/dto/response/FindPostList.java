@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.common.dto.response;
 
+import konkuk.nServer.domain.post.domain.Post;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,5 +23,16 @@ public class FindPostList {
         this.postState = postState;
         this.limitNumber = limitNumber;
         this.currentNumber = currentNumber;
+    }
+
+    public static FindPostList of(Post post) {
+        return FindPostList.builder()
+                .limitNumber(post.getLimitNumber())
+                .currentNumber(post.getCurrentNumber())
+                .postId(post.getId())
+                .postState(post.getProcess().name())
+                .spotName(post.getSpot().name())
+                .storeName(post.getStore().getName())
+                .build();
     }
 }
