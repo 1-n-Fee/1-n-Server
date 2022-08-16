@@ -82,11 +82,11 @@ class CommentControllerTest {
     @BeforeEach
     @AfterEach
     void clean() {
+        commentRepository.deleteAll();
         postRepository.deleteAll();
         storeRepository.deleteAll();
         storemanagerRepository.deleteAll();
         userRepository.deleteAll();
-        commentRepository.deleteAll();
     }
 
     @Test

@@ -6,6 +6,9 @@ import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.CommentService;
 import konkuk.nServer.domain.post.service.PostService;
+import konkuk.nServer.domain.proposal.dto.requestForm.SaveProposal;
+import konkuk.nServer.domain.proposal.service.ProposalService;
+import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
@@ -46,17 +49,21 @@ public class InitDB {
     private final StoreRepository storeRepository;
     private final CommentService commentService;
     private final PostRepository postRepository;
+    private final ProposalService proposalService;
 
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void initDB() {
         log.info("initialize database start");
+
         initUser();
         initStoremanager();
         initStore();
         initPost();
         initComment();
+        initProposal();
+
         log.info("initialize database end");
     }
 
@@ -231,7 +238,26 @@ public class InitDB {
     }
 
     void initProposal() {
+        User user = userRepository.findAll().get(1);
+        Post post = postRepository.findAll().get(0);
+        Store store = storeRepository.findAll().get(0);
 
+        List<Menu> menus = store.getMenus();
+        SaveProposal saveProposal =
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2),
+                        new SaveProposal.Menus(menus.get(2).getId(), 3),
+                        new SaveProposal.Menus(menus.get(3).getId(), 4)));
+
+        proposalService.saveProposal(user.getId(), saveProposal);
+
+        user = userRepository.findAll().get(2);
+
+        saveProposal = new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                new SaveProposal.Menus(menus.get(1).getId(), 2),
+                new SaveProposal.Menus(menus.get(3).getId(), 1)));
+
+        proposalService.saveProposal(user.getId(), saveProposal);
     }
 
 
