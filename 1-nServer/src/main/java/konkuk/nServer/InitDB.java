@@ -1,13 +1,22 @@
 package konkuk.nServer;
 
+import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
+import konkuk.nServer.domain.post.repository.PostRepository;
+import konkuk.nServer.domain.post.service.CommentService;
+import konkuk.nServer.domain.post.service.PostService;
+import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
+import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignupForApp;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.storemanager.service.StoremanagerService;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignupForApp;
 import konkuk.nServer.domain.user.repository.UserRepository;
@@ -15,6 +24,7 @@ import konkuk.nServer.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +34,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class InitDB {
 
     private final UserService userService;
@@ -31,6 +42,10 @@ public class InitDB {
     private final StoreService storeService;
     private final StoremanagerRepository storemanagerRepository;
     private final UserRepository userRepository;
+    private final PostService postService;
+    private final StoreRepository storeRepository;
+    private final CommentService commentService;
+    private final PostRepository postRepository;
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -40,6 +55,8 @@ public class InitDB {
         initUser();
         initStoremanager();
         initStore();
+        initPost();
+        initComment();
         log.info("initialize database end");
     }
 
@@ -166,5 +183,52 @@ public class InitDB {
 
         storeService.registryStoreByStudent(registryStoreByStudent);
     }
+
+    void initPost() {
+        User user = userRepository.findAll().get(0);
+        Store store = storeRepository.findAll().get(0);
+
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(store.getId())
+                .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
+                .limitNumber(5)
+                .content(store.getName() + "이(가) 먹고 싶으신 분, 대환영입니다.")
+                .spotId(1L)
+                .build());
+
+        user = userRepository.findAll().get(1);
+        store = storeRepository.findAll().get(1);
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(store.getId())
+                .closeTime("2022.08.30.18.00") //yyyy.MM.dd.HH.mm
+                .limitNumber(3)
+                .content(store.getName() + "이(가) 오늘 끌리는 너. 같이 시켜요.")
+                .spotId(1L)
+                .build());
+
+        user = userRepository.findAll().get(2);
+        store = storeRepository.findAll().get(2);
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(store.getId())
+                .closeTime("2022.08.28.19.30") //yyyy.MM.dd.HH.mm
+                .limitNumber(2)
+                .spotId(1L)
+                .build());
+    }
+
+    void initComment() {
+        User user = userRepository.findAll().get(0);
+        Post post = postRepository.findAll().get(0);
+        commentService.registryComment(user.getId(),
+                RegistryComment.builder().content("배달 도착 예상 시간이 언제인가요?")
+                        .postId(post.getId()).build());
+
+        user = userRepository.findAll().get(1);
+        post = postRepository.findAll().get(0);
+        commentService.registryComment(user.getId(),
+                RegistryComment.builder().content("올 때 메로나 가능한가요?")
+                        .postId(post.getId()).build());
+    }
+
 
 }

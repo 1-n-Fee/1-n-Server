@@ -14,16 +14,17 @@ import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
-import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
-import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
-import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.storemanager.service.StoremanagerService;
+import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
+import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,7 @@ class PostControllerTest {
     @Autowired
     private StoreRepository storeRepository;
 
+    @BeforeEach
     @AfterEach
     void clean() {
         postRepository.deleteAll();
@@ -213,7 +215,9 @@ class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        MvcResult result = mockMvc.perform(get("/post/1")
+        Post post = postRepository.findAll().get(0);
+
+        MvcResult result = mockMvc.perform(get("/post/{postId}", post.getId())
                         .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk())

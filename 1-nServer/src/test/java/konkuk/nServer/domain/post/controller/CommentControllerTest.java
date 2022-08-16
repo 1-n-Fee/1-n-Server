@@ -1,33 +1,47 @@
-package konkuk.nServer.domain.proposal.controller;
+package konkuk.nServer.domain.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.domain.post.domain.Comment;
+import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
+import konkuk.nServer.domain.post.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.store.service.StoreService;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
-import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
-import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.storemanager.service.StoremanagerService;
+import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
+import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Slf4j
 @AutoConfigureMockMvc //MockMvc 사용
 @SpringBootTest
-class ProposalControllerTest {
+class CommentControllerTest {
 
     @Autowired
     private PostService postService;
@@ -62,6 +76,9 @@ class ProposalControllerTest {
     @Autowired
     private StoreRepository storeRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     @BeforeEach
     @AfterEach
     void clean() {
@@ -69,24 +86,62 @@ class ProposalControllerTest {
         storeRepository.deleteAll();
         storemanagerRepository.deleteAll();
         userRepository.deleteAll();
+        commentRepository.deleteAll();
     }
 
+    @Test
+    @DisplayName("댓글 달기")
+    void saveComment() throws Exception {
+        // given
+        storemanagerService.signup(getStoremanagerForm());
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
 
-    private RegistryPost getRegistryPost() {
-        return RegistryPost.builder()
-                .storeId(1L)
+        storeService.registryStoreByStoremanager(storemanager.getId(), getRegistryStore());
+
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        Long storeId = storeRepository.findAll().get(0).getId();
+
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(storeId)
                 .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(5)
                 .content("알촌 먹고 싶으신 분, 대환영입니다.")
                 .spotId(1L)
-                .build();
+                .build());
+
+        Post post = postRepository.findAll().get(0);
+        RegistryComment registryComment = RegistryComment.builder().postId(post.getId())
+                .content("댓글댓글").build();
+        String content = objectMapper.writeValueAsString(registryComment);
+        String jwt = jwtTokenProvider.createJwt(user);
+
+        // expected
+        mockMvc.perform(post("/comment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        assertEquals(1L, commentRepository.count());
+
+        Comment comment = commentRepository.findAll().get(0);
+
+        assertEquals("댓글댓글", comment.getContent());
+        assertEquals(post.getId(), comment.getPost().getId());
+        assertEquals(user.getId(), comment.getUser().getId());
     }
+
 
     private UserSignup getUserSignupDto() {
         return UserSignup.builder()
                 .email("asdf@konkuk.ac.kr")
                 .accountType("password")
-                .password("testPassword")
+                .password("pwpw!123")
                 .nickname("ithinkso")
                 .name("tester")
                 .role("student")
@@ -101,7 +156,7 @@ class ProposalControllerTest {
                 .email("storemanager@google.com")
                 .name("홍길동")
                 .phone("01087654321")
-                .password("pwpw!")
+                .password("pwpw!123")
                 .accountType("password")
                 .storeRegistrationNumber("20-70006368")
                 .role("storemanager")
@@ -124,4 +179,5 @@ class ProposalControllerTest {
                         new RegistryStoreByStoremanager.MenuDto(2000, "사이다(500ml)", "default")))
                 .build();
     }
+
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>imageTest</title>
+</head>
+
+<body>
+  <h1>MenuImage Test</h1>
+  <input type="text" placeholder="Menu Stored Url" id="menu">
+  <button onclick="chImg(menu)">변경하기</button>
+  <br>
+  <img src="http://" width="300" id="menuImg">
+
+
+<script type="text/javascript">
+  function chImg(tg) {
+    const target = tg.id;
+    const name = tg.value;
+    document.getElementById(target+"Img").src = "http://localhost:8080/image/menu/"+name;
+  }
+</script>
+</body>
+</html>
