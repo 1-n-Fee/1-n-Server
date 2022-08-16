@@ -1,7 +1,7 @@
 package konkuk.nServer.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.domain.User;
@@ -13,7 +13,6 @@ import konkuk.nServer.security.jwt.JwtClaim;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

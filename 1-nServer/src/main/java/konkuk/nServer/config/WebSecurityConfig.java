@@ -1,7 +1,7 @@
 package konkuk.nServer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.repository.StoremanagerRepository;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.security.jwt.JwtAuthenticationFilter;
 import konkuk.nServer.security.jwt.JwtAuthorizationFilter;

@@ -1,5 +1,13 @@
 package konkuk.nServer.domain.common.controller;
 
+import konkuk.nServer.domain.account.domain.Google;
+import konkuk.nServer.domain.account.domain.Kakao;
+import konkuk.nServer.domain.account.domain.Naver;
+import konkuk.nServer.domain.account.domain.Password;
+import konkuk.nServer.domain.account.repository.GoogleRepository;
+import konkuk.nServer.domain.account.repository.KakaoRepository;
+import konkuk.nServer.domain.account.repository.NaverRepository;
+import konkuk.nServer.domain.account.repository.PasswordRepository;
 import konkuk.nServer.domain.post.domain.Comment;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.repository.CommentRepository;
@@ -12,6 +20,8 @@ import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.repository.*;
 import lombok.RequiredArgsConstructor;

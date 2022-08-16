@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.user.domain;
 
+import konkuk.nServer.domain.account.domain.*;
 import konkuk.nServer.domain.proposal.domain.Proposal;
 import lombok.Builder;
 import lombok.Getter;

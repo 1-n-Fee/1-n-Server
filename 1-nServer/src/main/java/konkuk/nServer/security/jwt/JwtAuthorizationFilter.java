@@ -1,10 +1,10 @@
 package konkuk.nServer.security.jwt;
 
-import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.account.domain.Password;
 import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.StoremanagerRepository;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;

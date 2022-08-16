@@ -1,6 +1,6 @@
 package konkuk.nServer.security;
 
-import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.account.domain.Password;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

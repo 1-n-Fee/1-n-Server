@@ -1,5 +1,7 @@
-package konkuk.nServer.domain.user.domain;
+package konkuk.nServer.domain.account.domain;
 
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
+import konkuk.nServer.domain.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,12 +10,12 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Naver {
+public class Kakao {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String naverId;
+    private String kakaoId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -23,13 +25,14 @@ public class Naver {
     @JoinColumn(name = "storemanager_id")
     private Storemanager storemanager;
 
-    public Naver(String naverId, User user) {
-        this.naverId = naverId;
+
+    public Kakao(String kakaoId, User user) {
+        this.kakaoId = kakaoId;
         this.user = user;
     }
 
-    public Naver(String naverId, Storemanager storemanager) {
-        this.naverId = naverId;
+    public Kakao(String kakaoId, Storemanager storemanager) {
+        this.kakaoId = kakaoId;
         this.storemanager = storemanager;
     }
 }

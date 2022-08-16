@@ -4,7 +4,7 @@ package konkuk.nServer.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;

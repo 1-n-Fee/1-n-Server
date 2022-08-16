@@ -1,9 +1,17 @@
-package konkuk.nServer.domain.user.service;
+package konkuk.nServer.domain.storemanager.service;
 
+import konkuk.nServer.domain.account.domain.*;
+import konkuk.nServer.domain.account.repository.GoogleRepository;
+import konkuk.nServer.domain.account.repository.KakaoRepository;
+import konkuk.nServer.domain.account.repository.NaverRepository;
+import konkuk.nServer.domain.account.repository.PasswordRepository;
+import konkuk.nServer.domain.account.service.OAuth2Provider;
 import konkuk.nServer.domain.common.service.ConvertProvider;
-import konkuk.nServer.domain.user.domain.*;
-import konkuk.nServer.domain.user.dto.requestForm.StoremanagerSignup;
-import konkuk.nServer.domain.user.repository.*;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
+import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignupForApp;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +68,38 @@ public class StoremanagerService {
             passwordRepository.save(password);
         }
     }
+
+    public void signupForApp(StoremanagerSignupForApp form) {
+        Role role = convertProvider.convertStoremanagerRole(form.getRole());
+        if (role != Role.ROLE_STOREMANAGER) {
+            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+        }
+        AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
+
+        Storemanager storemanager = form.toEntity(role, accountType);
+
+        storemanagerRepository.save(storemanager);
+
+        if (accountType == AccountType.KAKAO) {
+            Kakao kakao = new Kakao(form.getOauthId(), storemanager);
+            storemanager.setKakao(kakao);
+            kakaoRepository.save(kakao);
+        } else if (accountType == AccountType.NAVER) {
+            Naver naver = new Naver(form.getOauthId(), storemanager);
+            storemanager.setNaver(naver);
+            naverRepository.save(naver);
+        } else if (accountType == AccountType.GOOGLE) {
+            Google google = new Google(form.getOauthId(), storemanager);
+            storemanager.setGoogle(google);
+            googleRepository.save(google);
+        } else if (accountType == AccountType.PASSWORD) {
+            validatePassword(form.getPassword());
+            Password password = new Password(passwordEncoder.encode(form.getPassword()), storemanager);
+            storemanager.setPassword(password);
+            passwordRepository.save(password);
+        }
+    }
+
 
     private void validatePassword(String password) {
         if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&])[A-Za-z\\d$@!%*#?&]{8,15}$")) {

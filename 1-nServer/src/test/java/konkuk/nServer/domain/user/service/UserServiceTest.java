@@ -1,14 +1,13 @@
 package konkuk.nServer.domain.user.service;
 
-import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
-import konkuk.nServer.domain.user.repository.PasswordRepository;
+import konkuk.nServer.domain.account.repository.PasswordRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package konkuk.nServer.domain.store.dto.requestForm;
 import konkuk.nServer.domain.post.domain.Category;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.domain.StoreState;
-import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.AllArgsConstructor;

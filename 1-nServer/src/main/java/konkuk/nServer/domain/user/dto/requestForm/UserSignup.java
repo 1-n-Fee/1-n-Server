@@ -1,6 +1,6 @@
 package konkuk.nServer.domain.user.dto.requestForm;
 
-import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.domain.user.domain.User;

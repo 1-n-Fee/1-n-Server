@@ -1,8 +1,8 @@
 package konkuk.nServer.security;
 
-import konkuk.nServer.domain.user.domain.Password;
+import konkuk.nServer.domain.account.domain.Password;
 import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

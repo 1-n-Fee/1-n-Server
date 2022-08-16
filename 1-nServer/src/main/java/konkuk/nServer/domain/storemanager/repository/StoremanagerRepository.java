@@ -1,7 +1,6 @@
-package konkuk.nServer.domain.user.repository;
+package konkuk.nServer.domain.storemanager.repository;
 
-import konkuk.nServer.domain.user.domain.Storemanager;
-import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

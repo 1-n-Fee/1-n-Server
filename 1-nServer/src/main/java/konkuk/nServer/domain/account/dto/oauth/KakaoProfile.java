@@ -1,4 +1,4 @@
-package konkuk.nServer.domain.user.dto.oauth;
+package konkuk.nServer.domain.account.dto.oauth;
 
 import lombok.Data;
 

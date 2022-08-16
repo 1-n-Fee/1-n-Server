@@ -1,5 +1,11 @@
 package konkuk.nServer.domain.user.service;
 
+import konkuk.nServer.domain.account.domain.*;
+import konkuk.nServer.domain.account.repository.GoogleRepository;
+import konkuk.nServer.domain.account.repository.KakaoRepository;
+import konkuk.nServer.domain.account.repository.NaverRepository;
+import konkuk.nServer.domain.account.repository.PasswordRepository;
+import konkuk.nServer.domain.account.service.OAuth2Provider;
 import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;

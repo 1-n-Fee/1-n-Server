@@ -1,6 +1,6 @@
-package konkuk.nServer.domain.user.repository;
+package konkuk.nServer.domain.account.repository;
 
-import konkuk.nServer.domain.user.domain.Kakao;
+import konkuk.nServer.domain.account.domain.Kakao;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

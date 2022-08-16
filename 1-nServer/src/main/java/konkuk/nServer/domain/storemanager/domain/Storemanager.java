@@ -1,7 +1,9 @@
-package konkuk.nServer.domain.user.domain;
+package konkuk.nServer.domain.storemanager.domain;
 
 
+import konkuk.nServer.domain.account.domain.*;
 import konkuk.nServer.domain.store.domain.Store;
+import konkuk.nServer.domain.user.domain.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -2,7 +2,7 @@ package konkuk.nServer.domain.common.service;
 
 import konkuk.nServer.domain.post.domain.Category;
 import konkuk.nServer.domain.post.domain.Spot;
-import konkuk.nServer.domain.user.domain.AccountType;
+import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.exception.ApiException;

@@ -1,9 +1,9 @@
 package konkuk.nServer.security;
 
-import konkuk.nServer.domain.user.domain.Password;
-import konkuk.nServer.domain.user.domain.Storemanager;
+import konkuk.nServer.domain.account.domain.Password;
+import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.StoremanagerRepository;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

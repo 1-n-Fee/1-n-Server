@@ -1,12 +1,12 @@
-package konkuk.nServer.domain.user.service;
+package konkuk.nServer.domain.account.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.user.dto.oauth.*;
-import konkuk.nServer.domain.user.repository.GoogleRepository;
-import konkuk.nServer.domain.user.repository.KakaoRepository;
-import konkuk.nServer.domain.user.repository.NaverRepository;
+import konkuk.nServer.domain.account.dto.oauth.*;
+import konkuk.nServer.domain.account.repository.GoogleRepository;
+import konkuk.nServer.domain.account.repository.KakaoRepository;
+import konkuk.nServer.domain.account.repository.NaverRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
