@@ -2,13 +2,17 @@ package konkuk.nServer.domain.storemanager.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import konkuk.nServer.domain.account.domain.AccountType;
+import konkuk.nServer.domain.account.repository.KakaoRepository;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignupForApp;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
+import konkuk.nServer.domain.storemanager.service.StoremanagerService;
 import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.security.jwt.JwtClaim;
+import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +21,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -33,7 +42,16 @@ class StoremanagerControllerTest {
     private StoremanagerRepository storemanagerRepository;
 
     @Autowired
+    private KakaoRepository kakaoRepository;
+
+    @Autowired
+    private StoremanagerService storemanagerService;
+
+    @Autowired
     private ObjectMapper objectMapper; // 스프링에서 자동으로 주입해줌
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,9 +59,10 @@ class StoremanagerControllerTest {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @AfterEach
+    @BeforeEach
     void clean() {
         storemanagerRepository.deleteAll();
+        kakaoRepository.deleteAll();
     }
 
     @Test
@@ -126,6 +145,73 @@ class StoremanagerControllerTest {
         assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
         assertEquals("kakaoOauthId", storemanager.getKakao().getKakaoId());
     }
+
+    @Test
+    @DisplayName("로그인(password)")
+    void loginByPassword() throws Exception {
+        // given
+        StoremanagerSignup storemanagerSignup = getStoremanagerForm();
+        storemanagerService.signup(storemanagerSignup);
+
+        Map<String, String> map = Map.of("email", "storemanager@google.com", "password", "pwpw!123");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        MvcResult response = mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Authorization"))
+                .andDo(print())
+                .andReturn();
+
+        String jwt = response.getResponse().getHeader("Authorization");
+
+        JwtClaim jwtClaim = tokenProvider.validate(jwt.replace("Bearer ", ""));
+        Storemanager storemanager = storemanagerRepository.findById(jwtClaim.getId())
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+
+        assertEquals(AccountType.PASSWORD, storemanager.getAccountType());
+        assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
+        assertEquals("storemanager@google.com", storemanager.getEmail());
+        assertEquals("홍길동", storemanager.getName());
+        assertEquals("01087654321", storemanager.getPhone());
+        assertTrue(passwordEncoder.matches("pwpw!123", storemanager.getPassword().getPassword()));
+        assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
+    }
+
+    @Test
+    @DisplayName("로그인(oauth)")
+    void loginByOauth() throws Exception {
+        // given
+        StoremanagerSignupForApp storemanagerSignup = getStoremanagerFormForAppOauth();
+        storemanagerService.signupForApp(storemanagerSignup);
+
+        // expected
+        MvcResult response = mockMvc.perform(get("/manager/oauth/app/kakao")
+                        .queryParam("oauthId", "kakaoOauthId")
+                )
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Authorization"))
+                .andDo(print())
+                .andReturn();
+
+        String jwt = response.getResponse().getHeader("Authorization");
+
+        JwtClaim jwtClaim = tokenProvider.validate(jwt.replace("Bearer ", ""));
+        Storemanager storemanager = storemanagerRepository.findById(jwtClaim.getId())
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없음"));
+
+        assertEquals("01087654321", storemanager.getPhone());
+        assertEquals(AccountType.KAKAO, storemanager.getAccountType());
+        assertEquals("storemanager@google.com", storemanager.getEmail());
+        assertEquals("홍길동", storemanager.getName());
+        assertEquals("20-70006368", storemanager.getStoreRegistrationNumber());
+        assertEquals(Role.ROLE_STOREMANAGER, storemanager.getRole());
+        assertEquals("kakaoOauthId", storemanager.getKakao().getKakaoId());
+    }
+
 
     private StoremanagerSignup getStoremanagerForm() {
         return StoremanagerSignup.builder()

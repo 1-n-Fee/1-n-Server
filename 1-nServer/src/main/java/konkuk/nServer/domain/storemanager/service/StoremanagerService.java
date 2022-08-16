@@ -14,6 +14,7 @@ import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
+import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +35,7 @@ public class StoremanagerService {
     private final PasswordRepository passwordRepository;
     private final OAuth2Provider oAuth2Provider;
     private final ConvertProvider convertProvider;
+    private final JwtTokenProvider tokenProvider;
 
     public void signup(StoremanagerSignup form) {
         Role role = convertProvider.convertStoremanagerRole(form.getRole());
@@ -98,6 +100,57 @@ public class StoremanagerService {
             storemanager.setPassword(password);
             passwordRepository.save(password);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public String oAuthLogin(String oauth, String code) {
+        AccountType accountType = convertProvider.convertAccountType(oauth);
+        Storemanager storemanager = null;
+        if (accountType == AccountType.KAKAO) {
+            String kakaoId = oAuth2Provider.getKakaoId(code);
+            Kakao kakao = kakaoRepository.findByKakaoId(kakaoId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            storemanager = kakao.getStoremanager();
+        } else if (accountType == AccountType.NAVER) {
+            String naverId = oAuth2Provider.getNaverId(code);
+            Naver naver = naverRepository.findByNaverId(naverId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            storemanager = naver.getStoremanager();
+        } else if (accountType == AccountType.GOOGLE) {
+            String googleId = oAuth2Provider.getGoogleId(code);
+            Google google = googleRepository.findByGoogleId(googleId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+            storemanager = google.getStoremanager();
+        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+
+        String jwtToken = tokenProvider.createJwt(storemanager);
+        log.info("Token = {}", jwtToken);
+
+        return jwtToken;
+    }
+
+    @Transactional(readOnly = true)
+    public String oAuthLoginForApp(String oauth, String oauthId) {
+        AccountType accountType = convertProvider.convertAccountType(oauth);
+        Storemanager storemanager = null;
+        if (accountType == AccountType.KAKAO) {
+            Kakao kakao = kakaoRepository.findByKakaoId(oauthId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STOREMANAGER));
+            storemanager = kakao.getStoremanager();
+        } else if (accountType == AccountType.NAVER) {
+            Naver naver = naverRepository.findByNaverId(oauthId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STOREMANAGER));
+            storemanager = naver.getStoremanager();
+        } else if (accountType == AccountType.GOOGLE) {
+            Google google = googleRepository.findByGoogleId(oauthId)
+                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STOREMANAGER));
+            storemanager = google.getStoremanager();
+        } else throw new ApiException(ExceptionEnum.NO_FOUND_STOREMANAGER);
+
+        String jwtToken = tokenProvider.createJwt(storemanager);
+        log.info("Token = {}", jwtToken);
+
+        return jwtToken;
     }
 
 

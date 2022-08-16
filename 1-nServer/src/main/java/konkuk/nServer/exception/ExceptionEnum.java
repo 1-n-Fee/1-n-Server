@@ -14,6 +14,7 @@ public enum ExceptionEnum {
 
     INCORRECT_NICKNAME(HttpStatus.BAD_REQUEST, "U005", "올바르지 않은 nickname입니다."),
     NO_FOUND_USER(HttpStatus.BAD_REQUEST, "U006", "회원을 찾을 수 없습니다."),
+    NO_FOUND_STOREMANAGER(HttpStatus.BAD_REQUEST, "U007", "storemanager을 찾을 수 없습니다."),
 
     INCORRECT_LOGIN(HttpStatus.BAD_REQUEST, "L001", "잘못된 로그인 요청입니다."),
 
