@@ -8,6 +8,7 @@ import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.account.repository.PasswordRepository;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ class UserServiceTest {
     @Autowired
     private PasswordRepository passwordRepository;
 
-    @AfterEach
+    @BeforeEach
     void clean() {
         userRepository.deleteAll();
         passwordRepository.deleteAll();

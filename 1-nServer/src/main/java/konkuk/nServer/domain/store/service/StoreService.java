@@ -7,6 +7,7 @@ import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
 import konkuk.nServer.domain.store.dto.responseForm.StoreList;
+import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
@@ -125,4 +126,9 @@ public class StoreService {
         return originalFileName.substring(pos + 1);
     }
 
+    public List<StoreMenu> getStoreMenu(Long storeId) {
+        return menuRepository.findByStoreId(storeId).stream()
+                .map(StoreMenu::of)
+                .toList();
+    }
 }

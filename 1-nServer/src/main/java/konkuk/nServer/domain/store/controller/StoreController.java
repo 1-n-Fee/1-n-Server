@@ -4,6 +4,7 @@ package konkuk.nServer.domain.store.controller;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
 import konkuk.nServer.domain.store.dto.responseForm.StoreList;
+import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.service.StoreService;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
@@ -31,6 +32,11 @@ public class StoreController {
     @GetMapping("/{category}")
     public List<StoreList> getStoreList(@PathVariable String category) {
         return storeService.getStoreListByCategory(category);
+    }
+
+    @GetMapping("/detail/{storeId}")
+    public List<StoreMenu> getStoreMenu(@PathVariable Long storeId) {
+        return storeService.getStoreMenu(storeId);
     }
 
 
