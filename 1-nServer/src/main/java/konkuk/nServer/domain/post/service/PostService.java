@@ -17,6 +17,7 @@ import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Order.asc;
 
 @Slf4j
 @Service
@@ -125,6 +128,7 @@ public class PostService {
         return res;
     }
 
+    @Transactional(readOnly = true)
     public List<FindPost> findPostByDate(Long userId, String dateStr) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
@@ -132,7 +136,7 @@ public class PostService {
         LocalDateTime start = LocalDateTime.parse(dateStr + ".00:00:00", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
         LocalDateTime end = LocalDateTime.parse(dateStr + ".23:59:59", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
 
-        List<Post> posts = postRepository.findByCloseTimeBetween(start, end);
+        List<Post> posts = postRepository.findByCloseTimeBetween(start, end, Sort.by(asc("closeTime")));
         return posts.stream()
                 .map(post -> {
                     FindPost res = FindPost.of(post);

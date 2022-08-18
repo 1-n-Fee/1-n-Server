@@ -207,7 +207,7 @@ public class InitDB {
         store = storeRepository.findAll().get(1);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.08.30.18.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.01.19.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(3)
                 .content(store.getName() + "이(가) 오늘 끌리는 너. 같이 시켜요.")
                 .spotId(1L)
@@ -217,7 +217,7 @@ public class InitDB {
         store = storeRepository.findAll().get(2);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.08.28.19.30") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.01.16.30") //yyyy.MM.dd.HH.mm
                 .limitNumber(2)
                 .spotId(1L)
                 .build());
