@@ -1,16 +1,17 @@
 package konkuk.nServer.security.jwt;
 
 import konkuk.nServer.domain.account.domain.Password;
-import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
-import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,7 +51,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("인증이나 권한이 필요한 주소 요청이 됨.");
 
-        String jwtHeader = request.getHeader("Authorization");
+        String jwtHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {

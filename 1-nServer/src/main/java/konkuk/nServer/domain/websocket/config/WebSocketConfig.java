@@ -1,5 +1,7 @@
 package konkuk.nServer.domain.websocket.config;
 
+import konkuk.nServer.security.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -8,15 +10,20 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final JwtTokenProvider tokenProvider;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // ws://localhost:8080/ws/chat
         registry.addEndpoint("/ws/chat") // 웹소켓에 접속하기 위한 endpoint
-                .setAllowedOriginPatterns("*") // CORS 정책
-                .withSockJS();
+                .addInterceptors(new HttpHandshakeInterceptor(tokenProvider))
+                .setAllowedOriginPatterns("*"); // CORS 정책
+        //.withSockJS();
     }
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {

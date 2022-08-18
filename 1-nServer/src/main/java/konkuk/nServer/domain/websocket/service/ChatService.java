@@ -88,6 +88,7 @@ public class ChatService {
                 .sendTime(message.getTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
                 .type(requestMessage.getType())
                 .content(requestMessage.getContent())
+                .sender(requestMessage.getNickname())
                 .build();
     }
 

@@ -92,4 +92,11 @@ public class UserController {
         UserInfo result = userService.findInfoByUserId(userDetail.getId());
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    @GetMapping("/isLogin")
+    public Map<String, Object> userIsLogin(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        if (userDetail.getId() != null) {
+            return Map.of("isLogin", true, "role", userDetail.getRole().name());
+        } else return Map.of("isLogin", false);
+    }
 }

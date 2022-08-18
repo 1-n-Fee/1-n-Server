@@ -83,8 +83,10 @@ public class OAuth2Provider {
 
         // Gson, Json Simple, ObjectMapper(내장)음 등 json을 매핑하는 라이브러리 있음
         KakaoOAuthToken kakaoOAuthToken = mappingJsonToClass(response.getBody(), KakaoOAuthToken.class);
+        log.info("kakao AccessToken을 얻어왔습니다. token={}", kakaoOAuthToken.getAccess_token());
 
         KakaoProfile kakaoProfile = getKakaoProfile(kakaoOAuthToken.getAccess_token());
+        log.info("카카오 profile 조회 완료");
         return kakaoProfile.getId().toString();
     }
 

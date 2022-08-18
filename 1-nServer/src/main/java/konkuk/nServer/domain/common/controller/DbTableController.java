@@ -24,6 +24,8 @@ import konkuk.nServer.domain.storemanager.domain.Storemanager;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.domain.*;
 import konkuk.nServer.domain.user.repository.*;
+import konkuk.nServer.domain.websocket.domain.Message;
+import konkuk.nServer.domain.websocket.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -49,6 +51,7 @@ public class DbTableController {
     private final StoreRepository storeRepository;
     private final CommentRepository commentRepository;
     private final MenuRepository menuRepository;
+    private final MessageRepository messageRepository;
 
     @GetMapping("/table")
     public String showDbTable(Model model) {
@@ -65,6 +68,7 @@ public class DbTableController {
         List<Store> stores = storeRepository.findAll();
         List<Comment> comments = commentRepository.findAll();
         List<Menu> menus = menuRepository.findAll();
+        List<Message> messages = messageRepository.findAll();
 
 
         model.addAttribute("kakaos", kakaos);
@@ -79,9 +83,10 @@ public class DbTableController {
         model.addAttribute("stores", stores);
         model.addAttribute("comments", comments);
         model.addAttribute("menus", menus);
+        model.addAttribute("messages", messages);
 
         List<String> table = Arrays.asList("kakao", "naver", "google", "password", "user", "storemanager",
-                "post", "proposal", "proposalDetail", "store", "comment", "menu");
+                "post", "proposal", "proposalDetail", "store", "comment", "menu", "message");
         model.addAttribute("tableName", table);
 
         return "showDbTable";

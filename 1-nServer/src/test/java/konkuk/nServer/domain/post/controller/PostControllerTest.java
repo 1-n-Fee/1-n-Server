@@ -238,6 +238,105 @@ class PostControllerTest {
         assertEquals(1, findPostDetail.getSpotId());
     }
 
+    @Test
+    @DisplayName("post 찾기(By StoreName)")
+    void findPostByStoreName() throws Exception {
+        // given
+        storemanagerService.signup(getStoremanagerForm());
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
+
+        storeService.registryStoreByStoremanager(storemanager.getId(), getRegistryStore());
+
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+        Store store = storeRepository.findAll().get(0);
+
+        RegistryPost registryPost = getRegistryPost();
+        registryPost.setStoreId(store.getId());
+        postService.registryPost(user.getId(), registryPost);
+
+        // expected
+        MvcResult result = mockMvc.perform(get("/post/search")
+                        .param("store", "든든한 국BOB")
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        List<FindPost> response =
+                objectMapper.readValue(responseBody, new TypeReference<List<FindPost>>() {
+                });
+
+        assertEquals(1L, response.size());
+        FindPost findPost = response.get(0);
+
+        assertEquals(store.getCategory().name(), findPost.getCategory());
+        assertEquals("OWNER", findPost.getState());
+        assertEquals("2022.09.01.18.00", findPost.getCloseTime());
+        //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
+        assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());
+        assertEquals(5, findPost.getLimitNumber());
+        assertEquals(0, findPost.getCurrentNumber());
+
+        Post post = postRepository.findAll().get(0);
+        assertEquals(post.getId(), findPost.getPostId());
+    }
+
+    @Test
+    @DisplayName("post 찾기(By date)")
+    void findPostByDate() throws Exception {
+        // given
+        storemanagerService.signup(getStoremanagerForm());
+        Storemanager storemanager = storemanagerRepository.findAll().get(0);
+
+        storeService.registryStoreByStoremanager(storemanager.getId(), getRegistryStore());
+
+        UserSignup userSignup = getUserSignupDto();
+        userService.signup(userSignup);
+
+        User user = userRepository.findAll().get(0);
+        String jwt = jwtTokenProvider.createJwt(user);
+        Store store = storeRepository.findAll().get(0);
+
+        RegistryPost registryPost = getRegistryPost();
+        registryPost.setStoreId(store.getId());
+        postService.registryPost(user.getId(), registryPost);
+
+        // expected
+        MvcResult result = mockMvc.perform(get("/post/search")
+                        .param("date", "2022.09.01")
+                        .header("Authorization", "Bearer " + jwt)
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        List<FindPost> response =
+                objectMapper.readValue(responseBody, new TypeReference<List<FindPost>>() {
+                });
+
+        assertEquals(1L, response.size());
+        FindPost findPost = response.get(0);
+
+        assertEquals(store.getCategory().name(), findPost.getCategory());
+        assertEquals("OWNER", findPost.getState());
+        assertEquals("2022.09.01.18.00", findPost.getCloseTime());
+        //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
+        assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());
+        assertEquals(5, findPost.getLimitNumber());
+        assertEquals(0, findPost.getCurrentNumber());
+
+        Post post = postRepository.findAll().get(0);
+        assertEquals(post.getId(), findPost.getPostId());
+    }
+
+
     private RegistryPost getRegistryPost() {
         return RegistryPost.builder()
                 .storeId(1L)

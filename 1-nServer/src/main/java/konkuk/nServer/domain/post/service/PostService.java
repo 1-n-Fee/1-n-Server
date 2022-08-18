@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -97,5 +99,51 @@ public class PostService {
             throw new ApiException(ExceptionEnum.NOT_DELETE_POST);
 
         postRepository.deleteById(postId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FindPost> findPostByStoreName(Long userId, String storeName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        List<Store> stores = storeRepository.findByNameContains(storeName);
+
+        List<FindPost> res = new ArrayList<>();
+        for (Store store : stores) {
+            List<Post> posts = postRepository.findByStore(store);
+
+            for (Post post : posts) {
+                FindPost findPost = FindPost.of(post);
+
+                proposalRepository.findByUserAndPost(user, post).
+                        ifPresent(value -> findPost.setState(value.getProposalState().name()));
+
+                if (Objects.equals(post.getUser().getId(), userId)) findPost.setState("OWNER");
+
+                res.add(findPost);
+            }
+        }
+        return res;
+    }
+
+    public List<FindPost> findPostByDate(Long userId, String dateStr) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        LocalDateTime start = LocalDateTime.parse(dateStr + ".00:00:00", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
+        LocalDateTime end = LocalDateTime.parse(dateStr + ".23:59:59", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
+
+        List<Post> posts = postRepository.findByCloseTimeBetween(start, end);
+        return posts.stream()
+                .map(post -> {
+                    FindPost res = FindPost.of(post);
+
+                    proposalRepository.findByUserAndPost(user, post).
+                            ifPresent(value -> res.setState(value.getProposalState().name()));
+
+                    if (Objects.equals(post.getUser().getId(), userId)) res.setState("OWNER");
+
+                    return res;
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -46,5 +46,17 @@ public class PostController {
         postService.deletePost(userDetail.getId(), postId);
     }
 
+    @GetMapping("/search")
+    public List<FindPost> findPostBySearch(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                           String store, String date) {
+        if (store != null && date == null)
+            return postService.findPostByStoreName(userDetail.getId(), store);
+
+        if (store == null && date != null)
+            return postService.findPostByDate(userDetail.getId(), date);
+
+        else throw new IllegalArgumentException();
+    }
+
 
 }
