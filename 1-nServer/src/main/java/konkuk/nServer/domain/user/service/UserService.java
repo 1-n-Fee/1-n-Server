@@ -158,7 +158,7 @@ public class UserService {
             user = google.getUser();
         } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
 
-        String jwtToken = tokenProvider.createJwt(user);
+        String jwtToken = tokenProvider.createJwt(user.getId(), user.getRole());
         log.info("Token = {}", jwtToken);
 
         return jwtToken;
@@ -182,7 +182,7 @@ public class UserService {
             user = google.getUser();
         } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
 
-        String jwtToken = tokenProvider.createJwt(user);
+        String jwtToken = tokenProvider.createJwt(user.getId(), user.getRole());
         log.info("Token = {}", jwtToken);
 
         return jwtToken;

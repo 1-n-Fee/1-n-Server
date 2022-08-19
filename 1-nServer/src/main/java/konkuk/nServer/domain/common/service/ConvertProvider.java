@@ -76,4 +76,10 @@ public class ConvertProvider {
         throw new ApiException(ExceptionEnum.INCORRECT_SPOT);
     }
 
+    public Role convertRole(String role) {
+        if (Objects.equals(role, "ROLE_STUDENT")) return Role.ROLE_STUDENT;
+        else if (Objects.equals(role, "ROLE_STOREMANAGER")) return Role.ROLE_STOREMANAGER;
+        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+    }
+
 }

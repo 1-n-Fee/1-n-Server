@@ -234,6 +234,26 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 실패(password)")
+    void failLoginByPassword() throws Exception {
+        // given
+        Map<String, String> map = Map.of("email", "asdf@konkuk.ac.kr", "password", "pwpw!123");
+        String content = objectMapper.writeValueAsString(map);
+
+        // expected
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                )
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.errorCode").value(ExceptionEnum.FAIL_LOGIN.getCode()))
+                .andExpect(jsonPath("$.message").value(ExceptionEnum.FAIL_LOGIN.getMessage()))
+                .andDo(print());
+
+        assertEquals(0L, userRepository.count());
+    }
+
+    @Test
     @DisplayName("비밀번호 변경")
     void changePassword() throws Exception {
         // given
@@ -241,7 +261,7 @@ class UserControllerTest {
         userService.signup(userSignup);
 
         User user = userRepository.findAll().get(0);
-        String jwt = jwtTokenProvider.createJwt(user);
+        String jwt = jwtTokenProvider.createJwt(user.getId(), user.getRole());
 
         Map<String, String> map = Map.of("newPassword", "password!123");
         String content = objectMapper.writeValueAsString(map);

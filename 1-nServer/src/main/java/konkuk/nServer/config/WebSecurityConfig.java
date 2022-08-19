@@ -1,11 +1,7 @@
 package konkuk.nServer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
-import konkuk.nServer.domain.user.repository.UserRepository;
-import konkuk.nServer.security.jwt.JwtAuthenticationFilter;
-import konkuk.nServer.security.jwt.JwtAuthorizationFilter;
-import konkuk.nServer.security.jwt.JwtTokenProvider;
+import konkuk.nServer.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Slf4j
 public class WebSecurityConfig {
 
-    private final UserRepository userRepository;
-    private final StoremanagerRepository storemanagerRepository;
     private final JwtTokenProvider tokenProvider;
     private final ObjectMapper objectMapper;
 
@@ -42,19 +36,27 @@ public class WebSecurityConfig {
                 .apply(new MyCustomDsl()) // 커스텀 필터 등록
                 .and()
                 .headers().frameOptions().disable()// h2 오류 방지
-
                 .and()
+
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //session 기반이 아님을 선언
-
                 .and()
+
+
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .and()
+
                 .authorizeRequests(authorize ->
-                        authorize.antMatchers("/admin")
-                                .access("hasRole('ADMIN')")
-                                .antMatchers("/user")
-                                .access("hasRole('USER') or hasRole('ADMIN')")
-                                //.antMatchers("/home").authenticated()
+                        authorize.antMatchers("/store/student")
+                                .access("hasRole('STUDENT')")
+                                .antMatchers("/store")
+                                .access("hasRole('STOREMANAGER')")
+                                .antMatchers("/user/change/**", "/user/info").authenticated()
                                 .anyRequest().permitAll()
                 )
+
+
                 //.antMatchers("/home", "/signup", "/login", "/h2-console/**").permitAll()
                 //.anyRequest().authenticated() //이외의 모든 경로는 인증 해야 함
                 //.and().build();
@@ -68,7 +70,7 @@ public class WebSecurityConfig {
         public void configure(HttpSecurity http) {
             AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
             http.addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider, objectMapper))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository, storemanagerRepository, tokenProvider));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, tokenProvider));
         }
     }
 

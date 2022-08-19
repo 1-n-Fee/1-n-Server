@@ -309,7 +309,7 @@ class PostControllerTest {
 
         // expected
         MvcResult result = mockMvc.perform(get("/post/search")
-                        .param("date", "2022.09.01")
+                        .param("date", "20220901")
                         .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk())

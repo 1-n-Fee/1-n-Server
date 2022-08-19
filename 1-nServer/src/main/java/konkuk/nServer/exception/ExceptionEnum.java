@@ -17,6 +17,7 @@ public enum ExceptionEnum {
     NO_FOUND_STOREMANAGER(HttpStatus.BAD_REQUEST, "U007", "storemanager을 찾을 수 없습니다."),
 
     INCORRECT_LOGIN(HttpStatus.BAD_REQUEST, "L001", "잘못된 로그인 요청입니다."),
+    FAIL_LOGIN(HttpStatus.BAD_REQUEST, "L002", "로그인에 실패했습니다."),
 
     INCORRECT_SPOT(HttpStatus.BAD_REQUEST, "P001", "올바르지 않은 spot입니다."),
     INCORRECT_CATEGORY(HttpStatus.BAD_REQUEST, "P002", "올바르지 않은 category입니다."),
@@ -38,6 +39,11 @@ public enum ExceptionEnum {
 
     INCORRECT_MESSAGE_TYPE(HttpStatus.BAD_REQUEST, "M001", "잘못된 메시지 타입입니다."),
     NOT_LOGIN_CHAT(HttpStatus.BAD_REQUEST, "M002", "채팅은 로그인 회원만 가능합니다."),
+
+    EXPIRED_TOKEN(HttpStatus.BAD_REQUEST, "T001", "유효기간이 지난 토큰입니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "T002", "토큰 검증에 실패했습니다."),
+    NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "T003", "토큰을 찾을 수 없습니다."),
+    ACCESS_DENIED(HttpStatus.BAD_REQUEST, "T004", "권한이 없습니다."),
 
     ;
     private final HttpStatus status;

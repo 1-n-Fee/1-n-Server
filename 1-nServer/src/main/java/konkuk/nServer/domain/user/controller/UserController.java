@@ -1,8 +1,12 @@
 package konkuk.nServer.domain.user.controller;
 
+import konkuk.nServer.domain.storemanager.service.StoremanagerService;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.dto.requestForm.*;
 import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final StoremanagerService storemanagerService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
@@ -88,14 +93,15 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ResponseEntity<UserInfo> findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
-        UserInfo result = userService.findInfoByUserId(userDetail.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    public UserInfo findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        if(userDetail.getRole()== Role.ROLE_STUDENT) return userService.findInfoByUserId(userDetail.getId());
+        else if(userDetail.getRole()== Role.ROLE_STOREMANAGER) return storemanagerService.findInfoByUserId(userDetail.getId());
+        else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
     }
 
     @GetMapping("/isLogin")
     public Map<String, Object> userIsLogin(@AuthenticationPrincipal PrincipalDetails userDetail) {
-        if (userDetail.getId() != null) {
+        if (userDetail != null) {
             return Map.of("isLogin", true, "role", userDetail.getRole().name());
         } else return Map.of("isLogin", false);
     }

@@ -1,6 +1,7 @@
 package konkuk.nServer.security;
 
 import konkuk.nServer.domain.account.domain.Password;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class WithAuthUserSecurityContextFactory implements WithSecurityContextFa
         User user = userRepository.findByEmail(email).get();
 
 
-        PrincipalDetails principalDetails = new PrincipalDetails(user, new Password());
+        PrincipalDetails principalDetails = new PrincipalDetails(user.getId(), Role.ROLE_STUDENT);
 
         AbstractAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                 principalDetails, null, AuthorityUtils.NO_AUTHORITIES

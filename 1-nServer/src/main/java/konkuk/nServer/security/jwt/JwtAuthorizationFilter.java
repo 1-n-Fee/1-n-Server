@@ -1,12 +1,7 @@
 package konkuk.nServer.security.jwt;
 
-import konkuk.nServer.domain.account.domain.Password;
-import konkuk.nServer.domain.storemanager.domain.Storemanager;
-import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
-import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.UserRepository;
-import konkuk.nServer.exception.ApiException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +10,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -25,66 +23,61 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// 시큐리티가 가진 filer 중 BasicAuthenticationFilter가 있음
-// 권한이나 인증이 필요한 특정 주소를 요청했을 때 위 필터를 무조건 타게 되어있음
-// 만약 권한이나 인증이 필요한 주소가 아니라면 이 필터를 안탐
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Value("@{token.secret}")
     private String SECRET;
 
-    private final UserRepository userRepository;
-    private final StoremanagerRepository storemanagerRepository;
     private final JwtTokenProvider tokenProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
-                                  StoremanagerRepository storemanagerRepository, JwtTokenProvider tokenProvider) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         super(authenticationManager);
-        this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
-        this.storemanagerRepository = storemanagerRepository;
     }
 
-    // 인증이나 권한이 필요한 주소 요청이 있을 때 해당 필터를 타게 됨
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        log.info("인증이나 권한이 필요한 주소 요청이 됨.");
+        log.info("요청 들어옴");
 
         String jwtHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
             log.info("헤더에 포함된 Authorization Bearer 토큰이 없습니다.");
+
+            request.setAttribute("exception", ExceptionEnum.NOT_FOUND_TOKEN.getCode());
             chain.doFilter(request, response);
             return;
         }
 
         String jwtToken = request.getHeader("Authorization").replace("Bearer ", "");
-        JwtClaim jwtClaim = tokenProvider.validate(jwtToken);
 
-        log.info("로그인 회원 id={}", jwtClaim.getId());
-
+        JwtClaim jwtClaim = null;
+        try {
+            jwtClaim = tokenProvider.validate(jwtToken);
+        } catch (TokenExpiredException e) {
+            e.printStackTrace();
+            request.setAttribute("exception", ExceptionEnum.EXPIRED_TOKEN.getCode());
+        } catch (JWTDecodeException e) {
+            e.printStackTrace();
+            request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
+        } catch (Exception e) {
+            log.error("================================================");
+            log.error("JwtFilter - doFilterInternal() 오류발생");
+            log.error("Exception Message : {}", e.getMessage());
+            log.error("Exception StackTrace : {");
+            e.printStackTrace();
+            log.error("}");
+            log.error("================================================");
+            request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
+        }
 
         // 서명이 정상적으로 됨
-        if (jwtClaim.getId() != null) {
+        if (jwtClaim != null && jwtClaim.getId() != null) {
 
-            PrincipalDetails principalDetails = null;
-
-            if (jwtClaim.getRole() == Role.ROLE_STUDENT) {
-                User user = userRepository.findById(jwtClaim.getId())
-                        .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-                log.info("인가 성공 userId={}", user.getId());
-
-                principalDetails = new PrincipalDetails(user, new Password()); // 여기서 password는 의미없음
-
-            } else if (jwtClaim.getRole() == Role.ROLE_STOREMANAGER) {
-                Storemanager storemanager = storemanagerRepository.findById(jwtClaim.getId())
-                        .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-                log.info("인가 성공 storemanagerId={}", storemanager.getId());
-
-                principalDetails = new PrincipalDetails(storemanager, new Password()); // 여기서 password는 의미없음
-            }
+            PrincipalDetails principalDetails = new PrincipalDetails(jwtClaim.getId(), jwtClaim.getRole());
+            log.info("JWT 검증 성공. id={}, Role={}", jwtClaim.getId(), jwtClaim.getRole());
 
             // Jwt 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다.
             Authentication authentication
@@ -93,7 +86,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 시큐리티의 세션에 접근하여 Authentication 객체를 저장
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
-        } else log.info("인가 실패. jwtToken={}", jwtToken);
+        } else log.info("JWT 검증 실패. jwtToken={}", jwtToken);
         chain.doFilter(request, response);
     }
 }

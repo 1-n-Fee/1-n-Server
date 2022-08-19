@@ -12,6 +12,8 @@ import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignupForApp;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
@@ -123,7 +125,7 @@ public class StoremanagerService {
             storemanager = google.getStoremanager();
         } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
 
-        String jwtToken = tokenProvider.createJwt(storemanager);
+        String jwtToken = tokenProvider.createJwt(storemanager.getId(), storemanager.getRole());
         log.info("Token = {}", jwtToken);
 
         return jwtToken;
@@ -147,7 +149,7 @@ public class StoremanagerService {
             storemanager = google.getStoremanager();
         } else throw new ApiException(ExceptionEnum.NO_FOUND_STOREMANAGER);
 
-        String jwtToken = tokenProvider.createJwt(storemanager);
+        String jwtToken = tokenProvider.createJwt(storemanager.getId(), storemanager.getRole());
         log.info("Token = {}", jwtToken);
 
         return jwtToken;
@@ -158,5 +160,12 @@ public class StoremanagerService {
         if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@!%*#?&])[A-Za-z\\d$@!%*#?&]{8,15}$")) {
             throw new ApiException(ExceptionEnum.INCORRECT_PASSWORD);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public UserInfo findInfoByUserId(Long storemanagerId) {
+        Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        return UserInfo.of(storemanager);
     }
 }
