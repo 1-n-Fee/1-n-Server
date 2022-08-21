@@ -194,7 +194,6 @@ public class InitDB {
     void initPost() {
         User user = userRepository.findAll().get(0);
         Store store = storeRepository.findAll().get(0);
-
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
                 .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
@@ -202,6 +201,15 @@ public class InitDB {
                 .content(store.getName() + "이(가) 먹고 싶으신 분, 대환영입니다.")
                 .spotId(1L)
                 .build());
+        Post post = postRepository.findAll().get(0);
+        List<Menu> menus = store.getMenus();
+        SaveProposal saveProposal =
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2),
+                        new SaveProposal.Menus(menus.get(2).getId(), 3),
+                        new SaveProposal.Menus(menus.get(3).getId(), 4)));
+        proposalService.saveProposal(user.getId(), saveProposal);
+
 
         user = userRepository.findAll().get(1);
         store = storeRepository.findAll().get(1);
@@ -212,6 +220,15 @@ public class InitDB {
                 .content(store.getName() + "이(가) 오늘 끌리는 너. 같이 시켜요.")
                 .spotId(1L)
                 .build());
+        post = postRepository.findAll().get(1);
+        menus = store.getMenus();
+        saveProposal =
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2),
+                        new SaveProposal.Menus(menus.get(2).getId(), 3),
+                        new SaveProposal.Menus(menus.get(3).getId(), 4)));
+        proposalService.saveProposal(user.getId(), saveProposal);
+
 
         user = userRepository.findAll().get(2);
         store = storeRepository.findAll().get(2);
@@ -221,6 +238,14 @@ public class InitDB {
                 .limitNumber(2)
                 .spotId(1L)
                 .build());
+        post = postRepository.findAll().get(2);
+        menus = store.getMenus();
+        saveProposal =
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2),
+                        new SaveProposal.Menus(menus.get(2).getId(), 3),
+                        new SaveProposal.Menus(menus.get(3).getId(), 4)));
+        proposalService.saveProposal(user.getId(), saveProposal);
     }
 
     void initComment() {

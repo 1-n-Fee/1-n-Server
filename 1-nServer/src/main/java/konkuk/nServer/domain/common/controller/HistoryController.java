@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.common.controller;
 
+import konkuk.nServer.domain.common.dto.response.FindAllPostList;
 import konkuk.nServer.domain.common.dto.response.FindApplyPostList;
 import konkuk.nServer.domain.common.dto.response.FindPostList;
 import konkuk.nServer.domain.common.service.HistoryService;
@@ -27,6 +28,11 @@ public class HistoryController {
     @GetMapping("/apply")
     public List<FindApplyPostList> findApplyPostByUser(@AuthenticationPrincipal PrincipalDetails userDetail) {
         return historyService.findApplyPostByUser(userDetail.getId());
+    }
+
+    @GetMapping
+    public List<FindAllPostList> findPostByAll(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        return historyService.findPostByAll(userDetail.getId());
     }
 
 }

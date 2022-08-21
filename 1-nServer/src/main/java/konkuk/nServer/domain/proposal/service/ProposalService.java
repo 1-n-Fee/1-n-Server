@@ -43,11 +43,10 @@ public class ProposalService {
         Post post = postRepository.findById(form.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
-        if (Objects.equals(post.getUser().getId(), userId))
-            throw new ApiException(ExceptionEnum.OWNER_POST_PROPOSAL);
+        ProposalState proposalState = Objects.equals(post.getUser().getId(), userId) ? ProposalState.ACCEPTED : ProposalState.AWAITING;
 
         Proposal proposal = Proposal.builder()
-                .proposalState(ProposalState.AWAITING)
+                .proposalState(proposalState)
                 .createDateTime(LocalDateTime.now())
                 .post(post)
                 .user(user)
