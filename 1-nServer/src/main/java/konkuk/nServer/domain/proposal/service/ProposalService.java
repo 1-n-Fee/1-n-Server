@@ -44,6 +44,7 @@ public class ProposalService {
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
         ProposalState proposalState = Objects.equals(post.getUser().getId(), userId) ? ProposalState.ACCEPTED : ProposalState.AWAITING;
+        if (proposalState == ProposalState.ACCEPTED) post.increaseCurrentNumber();
 
         Proposal proposal = Proposal.builder()
                 .proposalState(proposalState)
