@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: ENC(IbpDDudsv0JP/3jQme+LvTMejs0EyeiWev2+nX+hdPU=)
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+        #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+
+token:
+  expiration_time: 600000
+  secret: ENC(03SQAJfxfmKWC7qP3arNeM4dpEUlvWpp)
+
+oauth2:
+  kakao:
+    client_id: ENC(QeZ2V8+WvVXMy8eiBPoFF2tw28Ph08KqxJH9OThlULaFFGCWv6ffQq21xOQtKeYr)
+    redirect_uri: ENC(IKx7TpVUQRw0suyLiOjMpldVhY2vuW9vEcsza3C2UgtnFtZ9RJOvlqS3X0Kb5Ppb)
+  naver:
+    client_id: ENC(vXOED7ikTxmZ9+Jpj5pv1HhtlcVuyIXTnLZv1/V003w=)
+    client_secret: ENC(VOvbbLKwYZDw+8WIb3NOvTB/SbCaSqag)
+    state: ENC(HzE4UIFf15UtOPVpK6g+ZQ==)
+  google:
+    client_id: ENC(talg5LxfU/Aq7022Ma1EmHa4EzK75IK5BwUCnTdte2Zgf3x6WMW6UXbo2THMl3AbqaYYxh8dkZz5uHXfeMyq6zs4InRMeF9HDfkTWwQGrJQ=)
+    client_secret: ENC(74z3ThE+J+hrzcTULNeHdBW/ZTjGCJKIr/ZZjIkUoeSx3ngty9LnisZ7wi2WrKJc)
+
+image:
+  #menu: /Users/hongseungtaeg/Desktop/toyproject/toyProject6-1-n/1-n-Server/1-nServer/src/main/resources/static/menu/
+  menu: /image/menu/
+  #menu: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\menu\
+  default_filename: default.png
