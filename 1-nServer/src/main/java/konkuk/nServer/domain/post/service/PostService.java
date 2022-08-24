@@ -8,6 +8,8 @@ import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
 import konkuk.nServer.domain.post.repository.PostRepository;
+import konkuk.nServer.domain.proposal.domain.Proposal;
+import konkuk.nServer.domain.proposal.domain.ProposalState;
 import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.StoreRepository;
@@ -62,6 +64,7 @@ public class PostService {
         List<Post> posts = postRepository.findBySpot(spot);
 
         return posts.stream()
+                .filter(post -> post.getProcess() != PostProcess.CLOSE && post.getProcess() != PostProcess.DELETE)
                 .map(post -> {
                     FindPost res = FindPost.of(post);
 
@@ -98,10 +101,16 @@ public class PostService {
         if (!Objects.equals(post.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
-        if (post.getProcess() != PostProcess.RECRUITING)
+        if (post.getProcess() == PostProcess.DELETE)
             throw new ApiException(ExceptionEnum.NOT_DELETE_POST);
 
-        postRepository.deleteById(postId);
+        post.changeProcess(PostProcess.DELETE);
+
+        List<Proposal> proposals = proposalRepository.findByPostId(postId);
+        proposals.forEach(proposal -> {
+            if (proposal.getProposalState() == ProposalState.AWAITING)
+                proposal.changeState(false);
+        });
     }
 
     @Transactional(readOnly = true)
@@ -115,6 +124,7 @@ public class PostService {
             List<Post> posts = postRepository.findByStore(store);
 
             for (Post post : posts) {
+                if (post.getProcess() == PostProcess.CLOSE || post.getProcess() == PostProcess.DELETE) continue;
                 FindPost findPost = FindPost.of(post);
 
                 proposalRepository.findByUserAndPost(user, post).
@@ -138,6 +148,7 @@ public class PostService {
 
         List<Post> posts = postRepository.findByCloseTimeBetween(start, end, Sort.by(asc("closeTime")));
         return posts.stream()
+                .filter(post -> post.getProcess() != PostProcess.CLOSE && post.getProcess() != PostProcess.DELETE)
                 .map(post -> {
                     FindPost res = FindPost.of(post);
 

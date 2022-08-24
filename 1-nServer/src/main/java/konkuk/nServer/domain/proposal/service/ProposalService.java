@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.proposal.service;
 
 import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.proposal.domain.Proposal;
 import konkuk.nServer.domain.proposal.domain.ProposalDetail;
@@ -38,10 +39,14 @@ public class ProposalService {
     private final PostRepository postRepository;
 
     public void saveProposal(Long userId, SaveProposal form) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
         Post post = postRepository.findById(form.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+        if (post.getProcess() == PostProcess.DELETE || post.getProcess() == PostProcess.CLOSE) {
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
 
         ProposalState proposalState = Objects.equals(post.getUser().getId(), userId) ? ProposalState.ACCEPTED : ProposalState.AWAITING;
         if (proposalState == ProposalState.ACCEPTED) post.increaseCurrentNumber();
@@ -68,6 +73,10 @@ public class ProposalService {
     public List<FindProposal> findProposalByPost(Long userId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+
+        if (post.getProcess() == PostProcess.DELETE || post.getProcess() == PostProcess.CLOSE) {
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        }
 
         if (!Objects.equals(post.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
@@ -102,7 +111,10 @@ public class ProposalService {
     public void deleteProposal(Long userId, Long proposalId) {
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL));
-
+        if (proposal.getPost().getProcess() == PostProcess.DELETE || proposal.getPost().getProcess() == PostProcess.CLOSE) {
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        }
+        
         if (!Objects.equals(proposal.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_PROPOSAL);
 

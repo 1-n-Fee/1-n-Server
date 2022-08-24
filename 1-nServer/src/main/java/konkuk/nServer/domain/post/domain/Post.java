@@ -81,4 +81,8 @@ public class Post {
     public void decreaseCurrentNumber() {
         this.currentNumber -= 1;
     }
+
+    public void changeProcess(PostProcess postProcess) {
+        this.process = postProcess;
+    }
 }

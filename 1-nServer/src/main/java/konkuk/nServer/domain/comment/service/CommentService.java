@@ -7,6 +7,7 @@ import konkuk.nServer.domain.comment.dto.requestForm.RegistryReply;
 import konkuk.nServer.domain.comment.repository.CommentRepository;
 import konkuk.nServer.domain.comment.repository.ReplyRepository;
 import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;
@@ -37,6 +38,10 @@ public class CommentService {
         Post post = postRepository.findById(registryComment.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
+        if (post.getProcess() == PostProcess.DELETE || post.getProcess() == PostProcess.CLOSE) {
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        }
+
         Comment comment = Comment.builder()
                 .createDateTime(LocalDateTime.now())
                 .content(registryComment.getContent())
@@ -50,6 +55,10 @@ public class CommentService {
     public void registryReply(Long userId, RegistryReply registryReply) {
         Comment comment = commentRepository.findById(registryReply.getCommentId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_COMMENT));
+
+        if (comment.getPost().getProcess() == PostProcess.DELETE || comment.getPost().getProcess() == PostProcess.CLOSE) {
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        }
 
         if (!comment.getPost().getUser().getId().equals(userId)) {
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);

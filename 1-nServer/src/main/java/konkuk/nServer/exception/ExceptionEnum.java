@@ -32,6 +32,7 @@ public enum ExceptionEnum {
     NOT_OWNER_PROPOSAL(HttpStatus.BAD_REQUEST, "P011", "해당 회원은 proposal owner이 아닙니다."),
     OWNER_POST_PROPOSAL(HttpStatus.BAD_REQUEST, "P012", "본인의 post는 제안서를 보낼 수 없습니다."),
     NO_FOUND_COMMENT(HttpStatus.BAD_REQUEST, "P013", "해당 댓글을 찾을 수 없습니다"),
+    NOT_ACCESS_POST(HttpStatus.BAD_REQUEST, "P014", "해당 post에는 접근할 수 없습니다."),
 
     FAIL_STORE_IMAGE(HttpStatus.BAD_REQUEST, "I001", "이미지 저장에 실패했습니다."),
     FAIL_CALL_IMAGE(HttpStatus.BAD_REQUEST, "I002", "이미지를 불러오는데 실패했습니다."),
