@@ -97,4 +97,10 @@ public class ChatService {
         else if (Objects.equals(type, "TALK")) return MessageType.TALK;
         else throw new ApiException(ExceptionEnum.INCORRECT_MESSAGE_TYPE);
     }
+
+    public List<ResponseMessage> findByPostId(Long postId) {
+        return messageRepository.findByPostId(postId).stream()
+                .map(message -> ResponseMessage.of(message, postId))
+                .toList();
+    }
 }

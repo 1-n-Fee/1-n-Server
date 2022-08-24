@@ -1,5 +1,6 @@
-package konkuk.nServer.domain.post.domain;
+package konkuk.nServer.domain.comment.domain;
 
+import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;

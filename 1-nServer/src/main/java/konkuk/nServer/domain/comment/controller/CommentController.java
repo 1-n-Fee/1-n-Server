@@ -1,7 +1,7 @@
-package konkuk.nServer.domain.post.controller;
+package konkuk.nServer.domain.comment.controller;
 
-import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
-import konkuk.nServer.domain.post.service.CommentService;
+import konkuk.nServer.domain.comment.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.comment.service.CommentService;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

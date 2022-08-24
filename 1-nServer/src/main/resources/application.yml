@@ -39,7 +39,7 @@ oauth2:
     client_secret: ENC(74z3ThE+J+hrzcTULNeHdBW/ZTjGCJKIr/ZZjIkUoeSx3ngty9LnisZ7wi2WrKJc)
 
 image:
-  #menu: /Users/hongseungtaeg/Desktop/toyproject/toyProject6-1-n/1-n-Server/1-nServer/src/main/resources/static/menu/
-  menu: /image/menu/
+  menu: /Users/hongseungtaeg/Desktop/toyproject/toyProject6-1-n/1-n-Server/1-nServer/src/main/resources/static/menu/
+  #menu: /image/menu/
   #menu: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\menu\
   default_filename: default.png

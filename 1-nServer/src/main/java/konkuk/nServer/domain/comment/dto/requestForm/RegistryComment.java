@@ -1,4 +1,4 @@
-package konkuk.nServer.domain.post.dto.requestForm;
+package konkuk.nServer.domain.comment.dto.requestForm;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package konkuk.nServer.domain.post.dto.responseForm;
 
-import konkuk.nServer.domain.post.domain.Comment;
+import konkuk.nServer.domain.comment.domain.Comment;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.store.domain.Menu;
 import lombok.AllArgsConstructor;

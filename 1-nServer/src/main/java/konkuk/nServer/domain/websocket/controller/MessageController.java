@@ -10,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +23,7 @@ public class MessageController {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatService chatService;
 
-    @MessageMapping("/chat/message") // 클라이언트에서 /pub/chat/message로 메시지 발행
+    @MessageMapping("/chat/message") // 클라이언트에서 /pub/chat/message 로 메시지 발행
     public void enter(RequestMessage message, SimpMessageHeaderAccessor messageHeaderAccessor) {
         Object seesion = messageHeaderAccessor.getSessionAttributes().getOrDefault("userId", null);
         if (seesion == null) throw new ApiException(ExceptionEnum.NOT_LOGIN_CHAT);
@@ -31,4 +35,11 @@ public class MessageController {
         // /sub/chat/room/{roomId} 에 구독 중인 클라이언트에게 메시지를 보낸다.
         sendingOperations.convertAndSend("/sub/chat/room/" + message.getPostId(), responseMessage);
     }
+
+    @GetMapping("/message/{postId}")
+    public List<ResponseMessage> sendMessage(@PathVariable Long postId) {
+        return chatService.findByPostId(postId);
+    }
+
+
 }

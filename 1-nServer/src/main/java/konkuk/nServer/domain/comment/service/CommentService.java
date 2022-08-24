@@ -1,9 +1,9 @@
-package konkuk.nServer.domain.post.service;
+package konkuk.nServer.domain.comment.service;
 
-import konkuk.nServer.domain.post.domain.Comment;
+import konkuk.nServer.domain.comment.domain.Comment;
 import konkuk.nServer.domain.post.domain.Post;
-import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
-import konkuk.nServer.domain.post.repository.CommentRepository;
+import konkuk.nServer.domain.comment.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.comment.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserRepository;

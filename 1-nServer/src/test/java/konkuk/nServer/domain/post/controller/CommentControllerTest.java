@@ -1,11 +1,11 @@
 package konkuk.nServer.domain.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import konkuk.nServer.domain.post.domain.Comment;
+import konkuk.nServer.domain.comment.domain.Comment;
 import konkuk.nServer.domain.post.domain.Post;
-import konkuk.nServer.domain.post.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.comment.dto.requestForm.RegistryComment;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
-import konkuk.nServer.domain.post.repository.CommentRepository;
+import konkuk.nServer.domain.comment.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
