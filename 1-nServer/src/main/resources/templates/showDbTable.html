@@ -429,6 +429,31 @@
         <hr>
     </div>
 
+    <div style="display:none" id="reply">
+        <h3>Reply</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">content</th>
+                <th scope="col">time</th>
+                <th scope="col">comment_id</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="reply : ${replies}">
+                <td th:text="${reply.id==null} ? '' : ${reply.id}"></td>
+                <td th:text="${reply.content==null} ? '' : ${reply.content}"></td>
+                <td th:text="${reply.createDateTime==null} ? '' : ${reply.createDateTime}"></td>
+                <td th:text="${reply.comment.id==null} ? '' : ${reply.comment.id}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    </div>
+
 
 </div>
 </body>

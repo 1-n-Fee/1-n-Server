@@ -1,6 +1,7 @@
 package konkuk.nServer.domain.comment.controller;
 
 import konkuk.nServer.domain.comment.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.comment.dto.requestForm.RegistryReply;
 import konkuk.nServer.domain.comment.service.CommentService;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,14 @@ public class CommentController {
                                 @RequestBody @Valid RegistryComment registryComment) {
         commentService.registryComment(userDetail.getId(), registryComment);
     }
+
+
+    @PostMapping("/reply")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registryReply(@AuthenticationPrincipal PrincipalDetails userDetail,
+                              @RequestBody @Valid RegistryReply registryReply) {
+        commentService.registryReply(userDetail.getId(), registryReply);
+    }
+
 
 }

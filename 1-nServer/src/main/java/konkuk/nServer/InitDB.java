@@ -1,10 +1,12 @@
 package konkuk.nServer;
 
-import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.comment.dto.requestForm.RegistryComment;
+import konkuk.nServer.domain.comment.dto.requestForm.RegistryReply;
+import konkuk.nServer.domain.comment.repository.CommentRepository;
+import konkuk.nServer.domain.comment.service.CommentService;
+import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.repository.PostRepository;
-import konkuk.nServer.domain.comment.service.CommentService;
 import konkuk.nServer.domain.post.service.PostService;
 import konkuk.nServer.domain.proposal.dto.requestForm.SaveProposal;
 import konkuk.nServer.domain.proposal.service.ProposalService;
@@ -51,6 +53,7 @@ public class InitDB {
     private final CommentService commentService;
     private final PostRepository postRepository;
     private final ProposalService proposalService;
+    private final CommentRepository commentRepository;
 
     @Value("{image.default_filename}")
     private String defaultImage;
@@ -390,6 +393,9 @@ public class InitDB {
         commentService.registryComment(user.getId(),
                 RegistryComment.builder().content("올 때 메로나 가능한가요?")
                         .postId(post.getId()).build());
+        commentService.registryReply(post.getUser().getId(), RegistryReply.builder()
+                .commentId(commentRepository.findAll().get(1).getId())
+                .content("죄송하지만 불가능합니다.").build());
     }
 
     void initProposal() {

@@ -9,6 +9,8 @@ import konkuk.nServer.domain.account.repository.KakaoRepository;
 import konkuk.nServer.domain.account.repository.NaverRepository;
 import konkuk.nServer.domain.account.repository.PasswordRepository;
 import konkuk.nServer.domain.comment.domain.Comment;
+import konkuk.nServer.domain.comment.domain.Reply;
+import konkuk.nServer.domain.comment.repository.ReplyRepository;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.comment.repository.CommentRepository;
 import konkuk.nServer.domain.post.repository.PostRepository;
@@ -52,6 +54,7 @@ public class DbTableController {
     private final CommentRepository commentRepository;
     private final MenuRepository menuRepository;
     private final MessageRepository messageRepository;
+    private final ReplyRepository replyRepository;
 
     @GetMapping("/table")
     public String showDbTable(Model model) {
@@ -69,6 +72,7 @@ public class DbTableController {
         List<Comment> comments = commentRepository.findAll();
         List<Menu> menus = menuRepository.findAll();
         List<Message> messages = messageRepository.findAll();
+        List<Reply> replies = replyRepository.findAll();
 
 
         model.addAttribute("kakaos", kakaos);
@@ -84,9 +88,10 @@ public class DbTableController {
         model.addAttribute("comments", comments);
         model.addAttribute("menus", menus);
         model.addAttribute("messages", messages);
+        model.addAttribute("replies", replies);
 
         List<String> table = Arrays.asList("kakao", "naver", "google", "password", "user", "storemanager",
-                "post", "proposal", "proposalDetail", "store", "comment", "menu", "message");
+                "post", "proposal", "proposalDetail", "store", "comment", "menu", "message", "reply");
         model.addAttribute("tableName", table);
 
         return "showDbTable";

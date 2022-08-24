@@ -30,6 +30,8 @@ public class QComment extends EntityPathBase<Comment> {
 
     public final konkuk.nServer.domain.post.domain.QPost post;
 
+    public final ListPath<Reply, QReply> replies = this.<Reply, QReply>createList("replies", Reply.class, QReply.class, PathInits.DIRECT2);
+
     public final konkuk.nServer.domain.user.domain.QUser user;
 
     public QComment(String variable) {
