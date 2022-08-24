@@ -1,8 +1,9 @@
 package konkuk.nServer.domain.common.service;
 
-import konkuk.nServer.domain.post.domain.Category;
-import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.account.domain.AccountType;
+import konkuk.nServer.domain.post.domain.Category;
+import konkuk.nServer.domain.post.domain.PostProcess;
+import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
 import konkuk.nServer.exception.ApiException;
@@ -80,6 +81,14 @@ public class ConvertProvider {
         if (Objects.equals(role, "ROLE_STUDENT")) return Role.ROLE_STUDENT;
         else if (Objects.equals(role, "ROLE_STOREMANAGER")) return Role.ROLE_STOREMANAGER;
         else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+    }
+
+    public PostProcess convertPostProcess(String process) {
+        PostProcess[] postProcesses = PostProcess.values();
+        for (PostProcess postProcess : postProcesses) {
+            if (process.toUpperCase().equals(postProcess.name())) return postProcess;
+        }
+        throw new ApiException(ExceptionEnum.INCORRECT_POST_PROCESS);
     }
 
 }

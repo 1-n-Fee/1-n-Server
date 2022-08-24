@@ -1,5 +1,6 @@
 package konkuk.nServer.domain.post.controller;
 
+import konkuk.nServer.domain.post.dto.requestForm.ChangePostProcess;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
@@ -56,6 +57,12 @@ public class PostController {
             return postService.findPostByDate(userDetail.getId(), date);
 
         else throw new IllegalArgumentException();
+    }
+
+    @PostMapping("/state/change")
+    public void changePostState(@AuthenticationPrincipal PrincipalDetails userDetail,
+                                @RequestBody ChangePostProcess form) {
+        postService.changePostState(userDetail.getId(), form);
     }
 
 

@@ -4,6 +4,7 @@ import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.domain.Spot;
+import konkuk.nServer.domain.post.dto.requestForm.ChangePostProcess;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPost;
 import konkuk.nServer.domain.post.dto.responseForm.FindPostDetail;
@@ -101,8 +102,8 @@ public class PostService {
         if (!Objects.equals(post.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
-        if (post.getProcess() == PostProcess.DELETE)
-            throw new ApiException(ExceptionEnum.NOT_DELETE_POST);
+        if (post.getProcess() == PostProcess.DELETE || post.getProcess() == PostProcess.CLOSE)
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
 
         post.changeProcess(PostProcess.DELETE);
 
@@ -160,5 +161,22 @@ public class PostService {
                     return res;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void changePostState(Long userId, ChangePostProcess form) {
+        Post post = postRepository.findById(form.getPostId())
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+
+        if (post.getProcess() == PostProcess.DELETE || post.getProcess() == PostProcess.CLOSE)
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+
+
+        if (!Objects.equals(post.getUser().getId(), userId))
+            throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
+
+        PostProcess postProcess = convertProvider.convertPostProcess(form.getState());
+        if (postProcess == PostProcess.DELETE) throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+
+        post.changeProcess(postProcess);
     }
 }
