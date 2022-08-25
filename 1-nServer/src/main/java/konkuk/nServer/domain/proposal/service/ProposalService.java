@@ -108,15 +108,11 @@ public class ProposalService {
     public void deleteProposal(Long userId, Long proposalId) {
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL));
-        if (proposal.getPost().getProcess() == PostProcess.DELETE || proposal.getPost().getProcess() == PostProcess.CLOSE) {
-            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
-        }
 
         if (!Objects.equals(proposal.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_PROPOSAL);
 
         if (proposal.getProposalState() == ProposalState.AWAITING) {
-            proposal.getPost().decreaseCurrentNumber();
             proposalRepository.delete(proposal);
         } else {
             throw new ApiException(ExceptionEnum.NO_CHANGE_PROPOSAL);
