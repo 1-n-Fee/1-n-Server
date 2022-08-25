@@ -10,6 +10,7 @@ import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
@@ -27,14 +28,12 @@ import java.time.LocalDateTime;
 public class CommentService {
 
     private final PostRepository postRepository;
+    private final UserFindDao userFindDao;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
-    private final UserRepository userRepository;
 
     public void registryComment(Long userId, RegistryComment registryComment) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
+        User user = userFindDao.findById(userId);
         Post post = postRepository.findById(registryComment.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 

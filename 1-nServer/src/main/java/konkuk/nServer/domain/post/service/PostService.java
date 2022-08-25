@@ -15,6 +15,7 @@ import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.user.domain.User;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
@@ -42,12 +43,12 @@ public class PostService {
     private final PostRepository postRepository;
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
     private final StoreRepository storeRepository;
     private final ConvertProvider convertProvider;
 
     public void registryPost(Long userId, RegistryPost registryPost) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
         Store store = storeRepository.findById(registryPost.getStoreId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_STORE));
         Spot spot = convertProvider.convertSpot(registryPost.getSpotId());
@@ -57,15 +58,13 @@ public class PostService {
         postRepository.save(post);
     }
 
-    @Transactional(readOnly = true)
     public List<FindPost> findPostBySpot(Long userId, Long spotId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
         Spot spot = convertProvider.convertSpot(spotId);
-        List<Post> posts = postRepository.findBySpot(spot);
+        updatePost();
 
-        return posts.stream()
-                .filter(post -> post.getProcess() != PostProcess.CLOSE && post.getProcess() != PostProcess.DELETE)
+        return postRepository.findBySpotOrderByCloseTimeAsc(spot).stream()
+                .filter(post -> post.getProcess() == PostProcess.RECRUITING)
                 .map(post -> {
                     FindPost res = FindPost.of(post);
 
@@ -79,7 +78,56 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    public List<FindPost> findPostByStoreName(Long userId, String storeName) {
+        updatePost();
+
+        User user = userFindDao.findById(userId);
+        List<Store> stores = storeRepository.findByNameContains(storeName);
+
+        List<FindPost> res = new ArrayList<>();
+        for (Store store : stores) {
+            List<Post> posts = postRepository.findByStoreOrderByCloseTimeAsc(store);
+
+            for (Post post : posts) {
+                if (post.getProcess() != PostProcess.RECRUITING) continue;
+                FindPost findPost = FindPost.of(post);
+
+                proposalRepository.findByUserAndPost(user, post).
+                        ifPresent(value -> findPost.setState(value.getProposalState().name()));
+
+                if (Objects.equals(post.getUser().getId(), userId)) findPost.setState("OWNER");
+
+                res.add(findPost);
+            }
+        }
+        return res;
+    }
+
+    public List<FindPost> findPostByDate(Long userId, String dateStr) {
+        updatePost();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+
+        LocalDateTime start = LocalDateTime.parse(dateStr + ".00:00:00", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
+        LocalDateTime end = LocalDateTime.parse(dateStr + ".23:59:59", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
+
+        List<Post> posts = postRepository.findByCloseTimeBetween(start, end, Sort.by(asc("closeTime")));
+        return posts.stream()
+                .filter(post -> post.getProcess() == PostProcess.RECRUITING)
+                .map(post -> {
+                    FindPost res = FindPost.of(post);
+
+                    proposalRepository.findByUserAndPost(user, post).
+                            ifPresent(value -> res.setState(value.getProposalState().name()));
+
+                    if (Objects.equals(post.getUser().getId(), userId)) res.setState("OWNER");
+
+                    return res;
+                })
+                .collect(Collectors.toList());
+    }
+
     public FindPostDetail findPostDetailById(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
@@ -114,55 +162,6 @@ public class PostService {
         });
     }
 
-    @Transactional(readOnly = true)
-    public List<FindPost> findPostByStoreName(Long userId, String storeName) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-        List<Store> stores = storeRepository.findByNameContains(storeName);
-
-        List<FindPost> res = new ArrayList<>();
-        for (Store store : stores) {
-            List<Post> posts = postRepository.findByStore(store);
-
-            for (Post post : posts) {
-                if (post.getProcess() == PostProcess.CLOSE || post.getProcess() == PostProcess.DELETE) continue;
-                FindPost findPost = FindPost.of(post);
-
-                proposalRepository.findByUserAndPost(user, post).
-                        ifPresent(value -> findPost.setState(value.getProposalState().name()));
-
-                if (Objects.equals(post.getUser().getId(), userId)) findPost.setState("OWNER");
-
-                res.add(findPost);
-            }
-        }
-        return res;
-    }
-
-    @Transactional(readOnly = true)
-    public List<FindPost> findPostByDate(Long userId, String dateStr) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
-        LocalDateTime start = LocalDateTime.parse(dateStr + ".00:00:00", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
-        LocalDateTime end = LocalDateTime.parse(dateStr + ".23:59:59", DateTimeFormatter.ofPattern("yyyyMMdd.HH:mm:ss"));
-
-        List<Post> posts = postRepository.findByCloseTimeBetween(start, end, Sort.by(asc("closeTime")));
-        return posts.stream()
-                .filter(post -> post.getProcess() != PostProcess.CLOSE && post.getProcess() != PostProcess.DELETE)
-                .map(post -> {
-                    FindPost res = FindPost.of(post);
-
-                    proposalRepository.findByUserAndPost(user, post).
-                            ifPresent(value -> res.setState(value.getProposalState().name()));
-
-                    if (Objects.equals(post.getUser().getId(), userId)) res.setState("OWNER");
-
-                    return res;
-                })
-                .collect(Collectors.toList());
-    }
-
     public void changePostState(Long userId, ChangePostProcess form) {
         Post post = postRepository.findById(form.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
@@ -175,8 +174,15 @@ public class PostService {
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
         PostProcess postProcess = convertProvider.convertPostProcess(form.getState());
-        if (postProcess == PostProcess.DELETE) throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
+        if (postProcess == PostProcess.DELETE)
+            throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
 
         post.changeProcess(postProcess);
+    }
+
+
+    private void updatePost() {
+        postRepository.findByProcessAndCloseTimeBefore(PostProcess.RECRUITING, LocalDateTime.now())
+                .forEach(post -> post.changeProcess(PostProcess.DELETE));
     }
 }

@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class RegistryComment {
 
-    @NotNull
+    @NotNull(message = "postId는 필수입니다.")
     private Long postId;
 
-    @NotBlank
+    @NotBlank(message = "content는 필수입니다.")
     @Length(max = 300)
     private String content;
 

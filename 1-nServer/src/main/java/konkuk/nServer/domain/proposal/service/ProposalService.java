@@ -13,7 +13,7 @@ import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.UserRepository;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class ProposalService {
 
     private final ProposalRepository proposalRepository;
     private final ProposalDetailRepository proposalDetailRepository;
-    private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
     private final MenuRepository menuRepository;
     private final PostRepository postRepository;
 
@@ -45,8 +45,7 @@ public class ProposalService {
             throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
 
         ProposalState proposalState = Objects.equals(post.getUser().getId(), userId) ? ProposalState.ACCEPTED : ProposalState.AWAITING;
         if (proposalState == ProposalState.ACCEPTED) post.increaseCurrentNumber();
@@ -81,11 +80,9 @@ public class ProposalService {
         if (!Objects.equals(post.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_POST);
 
-        return proposalRepository.findByPostId(postId).stream()
-                .filter(proposal -> proposal.getProposalState() == ProposalState.AWAITING)
+        return proposalRepository.findByPostIdAndProposalState(postId, ProposalState.AWAITING).stream()
                 .map(proposal -> {
-                    List<FindProposal.Menus> menus = proposalDetailRepository.findByProposal(proposal)
-                            .stream()
+                    List<FindProposal.Menus> menus = proposalDetailRepository.findByProposal(proposal).stream()
                             .map(proposalDetail -> new FindProposal.Menus(proposalDetail.getMenu().getId(), proposalDetail.getQuantity()))
                             .toList();
                     return new FindProposal(proposal.getId(), proposal.getUser().getNickname(), menus);
@@ -114,7 +111,7 @@ public class ProposalService {
         if (proposal.getPost().getProcess() == PostProcess.DELETE || proposal.getPost().getProcess() == PostProcess.CLOSE) {
             throw new ApiException(ExceptionEnum.NOT_ACCESS_POST);
         }
-        
+
         if (!Objects.equals(proposal.getUser().getId(), userId))
             throw new ApiException(ExceptionEnum.NOT_OWNER_PROPOSAL);
 

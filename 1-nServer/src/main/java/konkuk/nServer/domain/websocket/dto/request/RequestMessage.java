@@ -1,11 +1,10 @@
 package konkuk.nServer.domain.websocket.dto.request;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class RequestMessage {
 
@@ -14,4 +13,12 @@ public class RequestMessage {
     private Long postId; // 방번호
     private String nickname;
 
+
+    @Builder
+    public RequestMessage(String content, String type, Long postId, String nickname) {
+        this.content = content;
+        this.type = type;
+        this.postId = postId;
+        this.nickname = nickname;
+    }
 }

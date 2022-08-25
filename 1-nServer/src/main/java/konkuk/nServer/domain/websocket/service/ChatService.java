@@ -1,10 +1,11 @@
 package konkuk.nServer.domain.websocket.service;
 
+import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.post.domain.Post;
 import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.UserRepository;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.domain.websocket.domain.Message;
 import konkuk.nServer.domain.websocket.domain.MessageType;
 import konkuk.nServer.domain.websocket.dto.request.RequestMessage;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
     private final MessageRepository messageRepository;
+    private final ConvertProvider convertProvider;
 
     //채팅방 불러오기
     public List<FindRoom> findUserRoom(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
 
         List<FindRoom> findRooms = user.getProposal().stream()
                 .filter(proposal -> proposal.getPost().getProcess() != PostProcess.CLOSE)
@@ -67,15 +67,14 @@ public class ChatService {
         Post post = postRepository.findById(requestMessage.getPostId())
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
 
         if (MessageType.ENTER.name().equals(requestMessage.getType())) {
             requestMessage.setContent(user.getNickname() + "님이 입장하였습니다.");
         }
 
         Message message = Message.builder()
-                .type(convertMessageType(requestMessage.getType()))
+                .type(convertProvider.convertMessageType(requestMessage.getType()))
                 .content(requestMessage.getContent())
                 .time(LocalDateTime.now())
                 .post(post)
@@ -92,14 +91,8 @@ public class ChatService {
                 .build();
     }
 
-    private MessageType convertMessageType(String type) {
-        if (Objects.equals(type, "ENTER")) return MessageType.ENTER;
-        else if (Objects.equals(type, "TALK")) return MessageType.TALK;
-        else throw new ApiException(ExceptionEnum.INCORRECT_MESSAGE_TYPE);
-    }
-
     public List<ResponseMessage> findByPostId(Long postId) {
-        return messageRepository.findByPostId(postId).stream()
+        return messageRepository.findByPostIdOrderByTimeAsc(postId).stream()
                 .map(message -> ResponseMessage.of(message, postId))
                 .toList();
     }

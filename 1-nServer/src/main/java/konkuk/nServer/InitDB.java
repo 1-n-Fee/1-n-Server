@@ -27,6 +27,8 @@ import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignupForApp;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
+import konkuk.nServer.domain.websocket.dto.request.RequestMessage;
+import konkuk.nServer.domain.websocket.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +58,7 @@ public class InitDB {
     private final ProposalService proposalService;
     private final CommentRepository commentRepository;
     private final ProposalRepository proposalRepository;
+    private final ChatService chatService;
 
     @Value("${image.default_filename}")
     private String defaultImage;
@@ -72,6 +75,7 @@ public class InitDB {
         initPost();
         initComment();
         initProposal();
+        initMessage();
 
         log.info("initialize database end");
     }
@@ -446,6 +450,40 @@ public class InitDB {
                         List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
                                 new SaveProposal.Menus(menus.get(3).getId(), 1))));
         proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count + 4).getId(), true);
+    }
+
+    void initMessage() {
+        User owner = userRepository.findById(1L).get();
+        User user1 = userRepository.findById(2L).get();
+        User user2 = userRepository.findById(4L).get();
+        User user3 = userRepository.findById(6L).get();
+        Post post = postRepository.findById(1L).get();
+
+        sendMessage(owner, post, "ENTER", "입장");
+        sendMessage(user1, post, "ENTER", "입장");
+        sendMessage(user1, post, "TALK", "안녕하세요~");
+        sendMessage(owner, post, "TALK", "넵 안녕하세요.");
+        sendMessage(user2, post, "ENTER", "입장");
+        sendMessage(owner, post, "TALK", user2.getNickname() + "님, 안녕하세요.");
+        sendMessage(user2, post, "TALK", "아 배고프다ㅜ");
+        sendMessage(owner, post, "TALK", "목표 인원 모이면 바로 주문할께요!.");
+        sendMessage(user1, post, "TALK", "넵넵!");
+        sendMessage(user2, post, "TALK", "조아용~");
+        sendMessage(user2, post, "TALK", "다들 건대 근처에서 사시나요?");
+        sendMessage(user1, post, "TALK", "기숙사에 어제 들어왔습니다. 1학기때 통학하느라 고생좀 했습니다..");
+        sendMessage(user1, post, "TALK", user1.getNickname() + "님은 어디 사세요?");
+        sendMessage(user2, post, "TALK", "아 저는 경기도 사는데, 친구 자취방 놀러왔어요.");
+
+    }
+
+    private void sendMessage(User user, Post post, String type, String content) {
+        chatService.sendMessage(user.getId(),
+                RequestMessage.builder()
+                        .type(type)
+                        .nickname(user.getNickname())
+                        .postId(post.getId())
+                        .content(content)
+                        .build());
     }
 
 

@@ -17,18 +17,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RegistryPost {
 
-    @NotNull
+    @NotNull(message = "spotId는 필수입니다.")
     private Long spotId;
 
     private String content;
 
-    @NotNull
+    @NotNull(message = "limitNumber는 필수입니다.")
     private Integer limitNumber;
 
-    @NotNull
+    @NotNull(message = "storeId는 필수입니다.")
     private Long storeId;
 
-    @NotBlank
+    @NotBlank(message = "closeTime는 필수입니다.")
     private String closeTime; // yyyy.MM.dd.HH.mm
 
     @Builder

@@ -6,6 +6,7 @@ import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.domain.Spot;
 import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.websocket.domain.MessageType;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -89,6 +90,12 @@ public class ConvertProvider {
             if (process.toUpperCase().equals(postProcess.name())) return postProcess;
         }
         throw new ApiException(ExceptionEnum.INCORRECT_POST_PROCESS);
+    }
+
+    public MessageType convertMessageType(String type) {
+        if (Objects.equals(type, "ENTER")) return MessageType.ENTER;
+        else if (Objects.equals(type, "TALK")) return MessageType.TALK;
+        else throw new ApiException(ExceptionEnum.INCORRECT_MESSAGE_TYPE);
     }
 
 }

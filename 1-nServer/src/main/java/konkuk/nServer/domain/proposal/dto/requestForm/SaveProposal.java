@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SaveProposal {
 
-    @NotNull
+    @NotNull(message = "postId는 필수입니다.")
     private Long postId;
 
     private List<Menus> menus = new ArrayList<>();
@@ -19,10 +19,10 @@ public class SaveProposal {
     @Data
     @NoArgsConstructor
     public static class Menus {
-        @NotNull
+        @NotNull(message = "menuId는 필수입니다.")
         private Long menuId;
 
-        @NotNull
+        @NotNull(message = "quantity는 필수입니다.")
         private Integer quantity;
 
         public Menus(Long menuId, Integer quantity) {

@@ -37,7 +37,7 @@ public class MessageController {
     }
 
     @GetMapping("/message/{postId}")
-    public List<ResponseMessage> sendMessage(@PathVariable Long postId) {
+    public List<ResponseMessage> findMessage(@PathVariable Long postId) {
         return chatService.findByPostId(postId);
     }
 

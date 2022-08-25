@@ -36,9 +36,10 @@ public class HistoryService {
     public List<FindApplyPostList> findApplyPostByUser(Long userId) {
         return proposalRepository.findByUserId(userId).stream()
                 .map(proposal -> {
-                            List<FindApplyPostList.MyMenus> myMenus = proposal.getProposalDetails().stream()
-                                    .map(FindApplyPostList.MyMenus::of)
-                                    .toList();
+                            List<FindApplyPostList.MyMenus> myMenus =
+                                    proposal.getProposalDetails().stream()
+                                            .map(FindApplyPostList.MyMenus::of)
+                                            .toList();
                             return FindApplyPostList.of(proposal, myMenus);
                         }
                 )
@@ -46,12 +47,7 @@ public class HistoryService {
     }
 
     public List<FindAllPostList> findPostByAll(Long userId) {
-        List<Proposal> proposals = proposalRepository.findByUserId(userId);
-        proposals.sort((p1, p2) ->
-                p1.getPost().getRegistryTime().isBefore(p2.getPost().getRegistryTime()) ? 1 : -1
-        );
-
-        return proposals.stream()
+        return proposalRepository.findByUserIdOrderByCreateDateTimeAsc(userId).stream()
                 .map(proposal -> FindAllPostList.of(proposal, userId))
                 .toList();
     }
