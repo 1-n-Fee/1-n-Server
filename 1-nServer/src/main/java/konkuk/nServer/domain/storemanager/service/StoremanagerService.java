@@ -12,7 +12,6 @@ import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignup;
 import konkuk.nServer.domain.storemanager.dto.request.StoremanagerSignupForApp;
 import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
 import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
@@ -41,11 +40,7 @@ public class StoremanagerService {
 
     public void signup(StoremanagerSignup form) {
         Role role = convertProvider.convertStoremanagerRole(form.getRole());
-        if (role != Role.ROLE_STOREMANAGER) {
-            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-        }
         AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
-
         Storemanager storemanager = form.toEntity(role, accountType);
 
         storemanagerRepository.save(storemanager);
@@ -75,11 +70,7 @@ public class StoremanagerService {
 
     public void signupForApp(StoremanagerSignupForApp form) {
         Role role = convertProvider.convertStoremanagerRole(form.getRole());
-        if (role != Role.ROLE_STOREMANAGER) {
-            throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-        }
         AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
-
         Storemanager storemanager = form.toEntity(role, accountType);
 
         storemanagerRepository.save(storemanager);
@@ -163,7 +154,7 @@ public class StoremanagerService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfo findInfoByUserId(Long storemanagerId) {
+    public UserInfo findInfoByStoremanagerId(Long storemanagerId) {
         Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
                 .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
         return UserInfo.of(storemanager);

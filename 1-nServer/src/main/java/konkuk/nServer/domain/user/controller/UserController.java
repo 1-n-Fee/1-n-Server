@@ -11,7 +11,6 @@ import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -87,22 +86,26 @@ public class UserController {
     }
 
     @PostMapping("/find/email")
-    public Map<String, Object> findEmail(@RequestBody FindEmail form) {
+    public Map<String, Object> findEmail(@RequestBody @Valid FindEmail form) {
         String email = userService.findEmail(form.getName(), form.getPhone());
         return Map.of("email", email);
     }
 
     @GetMapping("/info")
     public UserInfo findLoginMemberInfo(@AuthenticationPrincipal PrincipalDetails userDetail) {
-        if(userDetail.getRole()== Role.ROLE_STUDENT) return userService.findInfoByUserId(userDetail.getId());
-        else if(userDetail.getRole()== Role.ROLE_STOREMANAGER) return storemanagerService.findInfoByUserId(userDetail.getId());
-        else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+        if (userDetail.getRole() == Role.ROLE_STUDENT) {
+            return userService.findInfoByUserId(userDetail.getId());
+        } else if (userDetail.getRole() == Role.ROLE_STOREMANAGER) {
+            return storemanagerService.findInfoByStoremanagerId(userDetail.getId());
+        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
     }
 
     @GetMapping("/isLogin")
     public Map<String, Object> userIsLogin(@AuthenticationPrincipal PrincipalDetails userDetail) {
         if (userDetail != null) {
             return Map.of("isLogin", true, "role", userDetail.getRole().name());
-        } else return Map.of("isLogin", false);
+        } else {
+            return Map.of("isLogin", false);
+        }
     }
 }

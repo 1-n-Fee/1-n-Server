@@ -7,11 +7,14 @@ import konkuk.nServer.domain.account.repository.NaverRepository;
 import konkuk.nServer.domain.account.repository.PasswordRepository;
 import konkuk.nServer.domain.account.service.OAuth2Provider;
 import konkuk.nServer.domain.common.service.ConvertProvider;
-import konkuk.nServer.domain.user.domain.*;
+import konkuk.nServer.domain.user.domain.Role;
+import konkuk.nServer.domain.user.domain.SexType;
+import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignupForApp;
 import konkuk.nServer.domain.user.dto.responseForm.UserInfo;
-import konkuk.nServer.domain.user.repository.*;
+import konkuk.nServer.domain.user.repository.UserFindDao;
+import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
     private final KakaoRepository kakaoRepository;
     private final NaverRepository naverRepository;
     private final GoogleRepository googleRepository;
@@ -44,6 +48,7 @@ public class UserService {
 
         AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
         SexType sexType = convertProvider.convertSexType(form.getSexType());
+        if (isDuplicateNickname(form.getNickname())) throw new ApiException(ExceptionEnum.DUPLICATE_NICKNAME);
 
         User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
@@ -78,6 +83,7 @@ public class UserService {
 
         AccountType accountType = convertProvider.convertAccountType(form.getAccountType());
         SexType sexType = convertProvider.convertSexType(form.getSexType());
+        if (isDuplicateNickname(form.getNickname())) throw new ApiException(ExceptionEnum.DUPLICATE_NICKNAME);
 
         User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
@@ -103,8 +109,7 @@ public class UserService {
     }
 
     public void changePassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
 
         if (user.getAccountType() != AccountType.PASSWORD)
             throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
@@ -116,20 +121,15 @@ public class UserService {
     }
 
     public void changeNickname(Long userId, String nickname) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
         if (userRepository.existsByNickname(nickname))
-            throw new ApiException(ExceptionEnum.INCORRECT_NICKNAME);
+            throw new ApiException(ExceptionEnum.DUPLICATE_NICKNAME);
 
-        user.changeNickname(nickname);
+        userFindDao.findById(userId).changeNickname(nickname);
     }
 
     public void changeSexType(Long userId, String sexType) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-
-        user.changeSexType(convertProvider.convertSexType(sexType));
+        userFindDao.findById(userId)
+                .changeSexType(convertProvider.convertSexType(sexType));
     }
 
     @Transactional(readOnly = true)
@@ -204,15 +204,12 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public String findEmail(String name, String phone) {
-        User user = userRepository.findByNameAndPhone(name, phone)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-        return user.getEmail();
+        return userFindDao.findByNameAndPhone(name, phone).getEmail();
     }
 
     @Transactional(readOnly = true)
     public UserInfo findInfoByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        User user = userFindDao.findById(userId);
         return UserInfo.of(user);
     }
 
