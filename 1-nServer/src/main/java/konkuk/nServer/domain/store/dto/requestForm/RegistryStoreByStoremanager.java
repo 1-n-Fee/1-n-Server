@@ -19,22 +19,22 @@ import java.util.List;
 @NoArgsConstructor
 public class RegistryStoreByStoremanager {
 
-    @NotBlank
+    @NotBlank(message = "name은 필수입니다.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "phone은 필수입니다.")
     private String phone;
 
-    @NotNull
+    @NotNull(message = "deliveryFee은 필수입니다.")
     private Integer deliveryFee;
 
-    @NotBlank
+    @NotBlank(message = "address은 필수입니다.")
     private String address;
 
-    @NotBlank
+    @NotBlank(message = "businessHours은 필수입니다.")
     private String businessHours; // hhmm-hhmm
 
-    @NotBlank
+    @NotBlank(message = "category은 필수입니다.")
     private String category;
 
     private String breakTime; // hhmm-hhmm

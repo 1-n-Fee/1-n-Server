@@ -11,7 +11,7 @@ import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.repository.MenuRepository;
 import konkuk.nServer.domain.store.repository.StoreRepository;
 import konkuk.nServer.domain.storemanager.domain.Storemanager;
-import konkuk.nServer.domain.storemanager.repository.StoremanagerRepository;
+import konkuk.nServer.domain.storemanager.repository.StoremanagerFindDao;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final StoremanagerRepository storemanagerRepository;
+    private final StoremanagerFindDao storemanagerFindDao;
     private final MenuRepository menuRepository;
     private final ConvertProvider convertProvider;
 
@@ -47,8 +47,7 @@ public class StoreService {
     private String defaultMenuImage;
 
     public void registryStoreByStoremanager(Long storemanagerId, RegistryStoreByStoremanager form) {
-        Storemanager storemanager = storemanagerRepository.findById(storemanagerId)
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
+        Storemanager storemanager = storemanagerFindDao.findById(storemanagerId);
         Category category = convertProvider.convertCategory(form.getCategory());
 
         Store store = form.toEntity(storemanager, category);
@@ -98,6 +97,7 @@ public class StoreService {
         return imageStoreUrl;
     }
 
+    @Transactional(readOnly = true)
     public List<StoreList> getStoreListByCategory(String category) {
         /**
          * 원래는 findAll() 을 사용하는 경우가 적음 -> DB 부담 커짐, 비용 너무 큼
@@ -105,7 +105,6 @@ public class StoreService {
          */
 
         List<Store> stores;
-
         if (Objects.equals(category, "all")) stores = storeRepository.findAll();
         else stores = storeRepository.findByCategory(convertProvider.convertCategory(category));
 
@@ -126,6 +125,7 @@ public class StoreService {
         return originalFileName.substring(pos + 1);
     }
 
+    @Transactional(readOnly = true)
     public List<StoreMenu> getStoreMenu(Long storeId) {
         return menuRepository.findByStoreId(storeId).stream()
                 .map(StoreMenu::of)

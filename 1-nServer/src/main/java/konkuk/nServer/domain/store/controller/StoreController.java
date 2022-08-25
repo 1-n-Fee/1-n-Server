@@ -6,9 +6,6 @@ import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
 import konkuk.nServer.domain.store.dto.responseForm.StoreList;
 import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.service.StoreService;
-import konkuk.nServer.domain.user.domain.Role;
-import konkuk.nServer.exception.ApiException;
-import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,21 +42,15 @@ public class StoreController {
     public void registryStoreByStoremanager(@AuthenticationPrincipal PrincipalDetails userDetail,
                                             @RequestBody @Valid RegistryStoreByStoremanager registryStore) {
         registryStore.validate();
-        if (userDetail.getRole() == Role.ROLE_STOREMANAGER)
-            storeService.registryStoreByStoremanager(userDetail.getId(), registryStore);
-        else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
+        storeService.registryStoreByStoremanager(userDetail.getId(), registryStore);
     }
 
 
     @PostMapping("/student")
     @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, Object> registryStoreByStudent(@AuthenticationPrincipal PrincipalDetails userDetail,
-                                                      @RequestBody RegistryStoreByStudent registryStore) {
-        if (userDetail.getRole() == Role.ROLE_STUDENT) {
-            Long storeId = storeService.registryStoreByStudent(registryStore);
-            return Map.of("storeId", storeId);
-        } else throw new ApiException(ExceptionEnum.INCORRECT_ROLE);
-
+    public Map<String, Object> registryStoreByStudent(@RequestBody RegistryStoreByStudent registryStore) {
+        Long storeId = storeService.registryStoreByStudent(registryStore);
+        return Map.of("storeId", storeId);
     }
 
     @PostMapping("/menu/image")
