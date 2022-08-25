@@ -3,11 +3,10 @@ package konkuk.nServer.domain.account.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.account.dto.oauth.*;
-import konkuk.nServer.domain.account.repository.GoogleRepository;
-import konkuk.nServer.domain.account.repository.KakaoRepository;
-import konkuk.nServer.domain.account.repository.NaverRepository;
-import konkuk.nServer.domain.user.repository.UserRepository;
+import konkuk.nServer.exception.ApiException;
+import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,14 +54,16 @@ public class OAuth2Provider {
 
     @Value("${oauth2.google.client_secret}")
     private String googleClientSecret;
-
-    private final KakaoRepository kakaoRepository;
-    private final NaverRepository naverRepository;
-    private final GoogleRepository googleRepository;
-    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    public String getKakaoId(String code) {
+    public String getOauthId(AccountType accountType, String code) {
+        if (accountType == AccountType.KAKAO) return getKakaoId(code);
+        if (accountType == AccountType.NAVER) return getNaverId(code);
+        if (accountType == AccountType.GOOGLE) return getGoogleId(code);
+        throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+    }
+
+    private String getKakaoId(String code) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -98,7 +99,7 @@ public class OAuth2Provider {
         return kakaoProfile;
     }
 
-    public String getNaverId(String authorizationCode) {
+    private String getNaverId(String authorizationCode) {
         RestTemplate rt = new RestTemplate();
 
         // HttpHeader 오브젝트 생성
@@ -132,7 +133,7 @@ public class OAuth2Provider {
         return naverProfile;
     }
 
-    public String getGoogleId(String authorizationCode) {
+    private String getGoogleId(String authorizationCode) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");

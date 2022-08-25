@@ -53,26 +53,11 @@ public class UserService {
         User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
 
-        if (accountType == AccountType.KAKAO) {
-            String kakaoId = oAuth2Provider.getKakaoId(form.getCode());
-            Kakao kakao = new Kakao(kakaoId, user);
-            user.setKakao(kakao);
-            kakaoRepository.save(kakao);
-        } else if (accountType == AccountType.NAVER) {
-            String naverId = oAuth2Provider.getNaverId(form.getCode());
-            Naver naver = new Naver(naverId, user);
-            user.setNaver(naver);
-            naverRepository.save(naver);
-        } else if (accountType == AccountType.GOOGLE) {
-            String googleId = oAuth2Provider.getGoogleId(form.getCode());
-            Google google = new Google(googleId, user);
-            user.setGoogle(google);
-            googleRepository.save(google);
-        } else if (accountType == AccountType.PASSWORD) {
-            validatePassword(form.getPassword());
-            Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
-            user.setPassword(password);
-            passwordRepository.save(password);
+        if (accountType == AccountType.PASSWORD) {
+            saveOauth(user, accountType, form.getPassword());
+        } else {
+            String oauthId = oAuth2Provider.getOauthId(accountType, form.getCode());
+            saveOauth(user, accountType, oauthId);
         }
     }
 
@@ -88,25 +73,34 @@ public class UserService {
         User user = form.toEntity(role, accountType, sexType);
         userRepository.save(user);
 
+        if (accountType == AccountType.PASSWORD) {
+            saveOauth(user, accountType, form.getPassword());
+        } else {
+            saveOauth(user, accountType, form.getOauthId());
+        }
+    }
+
+    private void saveOauth(User user, AccountType accountType, String id) {
         if (accountType == AccountType.KAKAO) {
-            Kakao kakao = new Kakao(form.getOauthId(), user);
+            Kakao kakao = new Kakao(id, user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
         } else if (accountType == AccountType.NAVER) {
-            Naver naver = new Naver(form.getOauthId(), user);
+            Naver naver = new Naver(id, user);
             user.setNaver(naver);
             naverRepository.save(naver);
         } else if (accountType == AccountType.GOOGLE) {
-            Google google = new Google(form.getOauthId(), user);
+            Google google = new Google(id, user);
             user.setGoogle(google);
             googleRepository.save(google);
         } else if (accountType == AccountType.PASSWORD) {
-            validatePassword(form.getPassword());
-            Password password = new Password(passwordEncoder.encode(form.getPassword()), user);
+            validatePassword(id);
+            Password password = new Password(passwordEncoder.encode(id), user);
             user.setPassword(password);
             passwordRepository.save(password);
         }
     }
+
 
     public void changePassword(Long userId, String newPassword) {
         User user = userFindDao.findById(userId);
@@ -140,23 +134,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public String oAuthLogin(String oauth, String code) {
         AccountType accountType = convertProvider.convertAccountType(oauth);
-        User user = null;
-        if (accountType == AccountType.KAKAO) {
-            String kakaoId = oAuth2Provider.getKakaoId(code);
-            Kakao kakao = kakaoRepository.findByKakaoId(kakaoId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = kakao.getUser();
-        } else if (accountType == AccountType.NAVER) {
-            String naverId = oAuth2Provider.getNaverId(code);
-            Naver naver = naverRepository.findByNaverId(naverId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = naver.getUser();
-        } else if (accountType == AccountType.GOOGLE) {
-            String googleId = oAuth2Provider.getGoogleId(code);
-            Google google = googleRepository.findByGoogleId(googleId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = google.getUser();
-        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+        String oauthId = oAuth2Provider.getOauthId(accountType, code);
+        User user = userFindDao.findUserByOauth(accountType, oauthId);
 
         String jwtToken = tokenProvider.createJwt(user.getId(), user.getRole());
         log.info("Token = {}", jwtToken);
@@ -167,26 +146,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public String oAuthLoginForApp(String oauth, String oauthId) {
         AccountType accountType = convertProvider.convertAccountType(oauth);
-        User user = null;
-        if (accountType == AccountType.KAKAO) {
-            Kakao kakao = kakaoRepository.findByKakaoId(oauthId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = kakao.getUser();
-        } else if (accountType == AccountType.NAVER) {
-            Naver naver = naverRepository.findByNaverId(oauthId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = naver.getUser();
-        } else if (accountType == AccountType.GOOGLE) {
-            Google google = googleRepository.findByGoogleId(oauthId)
-                    .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));
-            user = google.getUser();
-        } else throw new ApiException(ExceptionEnum.NO_FOUND_USER);
+        User user = userFindDao.findUserByOauth(accountType, oauthId);
 
         String jwtToken = tokenProvider.createJwt(user.getId(), user.getRole());
         log.info("Token = {}", jwtToken);
 
         return jwtToken;
     }
+
 
     public String findPassword(String email, String name, String phone) {
         User user = userRepository.findUserForPassword(email, name, phone)
