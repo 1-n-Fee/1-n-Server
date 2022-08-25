@@ -192,11 +192,11 @@ public class InitDB {
                         .deliveryFee(5000)
                         .name("탄탄면공방 서울숲점")
                         .category("chinese")
-                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(10500, "라구탄탄면", "라구탄탄면.png"),
-                                new RegistryStoreByStoremanager.MenuDto(9500, "얼큰탄탄국밥", "얼큰탄탄국밥.png"),
-                                new RegistryStoreByStoremanager.MenuDto(9800, "오리지널탄탄면", "오리지널탄탄면.png"),
-                                new RegistryStoreByStoremanager.MenuDto(10500, "청양탄탄면", "청양탄탄면.png"),
-                                new RegistryStoreByStoremanager.MenuDto(4000, "육고명튀김교자(2ea)", "육고명튀김교자.png")))
+                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(10500, "라구탄탄면", "fkrnxksxksaus.png"),
+                                new RegistryStoreByStoremanager.MenuDto(9500, "얼큰탄탄국밥", "djfzmsxksxksrnrqkq.png"),
+                                new RegistryStoreByStoremanager.MenuDto(9800, "오리지널탄탄면", "dhflwlsjfxksxksaus.png"),
+                                new RegistryStoreByStoremanager.MenuDto(10500, "청양탄탄면", "cjddidxksxksaus.png"),
+                                new RegistryStoreByStoremanager.MenuDto(4000, "육고명튀김교자(2ea)", "dbrrhaudxnlrlarywk.png")))
                         .build();
         storeService.registryStoreByStoremanager(storemanager.getId(), registryStoreByStoremanager);
 
@@ -210,12 +210,12 @@ public class InitDB {
                         .deliveryFee(4000)
                         .name("더진국수육국밥 건국대점")
                         .category("korean")
-                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8500, "수육국밥(보통)", "수육국밥(보통).jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(9500, "수육국밥(특)", "수육국밥(특).jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(8500, "순대국밥(보통)", "순대국밥(보통).jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(9500, "순대국밥(특)", "순대국밥(특).jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(23000, "김치찜", "김치찜.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(23000, "얼큰술국", "얼큰술국.jpeg")))
+                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(8500, "수육국밥(보통)", "tndbrrnrqkqqhxhd.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(9500, "수육국밥(특)", "tndbrrnrqkqxmr.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(8500, "순대국밥(보통)", "tnseornrqkqqhxhd.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(9500, "순대국밥(특)", "tnseornrqkqxmr.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(23000, "김치찜", "rlaclwla.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(23000, "얼큰술국", "djfzmstnfrnr.jpeg")))
                         .build();
         storeService.registryStoreByStoremanager(storemanager.getId(), registryStoreByStoremanager);
 
@@ -224,10 +224,10 @@ public class InitDB {
                 .deliveryFee(5000)
                 .name("홍콩반점 건대입구역점")
                 .category("chinese")
-                .menus(List.of(new RegistryStoreByStudent.MenuDto(6000, "짜장면", "짜장면.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(7000, "고추짜장", "고추짜장.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(7000, "짬뽕", "짬뽕.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(20000, "식사1인+탕수육", "식사1인+탕수육.jpeg"),
+                .menus(List.of(new RegistryStoreByStudent.MenuDto(6000, "짜장면", "wkwkdaus.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(7000, "고추짜장", "rhcnwkwkd.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(7000, "짬뽕", "wkaqhd.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(20000, "식사1인+탕수육", "tlrtk1dlsxkdtndbr.jpeg"),
                         new RegistryStoreByStudent.MenuDto(500, "단무지추가", defaultImage)))
                 .build();
         storeService.registryStoreByStudent(registryStoreByStudent);
@@ -253,10 +253,10 @@ public class InitDB {
                 .deliveryFee(2000)
                 .name("스테이키")
                 .category("western")
-                .menus(List.of(new RegistryStoreByStudent.MenuDto(7300, "갈비", "갈비.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(6900, "등심", "등심.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(6900, "함박", "함박.jpeg"),
-                        new RegistryStoreByStudent.MenuDto(6900, "차돌", "차돌.jpeg")))
+                .menus(List.of(new RegistryStoreByStudent.MenuDto(7300, "갈비", "rkfql.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(6900, "등심", "emdtla.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(6900, "함박", "gkaqkq.jpeg"),
+                        new RegistryStoreByStudent.MenuDto(6900, "차돌", "ckehf.jpeg")))
                 .build();
         storeService.registryStoreByStudent(registryStoreByStudent);
 
@@ -269,13 +269,13 @@ public class InitDB {
                         .deliveryFee(4000)
                         .name("도쿄빙수 건대점")
                         .category("etc")
-                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(12000, "(신메뉴)직접 우린 밀크티 빙수", "직접우린밀크티빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(12000, "애플망고빙수", "애플망고빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(10800, "방울방울 토마토 빙수", "방울방울토마토빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(12000, "후지산 말차 생크림 빙수", "후지산말차생크림빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(12000, "앙큼상큼 자두빙수(계절)", "앙큼상큼자두빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(12000, "리치핑크 자몽 요거트 빙수", "리치핑크자몽요거트빙수.jpeg"),
-                                new RegistryStoreByStoremanager.MenuDto(11500, "시크한 오레오 빙수", "시크한오레오빙수.jpeg")
+                        .menus(List.of(new RegistryStoreByStoremanager.MenuDto(12000, "(신메뉴)직접 우린 밀크티 빙수", "wlrwjqdnflsalfzmxlqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(12000, "애플망고빙수", "dovmfakdrhqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(10800, "방울방울 토마토 빙수", "qkddnfqkddnfxhakxhqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(12000, "후지산 말차 생크림 빙수", "gnwltksakfcktodzmflaqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(12000, "앙큼상큼 자두빙수(계절)", "dkdzmatkdzmawkenqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(12000, "리치핑크 자몽 요거트 빙수", "flclvldzmwkahddyrjxmqldtn.jpeg"),
+                                new RegistryStoreByStoremanager.MenuDto(11500, "시크한 오레오 빙수", "tlzmgksdhfpdhqldtn.jpeg")
 
                         ))
                         .build();
