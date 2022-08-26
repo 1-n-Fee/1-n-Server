@@ -19,4 +19,6 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
     List<Proposal> findByUserId(Long userId);
 
     List<Proposal> findByUserIdOrderByCreateDateTimeAsc(Long userId);
+
+    Optional<Proposal>  findByUserIdAndPostIdAndProposalState(Long userId, Long postId, ProposalState proposalState);
 }

@@ -117,11 +117,11 @@ public class InitDB {
                 .build());
 
         userService.signup(UserSignup.builder()
-                .email("test7@konkuk.ac.kr")
+                .email("test4@konkuk.ac.kr")
                 .accountType("password")
                 .password("test!123")
-                .nickname("tester7Nick")
-                .name("tester7")
+                .nickname("tester4Nick")
+                .name("tester4")
                 .role("student")
                 .phone("01012345678")
                 .major("수의학과")
@@ -129,11 +129,11 @@ public class InitDB {
                 .build());
 
         userService.signup(UserSignup.builder()
-                .email("test8@konkuk.ac.kr")
+                .email("test5@konkuk.ac.kr")
                 .accountType("password")
                 .password("test!123")
-                .nickname("tester8Nick")
-                .name("tester8")
+                .nickname("tester5Nick")
+                .name("tester5")
                 .role("student")
                 .phone("01012345678")
                 .major("국어국문과")
@@ -141,11 +141,11 @@ public class InitDB {
                 .build());
 
         userService.signup(UserSignup.builder()
-                .email("test9@konkuk.ac.kr")
+                .email("test6@konkuk.ac.kr")
                 .accountType("password")
                 .password("test!123")
-                .nickname("tester9Nick")
-                .name("tester9")
+                .nickname("tester6Nick")
+                .name("tester6")
                 .role("student")
                 .phone("01012345678")
                 .major("전기전자공학과")
@@ -155,8 +155,8 @@ public class InitDB {
 
     void initStoremanager() {
         storemanagerService.signup(StoremanagerSignup.builder()
-                .email("test4@google.com")
-                .name("tester4")
+                .email("test7@google.com")
+                .name("tester7")
                 .phone("0108234251")
                 .accountType("password")
                 .password("test!123")
@@ -165,8 +165,8 @@ public class InitDB {
                 .build());
 
         storemanagerService.signupForApp(StoremanagerSignupForApp.builder()
-                .email("test5@naver.com")
-                .name("tester5")
+                .email("test8@naver.com")
+                .name("tester8")
                 .phone("01045234143")
                 .accountType("password")
                 .password("test!123")
@@ -175,8 +175,8 @@ public class InitDB {
                 .build());
 
         storemanagerService.signupForApp(StoremanagerSignupForApp.builder()
-                .email("test6@kakao.com")
-                .name("tester6")
+                .email("test9@kakao.com")
+                .name("tester9")
                 .phone("010345134231")
                 .accountType("naver")
                 .oauthId("naverOauthId")
@@ -473,7 +473,6 @@ public class InitDB {
         sendMessage(user1, post, "TALK", "기숙사에 어제 들어왔습니다. 1학기때 통학하느라 고생좀 했습니다..");
         sendMessage(user1, post, "TALK", user1.getNickname() + "님은 어디 사세요?");
         sendMessage(user2, post, "TALK", "아 저는 경기도 사는데, 친구 자취방 놀러왔어요.");
-
     }
 
     private void sendMessage(User user, Post post, String type, String content) {

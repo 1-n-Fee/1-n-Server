@@ -2,8 +2,10 @@ package konkuk.nServer.domain.websocket.service;
 
 import konkuk.nServer.domain.common.service.ConvertProvider;
 import konkuk.nServer.domain.post.domain.Post;
-import konkuk.nServer.domain.post.domain.PostProcess;
 import konkuk.nServer.domain.post.repository.PostRepository;
+import konkuk.nServer.domain.proposal.domain.Proposal;
+import konkuk.nServer.domain.proposal.domain.ProposalState;
+import konkuk.nServer.domain.proposal.repository.ProposalRepository;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.domain.websocket.domain.Message;
@@ -17,50 +19,54 @@ import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ChatService {
 
     private final PostRepository postRepository;
     private final UserFindDao userFindDao;
     private final MessageRepository messageRepository;
     private final ConvertProvider convertProvider;
+    private final ProposalRepository proposalRepository;
 
-    //채팅방 불러오기
-    public List<FindRoom> findUserRoom(Long userId) {
-        User user = userFindDao.findById(userId);
+    @Transactional(readOnly = true)
+    public FindRoom findUserRoom(Long userId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_POST));
+        List<Proposal> proposals = proposalRepository.findByPostIdAndProposalState(postId, ProposalState.ACCEPTED);
 
-        List<FindRoom> findRooms = user.getProposal().stream()
-                .filter(proposal -> proposal.getPost().getProcess() != PostProcess.CLOSE)
-                .map(proposal -> FindRoom.builder()
-                        .postState(proposal.getPost().getProcess().name())
-                        .isOwner(false)
-                        .postId(proposal.getPost().getId())
-                        .storeName(proposal.getPost().getStore().getName())
-                        .build())
-                .collect(Collectors.toList());
+        List<String> members = proposals.stream().map(proposal -> proposal.getUser().getNickname()).toList();
 
-        List<Post> posts = postRepository.findByUserId(userId);
-        for (Post post : posts) {
-            if (post.getProcess() != PostProcess.CLOSE) {
-                FindRoom findRoom = FindRoom.builder()
-                        .postState(post.getProcess().name())
-                        .isOwner(true)
-                        .postId(post.getId())
-                        .storeName(post.getStore().getName())
-                        .build();
-                findRooms.add(findRoom);
-            }
-        }
+        Proposal proposal = proposalRepository.findByUserIdAndPostIdAndProposalState(userId, postId, ProposalState.ACCEPTED)
+                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_PROPOSAL));
 
-        return findRooms;
+        int totalPrice = proposal.getProposalDetails()
+                .stream()
+                .mapToInt(proposalDetail -> proposalDetail.getMenu().getPrice() * proposalDetail.getQuantity())
+                .sum();
+        int deliveryFeePerPerson = post.getStore().getDeliveryFee() / members.size();
+
+        return FindRoom.builder()
+                .postId(postId)
+                .storeName(post.getStore().getName())
+                .isOwner(Objects.equals(post.getUser().getId(), userId))
+                .postState(post.getProcess().name())
+                .userTotalPrice(totalPrice + deliveryFeePerPerson)
+                .deliveryFeePerPerson(deliveryFeePerPerson)
+                .spotId(post.getSpot().getId())
+                .limitNumber(post.getLimitNumber())
+                .currentNumber(post.getCurrentNumber())
+                .members(members)
+                .build();
     }
 
     public ResponseMessage sendMessage(Long userId, RequestMessage requestMessage) {

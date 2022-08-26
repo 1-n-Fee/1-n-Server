@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                                 .access("hasRole('STUDENT')")
                                 .antMatchers("/store")
                                 .access("hasRole('STOREMANAGER')")
-                                .antMatchers("/user/change/password", "/user/info").authenticated()
+                                .antMatchers("/user/change/password", "/user/info", "/chat/room/**").authenticated()
                                 .anyRequest().permitAll()
                 )
 
