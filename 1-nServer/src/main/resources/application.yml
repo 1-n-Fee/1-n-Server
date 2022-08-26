@@ -22,6 +22,19 @@ spring:
         #dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(eatMzZHxkLS+yWrXhbBWXoCO4LLdWPd2QvlPvdmPZW4=)
+    password: ENC(ijRTuMZpdeGFVx0WRhZK63p614qeKrpbdbCbI7MzwJs=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: utf-8
+
 token:
   expiration_time: 600000
   secret: ENC(03SQAJfxfmKWC7qP3arNeM4dpEUlvWpp)
