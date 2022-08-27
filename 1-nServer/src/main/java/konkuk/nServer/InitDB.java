@@ -5,6 +5,8 @@ import konkuk.nServer.domain.comment.dto.requestForm.RegistryReply;
 import konkuk.nServer.domain.comment.repository.CommentRepository;
 import konkuk.nServer.domain.comment.service.CommentService;
 import konkuk.nServer.domain.post.domain.Post;
+import konkuk.nServer.domain.post.domain.PostProcess;
+import konkuk.nServer.domain.post.dto.requestForm.ChangePostProcess;
 import konkuk.nServer.domain.post.dto.requestForm.RegistryPost;
 import konkuk.nServer.domain.post.repository.PostRepository;
 import konkuk.nServer.domain.post.service.PostService;
@@ -458,21 +460,23 @@ public class InitDB {
         User user2 = userRepository.findById(4L).get();
         User user3 = userRepository.findById(6L).get();
         Post post = postRepository.findById(1L).get();
+        postService.changePostState(owner.getId(), new ChangePostProcess(post.getId(), PostProcess.ORDERING.name()));
 
         sendMessage(owner, post, "ENTER", "입장");
         sendMessage(user1, post, "ENTER", "입장");
-        sendMessage(user1, post, "TALK", "안녕하세요~");
-        sendMessage(owner, post, "TALK", "넵 안녕하세요.");
         sendMessage(user2, post, "ENTER", "입장");
-        sendMessage(owner, post, "TALK", user2.getNickname() + "님, 안녕하세요.");
+        sendMessage(user3, post, "ENTER", "입장");
+        sendMessage(owner, post, "TALK", "안녕하세요.");
+        sendMessage(user1, post, "TALK", "넵 안녕하세요~");
         sendMessage(user2, post, "TALK", "아 배고프다ㅜ");
-        sendMessage(owner, post, "TALK", "목표 인원 모이면 바로 주문할께요!.");
-        sendMessage(user1, post, "TALK", "넵넵!");
+        sendMessage(owner, post, "TALK", user2.getNickname() + "님, 안녕하세요.");
+        sendMessage(owner, post, "TALK", "지금 주문 바로 할께요.");
+        sendMessage(user1, post, "TALK", "넵넵");
         sendMessage(user2, post, "TALK", "조아용~");
         sendMessage(user2, post, "TALK", "다들 건대 근처에서 사시나요?");
-        sendMessage(user1, post, "TALK", "기숙사에 어제 들어왔습니다. 1학기때 통학하느라 고생좀 했습니다..");
+        sendMessage(user1, post, "TALK", "기숙사에 어제 들어왔습니다. 1학기때 통학하느라 고생해서..");
         sendMessage(user1, post, "TALK", user1.getNickname() + "님은 어디 사세요?");
-        sendMessage(user2, post, "TALK", "아 저는 경기도 사는데, 친구 자취방 놀러왔어요.");
+        sendMessage(user2, post, "TALK", "저는 건대에서 자취합니다!");
     }
 
     private void sendMessage(User user, Post post, String type, String content) {
