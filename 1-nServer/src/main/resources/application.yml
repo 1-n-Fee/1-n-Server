@@ -36,7 +36,7 @@ spring:
     default-encoding: utf-8
 
 token:
-  expiration_time: 600000
+  expiration_time: 86400000 # ms기준, 1초=1000ms
   secret: ENC(03SQAJfxfmKWC7qP3arNeM4dpEUlvWpp)
 
 oauth2:
