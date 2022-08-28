@@ -50,7 +50,7 @@ public enum ExceptionEnum {
     ACCESS_DENIED(HttpStatus.BAD_REQUEST, "T004", "권한이 없습니다."),
 
     FAIL_EMAIL_SEND(HttpStatus.BAD_REQUEST, "E001", "메시지 전송에 실패했습니다."),
-    NO_SESSION_CODE(HttpStatus.BAD_REQUEST, "E002", "해당 유저의 세션에서 코드를 찾을 수 없습니다."),
+    NO_FIND_DB_CODE(HttpStatus.BAD_REQUEST, "E002", "DB에서 해당 이메일의 인증 코드를 찾을 수 없습니다."),
     INVALID_EMAIL_DOMAIN(HttpStatus.BAD_REQUEST, "E003", "이메일 검증에 실패했습니다."),
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "E004", "중복된 이메일입니다."),
 

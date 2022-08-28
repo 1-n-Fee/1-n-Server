@@ -39,6 +39,10 @@ token:
   expiration_time: 86400000 # ms기준, 1초=1000ms
   secret: ENC(03SQAJfxfmKWC7qP3arNeM4dpEUlvWpp)
 
+email:
+  code:
+    expiration_time: 180 # 초
+
 oauth2:
   kakao:
     client_id: ENC(QeZ2V8+WvVXMy8eiBPoFF2tw28Ph08KqxJH9OThlULaFFGCWv6ffQq21xOQtKeYr)
