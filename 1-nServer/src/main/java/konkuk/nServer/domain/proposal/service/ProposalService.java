@@ -83,7 +83,7 @@ public class ProposalService {
         return proposalRepository.findByPostIdAndProposalState(postId, ProposalState.AWAITING).stream()
                 .map(proposal -> {
                     List<FindProposal.Menus> menus = proposalDetailRepository.findByProposal(proposal).stream()
-                            .map(proposalDetail -> new FindProposal.Menus(proposalDetail.getMenu().getId(), proposalDetail.getQuantity()))
+                            .map(FindProposal.Menus::of)
                             .toList();
                     return new FindProposal(proposal.getId(), proposal.getUser().getNickname(), menus);
                 })

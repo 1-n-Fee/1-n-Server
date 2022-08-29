@@ -1,9 +1,9 @@
 package konkuk.nServer.domain.proposal.dto.responseForm;
 
+import konkuk.nServer.domain.proposal.domain.ProposalDetail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FindProposal {
 
-    @NotNull
     private Long proposalId;
     private String userNickname;
     private List<Menus> menus = new ArrayList<>();
@@ -19,10 +18,13 @@ public class FindProposal {
     @Data
     @AllArgsConstructor
     public static class Menus {
-        @NotNull
         private Long menuId;
-
-        @NotNull
         private Integer quantity;
+        private String name;
+
+        public static FindProposal.Menus of(ProposalDetail proposalDetail) {
+            return new FindProposal.Menus(proposalDetail.getMenu().getId(),
+                    proposalDetail.getQuantity(), proposalDetail.getMenu().getName());
+        }
     }
 }
