@@ -15,6 +15,7 @@ public class FindApplyPostList {
     private String storeName;
     private String spotName;
     private Long postId;
+    private Long proposalId;
     private String proposalState;
     private Integer limitNumber;
     private Integer currentNumber;
@@ -23,10 +24,11 @@ public class FindApplyPostList {
 
     @Builder
     public FindApplyPostList(String storeName, String spotName, Long postId, List<MyMenus> myMenus,
-                             String proposalState, Integer limitNumber, Integer currentNumber) {
+                             String proposalState, Integer limitNumber, Integer currentNumber, Long proposalId) {
         this.storeName = storeName;
         this.spotName = spotName;
         this.postId = postId;
+        this.proposalId = proposalId;
         this.proposalState = proposalState;
         this.limitNumber = limitNumber;
         this.currentNumber = currentNumber;
@@ -56,6 +58,7 @@ public class FindApplyPostList {
                 .limitNumber(post.getLimitNumber())
                 .currentNumber(post.getCurrentNumber())
                 .postId(post.getId())
+                .proposalId(proposal.getId())
                 .proposalState(proposal.getProposalState().name())
                 .spotName(post.getSpot().name())
                 .storeName(post.getStore().getName())
