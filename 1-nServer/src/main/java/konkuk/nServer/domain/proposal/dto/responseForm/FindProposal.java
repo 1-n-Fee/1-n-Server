@@ -13,7 +13,7 @@ public class FindProposal {
 
     private Long proposalId;
     private String userNickname;
-    private List<Menus> menus = new ArrayList<>();
+    private List<Menus> menus;
 
     @Data
     @AllArgsConstructor
@@ -21,10 +21,12 @@ public class FindProposal {
         private Long menuId;
         private Integer quantity;
         private String name;
+        private Integer price;
 
         public static FindProposal.Menus of(ProposalDetail proposalDetail) {
             return new FindProposal.Menus(proposalDetail.getMenu().getId(),
-                    proposalDetail.getQuantity(), proposalDetail.getMenu().getName());
+                    proposalDetail.getQuantity(), proposalDetail.getMenu().getName(),
+                    proposalDetail.getMenu().getPrice());
         }
     }
 }

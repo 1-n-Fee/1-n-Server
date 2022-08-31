@@ -16,6 +16,7 @@ public class FindAllPostList {
 
     private Long postId;
     private String storeName;
+    private Long proposalId;
     private Integer deliveryFeePerPerson;
     private Integer totalAmountForUser;
     private Integer limitNumber;
@@ -26,7 +27,7 @@ public class FindAllPostList {
 
     @Builder
     public FindAllPostList(Long postId, String storeName, Integer deliveryFeePerPerson, Integer totalAmountForUser,
-                           Integer limitNumber, Integer currentNumber, String state, String spotName, boolean isOwner) {
+                           Integer limitNumber, Integer currentNumber, String state, String spotName, boolean isOwner, Long proposalId) {
         this.postId = postId;
         this.storeName = storeName;
         this.deliveryFeePerPerson = deliveryFeePerPerson;
@@ -36,6 +37,7 @@ public class FindAllPostList {
         this.state = state;
         this.spotName = spotName;
         this.isOwner = isOwner;
+        this.proposalId = proposalId;
     }
 
 
@@ -56,6 +58,7 @@ public class FindAllPostList {
                 .sum();
 
         return FindAllPostList.builder()
+                .proposalId(proposal.getId())
                 .postId(post.getId())
                 .storeName(post.getStore().getName())
                 .deliveryFeePerPerson(deliveryFeePerPerson)
