@@ -24,9 +24,11 @@ public class FindAllPostList {
     private String state;
     private String spotName;
     private boolean isOwner;
+    private List<Long> members;
+
 
     @Builder
-    public FindAllPostList(Long postId, String storeName, Integer deliveryFeePerPerson, Integer totalAmountForUser,
+    public FindAllPostList(Long postId, String storeName, Integer deliveryFeePerPerson, Integer totalAmountForUser, List<Long> members,
                            Integer limitNumber, Integer currentNumber, String state, String spotName, boolean isOwner, Long proposalId) {
         this.postId = postId;
         this.storeName = storeName;
@@ -38,16 +40,18 @@ public class FindAllPostList {
         this.spotName = spotName;
         this.isOwner = isOwner;
         this.proposalId = proposalId;
+        this.members = members;
     }
 
 
-    public static FindAllPostList of(Proposal proposal, Long userId) {
+    public static FindAllPostList of(Proposal proposal, Long userId, List<Long> members) {
         Post post = proposal.getPost();
         String state = null;
         if (proposal.getProposalState() == ProposalState.AWAITING ||
                 proposal.getProposalState() == ProposalState.REJECTED) {
             state = proposal.getProposalState().name();
-        } else {
+        }
+        else {
             state = post.getProcess().name();
         }
 
@@ -60,6 +64,7 @@ public class FindAllPostList {
         return FindAllPostList.builder()
                 .proposalId(proposal.getId())
                 .postId(post.getId())
+                .members(members)
                 .storeName(post.getStore().getName())
                 .deliveryFeePerPerson(deliveryFeePerPerson)
                 .totalAmountForUser(menuPriceSum + deliveryFeePerPerson)

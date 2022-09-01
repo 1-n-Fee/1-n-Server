@@ -127,7 +127,7 @@ class PostControllerTest {
         assertEquals("알촌 먹고 싶으신 분, 대환영입니다.", post.getContent());
         assertEquals(PostProcess.RECRUITING, post.getProcess());
 
-        assertEquals(LocalDateTime.parse("2022.09.01.18.00", DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")), post.getCloseTime());
+        assertEquals(LocalDateTime.parse("2022.09.05.18.00", DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")), post.getCloseTime());
         assertEquals(5, post.getLimitNumber());
     }
 
@@ -177,7 +177,7 @@ class PostControllerTest {
 
         assertEquals(store.getCategory().name(), findPost.getCategory());
         assertEquals("OWNER", findPost.getState());
-        assertEquals("2022.09.01.18.00", findPost.getCloseTime());
+        assertEquals("2022.09.05.18.00", findPost.getCloseTime());
         //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
         assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());
         assertEquals(5, findPost.getLimitNumber());
@@ -229,7 +229,7 @@ class PostControllerTest {
         FindPostDetail findPostDetail = objectMapper.readValue(responseBody, FindPostDetail.class);
 
         assertEquals(store.getCategory().name(), findPostDetail.getCategory());
-        assertEquals("2022.09.01.18.00", findPostDetail.getCloseTime());
+        assertEquals("2022.09.05.18.00", findPostDetail.getCloseTime());
         //assertEquals("든든한 국BOB", findPostDetail.getStoreName()); // 한글 깨짐
         //assertEquals("알촌 먹고 싶으신 분, 대환영입니다.", findPostDetail.getContent()); // 한글 깨짐
         assertEquals(store.getDeliveryFee(), findPostDetail.getDeliveryFee());
@@ -277,7 +277,7 @@ class PostControllerTest {
 
         assertEquals(store.getCategory().name(), findPost.getCategory());
         assertEquals("OWNER", findPost.getState());
-        assertEquals("2022.09.01.18.00", findPost.getCloseTime());
+        assertEquals("2022.09.05.18.00", findPost.getCloseTime());
         //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
         assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());
         assertEquals(5, findPost.getLimitNumber());
@@ -309,7 +309,7 @@ class PostControllerTest {
 
         // expected
         MvcResult result = mockMvc.perform(get("/post/search")
-                        .param("date", "20220901")
+                        .param("date", "20220905")
                         .header("Authorization", "Bearer " + jwt)
                 )
                 .andExpect(status().isOk())
@@ -326,7 +326,7 @@ class PostControllerTest {
 
         assertEquals(store.getCategory().name(), findPost.getCategory());
         assertEquals("OWNER", findPost.getState());
-        assertEquals("2022.09.01.18.00", findPost.getCloseTime());
+        assertEquals("2022.09.05.18.00", findPost.getCloseTime());
         //assertEquals("든든한 국BOB", findPost.getStoreName()); // 한글 깨짐
         assertEquals(store.getDeliveryFee(), findPost.getDeliveryFee());
         assertEquals(5, findPost.getLimitNumber());
@@ -340,7 +340,7 @@ class PostControllerTest {
     private RegistryPost getRegistryPost() {
         return RegistryPost.builder()
                 .storeId(1L)
-                .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.18.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(5)
                 .content("알촌 먹고 싶으신 분, 대환영입니다.")
                 .spotId(1L)

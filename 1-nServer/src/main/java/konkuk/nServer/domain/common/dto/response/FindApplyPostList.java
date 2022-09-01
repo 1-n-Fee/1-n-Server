@@ -52,8 +52,12 @@ public class FindApplyPostList {
         }
     }
 
-    public static FindApplyPostList of(Proposal proposal, List<MyMenus> myMenus) {
+    public static FindApplyPostList of(Proposal proposal) {
         Post post = proposal.getPost();
+        List<FindApplyPostList.MyMenus> myMenus =
+                proposal.getProposalDetails().stream()
+                        .map(FindApplyPostList.MyMenus::of)
+                        .toList();
         return FindApplyPostList.builder()
                 .limitNumber(post.getLimitNumber())
                 .currentNumber(post.getCurrentNumber())

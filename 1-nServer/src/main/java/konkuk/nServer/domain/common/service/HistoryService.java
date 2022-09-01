@@ -35,20 +35,17 @@ public class HistoryService {
 
     public List<FindApplyPostList> findApplyPostByUser(Long userId) {
         return proposalRepository.findByUserId(userId).stream()
-                .map(proposal -> {
-                            List<FindApplyPostList.MyMenus> myMenus =
-                                    proposal.getProposalDetails().stream()
-                                            .map(FindApplyPostList.MyMenus::of)
-                                            .toList();
-                            return FindApplyPostList.of(proposal, myMenus);
-                        }
-                )
+                .map(FindApplyPostList::of)
                 .toList();
     }
 
     public List<FindAllPostList> findPostByAll(Long userId) {
         return proposalRepository.findByUserIdOrderByCreateDateTimeAsc(userId).stream()
-                .map(proposal -> FindAllPostList.of(proposal, userId))
+                .map(proposal -> {
+                    List<Long> members = proposalRepository.findByPostIdAndProposalState(proposal.getPost().getId(), ProposalState.ACCEPTED)
+                            .stream().map(proposal1 -> proposal1.getUser().getId()).toList();
+                    return FindAllPostList.of(proposal, userId, members);
+                })
                 .toList();
     }
 
@@ -66,7 +63,8 @@ public class HistoryService {
                     myMenus.add(new FindOrderMenu.Menu(proposalDetail.getMenu().getName(),
                             proposalDetail.getQuantity() * proposalDetail.getMenu().getPrice()));
                 }
-            } else {
+            }
+            else {
                 if (proposal.getProposalState() == ProposalState.ACCEPTED) {
                     List<FindOrderMenu.Menu> otherMenus = new ArrayList<>();
 

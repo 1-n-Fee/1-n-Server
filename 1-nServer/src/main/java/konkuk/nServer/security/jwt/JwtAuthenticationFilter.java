@@ -62,12 +62,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // JWT 토큰을 만들어서 request 요청한 사용자에게 JWT 토큰을 response 해주면 됨
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("successfulAuthentication 실행");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
         String jwtToken = tokenProvider.createJwt(principalDetails.getId(), principalDetails.getRole());
         response.addHeader("Authorization", "Bearer " + jwtToken);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().println("{ \"role\" : \"" + principalDetails.getRole().name() + "\" }");
         log.info("Token = {}", jwtToken);
     }
 
