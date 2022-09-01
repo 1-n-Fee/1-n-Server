@@ -15,23 +15,24 @@ public class PrincipalDetails implements UserDetails {
     private String password;
     private Role role;
     private Long id;
+    Collection<GrantedAuthority> authorities = new ArrayList<>();
 
     public PrincipalDetails(Long id, Password password, Role role) {
         this.id = id;
         this.password = password.getPassword();
         this.role = role;
+        authorities.add(role::name);
     }
 
     public PrincipalDetails(Long id, Role role) {
         this.id = id;
         this.role = role;
+        authorities.add(role::name);
     }
 
     //계정이 갖고있는 권한 목록은 리턴
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> role.name());
         return authorities;
     }
 

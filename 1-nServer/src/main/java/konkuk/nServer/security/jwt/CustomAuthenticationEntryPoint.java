@@ -16,38 +16,21 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        //String requestURI = request.getRequestURI();
-        //log.info("requestUrl={}", requestURI);
+        log.info("AuthenticationEntryPoint 실행");
+
         String exception = (String) request.getAttribute("exception");
-        ExceptionEnum errorCode;
+        ExceptionEnum errorCode = null;
 
         log.debug("log: exception: {} ", exception);
 
-        /*
-         * 토큰 없는 경우
-         */
-        if (exception == null) {
+        if (exception.equals(ExceptionEnum.NOT_FOUND_TOKEN.getCode())) //토큰 없는 경우
             errorCode = ExceptionEnum.NOT_FOUND_TOKEN;
-            setResponse(response, errorCode);
-            return;
-        }
-
-        /*
-         * 토큰 만료된 경우
-         */
-        if (exception.equals(ExceptionEnum.EXPIRED_TOKEN.getCode())) {
+        else if (exception.equals(ExceptionEnum.EXPIRED_TOKEN.getCode())) //토큰 만료된 경우
             errorCode = ExceptionEnum.EXPIRED_TOKEN;
-            setResponse(response, errorCode);
-            return;
-        }
-
-        /*
-         * 토큰 시그니처가 다른 경우
-         */
-        if (exception.equals(ExceptionEnum.INVALID_TOKEN.getCode())) {
+        else if (exception.equals(ExceptionEnum.INVALID_TOKEN.getCode())) //토큰 시그니처가 다른 경우
             errorCode = ExceptionEnum.INVALID_TOKEN;
-            setResponse(response, errorCode);
-        }
+
+        if (errorCode != null) setResponse(response, errorCode);
     }
 
     /*

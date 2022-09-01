@@ -3,6 +3,7 @@ package konkuk.nServer.domain.store.controller;
 
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
+import konkuk.nServer.domain.store.dto.responseForm.FindStore;
 import konkuk.nServer.domain.store.dto.responseForm.StoreList;
 import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.service.StoreService;
@@ -36,6 +37,11 @@ public class StoreController {
         return storeService.getStoreMenu(storeId);
     }
 
+
+    @GetMapping("/storemanager")
+    public FindStore findStoreByStoremanager(@AuthenticationPrincipal PrincipalDetails userDetail) {
+        return storeService.findStoreByStoremanager(userDetail.getId());
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

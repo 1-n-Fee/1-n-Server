@@ -5,16 +5,12 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import konkuk.nServer.exception.ExceptionEnum;
 import konkuk.nServer.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -25,9 +21,6 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-
-    @Value("@{token.secret}")
-    private String SECRET;
 
     private final JwtTokenProvider tokenProvider;
 
@@ -41,36 +34,35 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         log.info("요청 들어옴");
 
         String jwtHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        JwtClaim jwtClaim = null;
 
         // JWT 토큰을 검증을 해서 정상적인 사용자인지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
             log.info("헤더에 포함된 Authorization Bearer 토큰이 없습니다.");
-
             request.setAttribute("exception", ExceptionEnum.NOT_FOUND_TOKEN.getCode());
-            chain.doFilter(request, response);
-            return;
         }
+        else {
+            String jwtToken = jwtHeader.replace("Bearer ", "");
+            try {
+                jwtClaim = tokenProvider.validate(jwtToken);
+            } catch (TokenExpiredException e) {
+                e.printStackTrace();
+                request.setAttribute("exception", ExceptionEnum.EXPIRED_TOKEN.getCode());
+            } catch (JWTDecodeException e) {
+                e.printStackTrace();
+                request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
+            } catch (Exception e) {
+                log.error("================================================");
+                log.error("JwtFilter - doFilterInternal() 오류발생");
+                log.error("Exception Message : {}", e.getMessage());
+                log.error("Exception StackTrace : {");
+                e.printStackTrace();
+                log.error("}");
+                log.error("================================================");
+                request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
+            }
 
-        String jwtToken = request.getHeader("Authorization").replace("Bearer ", "");
-
-        JwtClaim jwtClaim = null;
-        try {
-            jwtClaim = tokenProvider.validate(jwtToken);
-        } catch (TokenExpiredException e) {
-            e.printStackTrace();
-            request.setAttribute("exception", ExceptionEnum.EXPIRED_TOKEN.getCode());
-        } catch (JWTDecodeException e) {
-            e.printStackTrace();
-            request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
-        } catch (Exception e) {
-            log.error("================================================");
-            log.error("JwtFilter - doFilterInternal() 오류발생");
-            log.error("Exception Message : {}", e.getMessage());
-            log.error("Exception StackTrace : {");
-            e.printStackTrace();
-            log.error("}");
-            log.error("================================================");
-            request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
+            log.info("JWT 검증 실패. jwtToken={}", jwtToken);
         }
 
         // 서명이 정상적으로 됨
@@ -86,7 +78,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 시큐리티의 세션에 접근하여 Authentication 객체를 저장
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authentication);
-        } else log.info("JWT 검증 실패. jwtToken={}", jwtToken);
+        }
+
         chain.doFilter(request, response);
     }
 }

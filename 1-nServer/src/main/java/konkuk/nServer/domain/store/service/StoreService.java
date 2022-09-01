@@ -6,6 +6,7 @@ import konkuk.nServer.domain.store.domain.Menu;
 import konkuk.nServer.domain.store.domain.Store;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStoremanager;
 import konkuk.nServer.domain.store.dto.requestForm.RegistryStoreByStudent;
+import konkuk.nServer.domain.store.dto.responseForm.FindStore;
 import konkuk.nServer.domain.store.dto.responseForm.StoreList;
 import konkuk.nServer.domain.store.dto.responseForm.StoreMenu;
 import konkuk.nServer.domain.store.repository.MenuRepository;
@@ -23,10 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -130,5 +128,10 @@ public class StoreService {
         return menuRepository.findByStoreId(storeId).stream()
                 .map(StoreMenu::of)
                 .toList();
+    }
+
+    public FindStore findStoreByStoremanager(Long storemanagerId) {
+        Optional<Store> store = storeRepository.findByStoremanagerId(storemanagerId);
+        return store.isPresent() ? FindStore.of(store.get()) : new FindStore();
     }
 }

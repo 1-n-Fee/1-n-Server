@@ -34,11 +34,13 @@ public class PrincipalDetailService implements UserDetailsService {
             log.info("student 로그인 시도");
             Password password = user.get().getPassword();
             return new PrincipalDetails(user.get().getId(), password, Role.ROLE_STUDENT);
-        } else if (storemanager.isPresent()) {
+        }
+        else if (storemanager.isPresent()) {
             log.info("storemanager 로그인 시도");
             Password password = storemanager.get().getPassword();
             return new PrincipalDetails(storemanager.get().getId(), password, Role.ROLE_STOREMANAGER);
-        } else throw new UsernameNotFoundException("해당 사용자를 찾을수 없습니다.:" + email);
+        }
+        else throw new UsernameNotFoundException("해당 사용자를 찾을수 없습니다.:" + email);
     }
 
 }

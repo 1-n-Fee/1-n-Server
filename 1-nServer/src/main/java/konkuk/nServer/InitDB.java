@@ -185,6 +185,26 @@ public class InitDB {
                 .storeRegistrationNumber("20-70091011")
                 .role("storemanager")
                 .build());
+
+        storemanagerService.signup(StoremanagerSignup.builder()
+                .email("test10@google.com")
+                .name("tester10")
+                .phone("010141312314")
+                .accountType("password")
+                .password("test!123")
+                .storeRegistrationNumber("20-70009361")
+                .role("storemanager")
+                .build());
+
+        storemanagerService.signup(StoremanagerSignup.builder()
+                .email("test11@naver.com")
+                .name("tester11")
+                .phone("01046395738")
+                .accountType("password")
+                .password("test!123")
+                .storeRegistrationNumber("20-704739401")
+                .role("storemanager")
+                .build());
     }
 
     void initStore() {
@@ -207,6 +227,7 @@ public class InitDB {
         storeService.registryStoreByStoremanager(storemanager.getId(), registryStoreByStoremanager);
 
 
+        storemanager = storemanagerRepository.findAll().get(1);
         registryStoreByStoremanager =
                 RegistryStoreByStoremanager.builder()
                         .address("서울 광진구 능동로13길 19")
@@ -239,6 +260,7 @@ public class InitDB {
         storeService.registryStoreByStudent(registryStoreByStudent);
 
 
+        storemanager = storemanagerRepository.findAll().get(2);
         registryStoreByStoremanager =
                 RegistryStoreByStoremanager.builder()
                         .address("서울 광진구 능동로13길 39 1층")
@@ -266,6 +288,8 @@ public class InitDB {
                 .build();
         storeService.registryStoreByStudent(registryStoreByStudent);
 
+
+        storemanager = storemanagerRepository.findAll().get(3);
         registryStoreByStoremanager =
                 RegistryStoreByStoremanager.builder()
                         .address("서울 광진구 아차산로31길 45")
