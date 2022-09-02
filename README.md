@@ -1,6 +1,7 @@
 <div align="center">
   
-<img width="300" alt="스크린샷 2022-07-02 오후 4 08 55" src="https://user-images.githubusercontent.com/51076814/188081794-4736c15c-300a-4817-b4ca-df239552d719.png">
+<img width="450" alt="logo" src="https://user-images.githubusercontent.com/51076814/188084065-3ee7b52f-47ac-46c1-a366-d400158066da.png">
+
 
 </div>
 
@@ -11,16 +12,10 @@
 
 </br>
 
-## **🎨 진행 과정**
+## **📚 프로젝트 사용 방법**
 
-1/n 은 프론트엔드, 안드로이드 와 백엔드를 나눠 진행했습니다.
+프로젝트의 사용 과정은 **1/n 작동과정** (링크 수정하기!)을 통해 확인하실 수 있습니다.<br>
 모든 코드는 [1/n](https://github.com/1-n-Fee)를 통해 확인할 수 있습니다.
-
-</br>
-
-## **🧩 프로젝트 사용 방법**
-
-프로젝트의 사용 과정은 **1/n 작동과정** (링크 수정하기!)을 통해 확인하실 수 있습니다.
 
 </br>
 
@@ -42,31 +37,32 @@
 
 ## **🛠 사용 기술**
 
-**Web Frontend**
-
+### 🎨 Web Frontend 🎨
 - **Language** : JavaScript
 - **Library & Framework** : React, Axios, Styled-Components, Recoil, FontAwesome, react-router-dom, StompJS
 - **API**: KAKAO 소셜 로그인 REST API, Google 소셜 로그인 REST API, Naver 소셜 로그인 REST API, KAKAO 지도 SDK , 다음 우편주소 API
 - **Deploy**: Docker
 
-**App Frontend**
+<br>
 
+### 📱 App Frontend 📱
 - **Language** : Flutter
 - **Library & Framework** :  FontAwesome, Firebase auth,provider,location,Intl,Dio,notification
 - **API** : KAKAO 소셜 로그인 , Google 소셜 로그인 REST API, Naver 소셜 로그인 , Google 지도 SDK
 - **Deploy** : Docker(준비중)
 
-**Backend**
+<br>
 
+### 🧑‍💻 Backend 🧑‍💻
 - **Language** : Java
 - **Library & Framework** : Spring Boot, Spring Security
 - **Database** : H2 Database
 - **ORM** : JPA
 - **Deploy**: Docker
 
+<br>
 
-
-**협업 도구**
+### 👫 협업 도구 👫
 
 - **Github**
 - **Slack**
