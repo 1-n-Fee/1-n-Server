@@ -1,10 +1,13 @@
-<div align="center">
+<p align="middle">
 <img width="450" alt="logo" src="https://user-images.githubusercontent.com/51076814/188084065-3ee7b52f-47ac-46c1-a366-d400158066da.png">
-<p align="middle" >
-<img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/><img src="https://img.shields.io/badge/Flutter-02569B?style=flat&logo=React&logoColor=white"/><img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white"/>
 </p>
 
-</div>
+<p align="middle">
+<img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/>
+<img src="https://img.shields.io/badge/Flutter-02569B?style=flat&logo=React&logoColor=white"/>
+<img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white"/>
+</p>
+<br>
 
 ## 🍕 프로젝트 소개 (1/n Procject)
 비싼 배달비 때문에 고민하는 당신을 위해! 음식 배달을 공동구매해서 배달비를 1/n로 나누는 커뮤니티입니다.
@@ -48,13 +51,13 @@
 
 ### 📱 App Frontend 📱
 - **Language** : Flutter
-- **Library & Framework** :  FontAwesome, Firebase auth,provider,location,Intl,Dio,notification
-- **API** : KAKAO 소셜 로그인 , Google 소셜 로그인 REST API, Naver 소셜 로그인 , Google 지도 SDK
+- **Library & Framework** :  FontAwesome, Firebase auth, provider, location, Intl, Dio, notification
+- **API** : KAKAO 소셜 로그인, Google 소셜 로그인 REST API, Naver 소셜 로그인, Google 지도 SDK
 - **Deploy** : Docker(준비중)
 
 <br>
 
-### 🧑‍💻 Backend 🧑‍💻
+### 💻 Backend 💻
 - **Language** : Java
 - **Library & Framework** : Spring Boot, Spring Security
 - **Database** : H2 Database
@@ -65,8 +68,12 @@
 
 ### 👫 협업 도구 👫
 
-- **Github**
-- **Slack**
+<p align="left">
+<img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>
+<br>
+<img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=white"/>
+
+</p>
 
 </br>
 
