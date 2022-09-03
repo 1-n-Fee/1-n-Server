@@ -1,7 +1,8 @@
 <div align="center">
-  
 <img width="450" alt="logo" src="https://user-images.githubusercontent.com/51076814/188084065-3ee7b52f-47ac-46c1-a366-d400158066da.png">
-
+<p align="middle" >
+<img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/><img src="https://img.shields.io/badge/Flutter-02569B?style=flat&logo=React&logoColor=white"/><img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white"/>
+</p>
 
 </div>
 
@@ -14,8 +15,8 @@
 
 ## **📚 프로젝트 사용 방법**
 
-프로젝트의 사용 과정은 **1/n 작동과정** (링크 수정하기!)을 통해 확인하실 수 있습니다.<br>
-모든 코드는 [1/n](https://github.com/1-n-Fee)를 통해 확인할 수 있습니다.
+프로젝트의 사용 과정은 [여기](https://github.com/1-n-Fee/1-n-Server.wiki.git)을 통해 확인하실 수 있습니다.<br>
+모든 코드는 [여기](https://github.com/1-n-Fee)를 통해 확인할 수 있습니다.
 
 </br>
 
@@ -88,6 +89,9 @@ docker run -p 8080:8080 ithinkso/1-nproject
 </br>
 
 ## **👨‍💻 참여 인원 👩‍💻**
+
+<div align="center">
+
 |  이름  |   역할    |                                                                                                  Github                                                                                                   |
 | :----: | :-------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | 최용재 | Web-FrontEnd  |        <a href="https://github.com/yjc2021"><img src="https://img.shields.io/badge/yjc2021-acb9f6?style=flat-square&logo=github&logoColor=white&link=https://github.com/yjc2021"/></a>        |
@@ -96,3 +100,4 @@ docker run -p 8080:8080 ithinkso/1-nproject
 | 황치현 | App-FrontEnd  |      <a href="https://github.com/clgusdl2"><img src="https://img.shields.io/badge/clgusdl2-339933?style=flat-square&logo=github&logoColor=white&link=https://github.com/clgusdl2"/></a>      |
 | 홍승택 | BackEnd  |        <a href="https://github.com/redcarrot1"><img src="https://img.shields.io/badge/IThinkSo-80c9f8?style=flat-square&logo=github&logoColor=white&link=https://github.com/redcarrot1"/></a>|
 
+</div>
