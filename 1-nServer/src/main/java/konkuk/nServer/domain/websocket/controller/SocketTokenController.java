@@ -1,9 +1,7 @@
 package konkuk.nServer.domain.websocket.controller;
 
 import konkuk.nServer.domain.user.domain.User;
-import konkuk.nServer.domain.user.repository.UserRepository;
-import konkuk.nServer.exception.ApiException;
-import konkuk.nServer.exception.ExceptionEnum;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.security.PrincipalDetails;
 import konkuk.nServer.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +17,13 @@ import java.util.Map;
 public class SocketTokenController {
 
     private final JwtTokenProvider tokenProvider;
-    private final UserRepository userRepository; // TODO
+    private final UserFindDao userFindDao;
 
     @GetMapping("/socketToken")
     @ResponseBody
     public Map<String, String> provideToken(@AuthenticationPrincipal PrincipalDetails userDetail) {
         String socketJwt = tokenProvider.createSocketJwt(userDetail.getId());
-        User user = userRepository.findById(userDetail.getId())
-                .orElseThrow(() -> new ApiException(ExceptionEnum.NO_FOUND_USER));// TODO
+        User user = userFindDao.findById(userDetail.getId());
         return Map.of("socketToken", socketJwt, "nickname", user.getNickname());
     }
 

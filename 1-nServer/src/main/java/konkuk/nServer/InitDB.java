@@ -27,6 +27,7 @@ import konkuk.nServer.domain.storemanager.service.StoremanagerService;
 import konkuk.nServer.domain.user.domain.User;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignup;
 import konkuk.nServer.domain.user.dto.requestForm.UserSignupForApp;
+import konkuk.nServer.domain.user.repository.UserFindDao;
 import konkuk.nServer.domain.user.repository.UserRepository;
 import konkuk.nServer.domain.user.service.UserService;
 import konkuk.nServer.domain.websocket.dto.request.RequestMessage;
@@ -53,6 +54,7 @@ public class InitDB {
     private final StoreService storeService;
     private final StoremanagerRepository storemanagerRepository;
     private final UserRepository userRepository;
+    private final UserFindDao userFindDao;
     private final PostService postService;
     private final StoreRepository storeRepository;
     private final CommentService commentService;
@@ -317,7 +319,7 @@ public class InitDB {
         Store store = storeRepository.findAll().get(0);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.18.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.18.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(5)
                 .content(store.getName() + "이(가) 먹고 싶으신 분, 대환영입니다.")
                 .spotId(1L)
@@ -334,7 +336,7 @@ public class InitDB {
         user = userRepository.findAll().get(1);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.20.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.20.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(3)
                 .content(store.getName() + "이(가) 오늘 끌리는 너. 같이 시켜요.")
                 .spotId(1L)
@@ -351,7 +353,7 @@ public class InitDB {
         store = storeRepository.findAll().get(2);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.16.30") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.16.30") //yyyy.MM.dd.HH.mm
                 .limitNumber(2)
                 .spotId(1L)
                 .build());
@@ -367,7 +369,7 @@ public class InitDB {
         store = storeRepository.findAll().get(3);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.12.30") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.12.30") //yyyy.MM.dd.HH.mm
                 .limitNumber(4)
                 .content("배달비 나눠내실 분~")
                 .spotId(2L)
@@ -383,7 +385,7 @@ public class InitDB {
         store = storeRepository.findAll().get(4);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.13.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.13.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(6)
                 .content("문의 댓글 안받습니다.")
                 .spotId(3L)
@@ -400,7 +402,7 @@ public class InitDB {
         store = storeRepository.findAll().get(5);
         postService.registryPost(user.getId(), RegistryPost.builder()
                 .storeId(store.getId())
-                .closeTime("2022.09.01.15.00") //yyyy.MM.dd.HH.mm
+                .closeTime("2022.09.05.15.00") //yyyy.MM.dd.HH.mm
                 .limitNumber(3)
                 .content("ㅈㄱㄴ")
                 .spotId(3L)
@@ -410,6 +412,38 @@ public class InitDB {
         proposalService.saveProposal(user.getId(),
                 new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(2).getId(), 1),
                         new SaveProposal.Menus(menus.get(3).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2))));
+
+
+        user = userFindDao.findById(5L);
+        store = storeRepository.findById(6L).get();
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(store.getId())
+                .closeTime("2022.09.05.18.00") //yyyy.MM.dd.HH.mm
+                .limitNumber(3)
+                .content("식사를 합시다!")
+                .spotId(1L)
+                .build());
+        post = postRepository.findAll().get(6);
+        menus = store.getMenus();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(2).getId(), 1),
+                        new SaveProposal.Menus(menus.get(1).getId(), 2))));
+
+
+        user = userFindDao.findById(6L);
+        store = storeRepository.findById(4L).get();
+        postService.registryPost(user.getId(), RegistryPost.builder()
+                .storeId(store.getId())
+                .closeTime("2022.09.05.18.00") //yyyy.MM.dd.HH.mm
+                .limitNumber(5)
+                .content("초밥 먹고싶다.")
+                .spotId(1L)
+                .build());
+        post = postRepository.findAll().get(7);
+        menus = store.getMenus();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(), List.of(new SaveProposal.Menus(menus.get(2).getId(), 1),
                         new SaveProposal.Menus(menus.get(1).getId(), 2))));
     }
 
@@ -444,7 +478,7 @@ public class InitDB {
                                 new SaveProposal.Menus(menus.get(1).getId(), 2),
                                 new SaveProposal.Menus(menus.get(2).getId(), 1),
                                 new SaveProposal.Menus(menus.get(3).getId(), 1))));
-        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count).getId(), true);
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
 
 
         user = userRepository.findAll().get(2);
@@ -453,7 +487,7 @@ public class InitDB {
                         List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
                                 new SaveProposal.Menus(menus.get(1).getId(), 2),
                                 new SaveProposal.Menus(menus.get(3).getId(), 1))));
-        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count + 1).getId(), false);
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), false);
 
 
         user = userRepository.findAll().get(3);
@@ -461,13 +495,14 @@ public class InitDB {
                 new SaveProposal(post.getId(),
                         List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
                                 new SaveProposal.Menus(menus.get(1).getId(), 2))));
-        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count + 2).getId(), true);
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
 
 
         user = userRepository.findAll().get(4);
         proposalService.saveProposal(user.getId(),
                 new SaveProposal(post.getId(),
                         List.of(new SaveProposal.Menus(menus.get(3).getId(), 1))));
+        count++;
 
 
         user = userRepository.findAll().get(5);
@@ -475,7 +510,72 @@ public class InitDB {
                 new SaveProposal(post.getId(),
                         List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
                                 new SaveProposal.Menus(menus.get(3).getId(), 1))));
-        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count + 4).getId(), true);
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
+
+
+        user = userFindDao.findById(1L);
+        post = postRepository.findById(3L).get();
+        owner = post.getUser();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
+                                new SaveProposal.Menus(menus.get(3).getId(), 1))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
+
+
+        user = userFindDao.findById(3L);
+        post = postRepository.findById(2L).get();
+        owner = post.getUser();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(1).getId(), 1))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
+
+
+        user = userFindDao.findById(4L);
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(1).getId(), 1),
+                                new SaveProposal.Menus(menus.get(4).getId(), 2))));
+        count++;
+
+
+        user = userFindDao.findById(5L);
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 4),
+                                new SaveProposal.Menus(menus.get(1).getId(), 6),
+                                new SaveProposal.Menus(menus.get(2).getId(), 3),
+                                new SaveProposal.Menus(menus.get(3).getId(), 2))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), false);
+
+
+        user = userFindDao.findById(6L);
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
+                                new SaveProposal.Menus(menus.get(4).getId(), 1))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
+
+
+        user = userFindDao.findById(1L);
+        post = postRepository.findById(8L).get();
+        owner = post.getUser();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 2),
+                                new SaveProposal.Menus(menus.get(4).getId(), 1))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), true);
+
+
+        user = userFindDao.findById(1L);
+        post = postRepository.findById(7L).get();
+        owner = post.getUser();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 3),
+                                new SaveProposal.Menus(menus.get(4).getId(), 4))));
+        proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), false);
     }
 
     void initMessage() {

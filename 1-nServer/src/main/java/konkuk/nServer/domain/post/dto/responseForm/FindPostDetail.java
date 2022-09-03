@@ -48,27 +48,30 @@ public class FindPostDetail {
         String name;
         Integer price;
         String image;
+        Long menuId;
 
         public static MenuDetail of(Menu menu) {
-            return new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl());
+            return new FindPostDetail.MenuDetail(menu.getName(), menu.getPrice(), menu.getImageUrl(), menu.getId());
         }
     }
 
     @Data
     public static class CommentDto {
         Long userId;
+        Long commentId;
         String nickname;
         String content;
         String createDateTime;
         List<ReplyDto> replies = new ArrayList<>();
 
         @Builder
-        public CommentDto(Long userId, String nickname, String content, String createDateTime, List<ReplyDto> replies) {
+        public CommentDto(Long userId, String nickname, String content, String createDateTime, List<ReplyDto> replies, Long commentId) {
             this.userId = userId;
             this.nickname = nickname;
             this.content = content;
             this.createDateTime = createDateTime;
             this.replies = replies;
+            this.commentId = commentId;
         }
 
         @Data
@@ -87,6 +90,7 @@ public class FindPostDetail {
                     .userId(comment.getUser().getId())
                     .nickname(comment.getUser().getNickname())
                     .content(comment.getContent())
+                    .commentId(comment.getId())
                     .createDateTime(comment.getCreateDateTime().format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm")))
                     .replies(comment.getReplies().stream().map(ReplyDto::of).toList())
                     .build();

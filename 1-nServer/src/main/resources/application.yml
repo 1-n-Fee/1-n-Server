@@ -60,3 +60,10 @@ image:
   #menu: /image/menu/
   #menu: C:\Users\s_gmtmoney2357\Desktop\ToyProject\ToyProject5\back-end\shop\src\main\resources\static\menu\
   default_filename: default.png
+
+logging:
+  level:
+    org:
+      apache:
+        coyote:
+          http11: debug

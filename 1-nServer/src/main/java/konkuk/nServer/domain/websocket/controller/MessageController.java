@@ -7,6 +7,7 @@ import konkuk.nServer.domain.websocket.service.ChatService;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MessageController {
@@ -25,6 +27,8 @@ public class MessageController {
 
     @MessageMapping("/chat/message") // 클라이언트에서 /pub/chat/message 로 메시지 발행
     public void enter(RequestMessage message, SimpMessageHeaderAccessor messageHeaderAccessor) {
+        log.info("메시지 받음. content={}", message.getContent());
+
         Object seesion = messageHeaderAccessor.getSessionAttributes().getOrDefault("userId", null);
         if (seesion == null) throw new ApiException(ExceptionEnum.NOT_LOGIN_CHAT);
 
@@ -38,6 +42,7 @@ public class MessageController {
 
     @GetMapping("/message/{postId}")
     public List<ResponseMessage> findMessage(@PathVariable Long postId) {
+        log.info("findMessage 실행");
         return chatService.findByPostId(postId);
     }
 
