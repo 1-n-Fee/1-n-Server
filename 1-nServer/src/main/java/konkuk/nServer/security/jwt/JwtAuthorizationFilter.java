@@ -47,11 +47,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 jwtClaim = tokenProvider.validate(jwtToken);
             } catch (TokenExpiredException e) {
                 e.printStackTrace();
+                log.info("JWT 검증 실패. jwtToken={}", jwtToken);
                 request.setAttribute("exception", ExceptionEnum.EXPIRED_TOKEN.getCode());
             } catch (JWTDecodeException e) {
                 e.printStackTrace();
+                log.info("JWT 검증 실패. jwtToken={}", jwtToken);
                 request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
             } catch (Exception e) {
+                log.info("JWT 검증 실패. jwtToken={}", jwtToken);
                 log.error("================================================");
                 log.error("JwtFilter - doFilterInternal() 오류발생");
                 log.error("Exception Message : {}", e.getMessage());
@@ -61,8 +64,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 log.error("================================================");
                 request.setAttribute("exception", ExceptionEnum.INVALID_TOKEN.getCode());
             }
-
-            log.info("JWT 검증 실패. jwtToken={}", jwtToken);
         }
 
         // 서명이 정상적으로 됨

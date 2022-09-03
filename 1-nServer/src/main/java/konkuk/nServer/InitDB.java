@@ -81,6 +81,8 @@ public class InitDB {
         initProposal();
         initMessage();
 
+        initChangePostState();
+
         log.info("initialize database end");
     }
 
@@ -576,6 +578,17 @@ public class InitDB {
                         List.of(new SaveProposal.Menus(menus.get(0).getId(), 3),
                                 new SaveProposal.Menus(menus.get(4).getId(), 4))));
         proposalService.approveProposal(owner.getId(), proposalRepository.findAll().get(count++).getId(), false);
+
+
+        user = userFindDao.findById(2L);
+        post = postRepository.findById(8L).get();
+        owner = post.getUser();
+        proposalService.saveProposal(user.getId(),
+                new SaveProposal(post.getId(),
+                        List.of(new SaveProposal.Menus(menus.get(0).getId(), 1),
+                                new SaveProposal.Menus(menus.get(1).getId(), 1))));
+        count++;
+
     }
 
     void initMessage() {
@@ -611,6 +624,13 @@ public class InitDB {
                         .postId(post.getId())
                         .content(content)
                         .build());
+    }
+
+    private void initChangePostState(){
+        // RECRUITING  ORDERING  ORDER_COMPLETED  DELIVERY_COMPLETE  CLOSE
+        User user = userFindDao.findById(6L);
+        Post post = postRepository.findById(8L).get();
+        postService.changePostState(user.getId(), new ChangePostProcess(post.getId(), "ORDER_COMPLETED"));
     }
 
 
