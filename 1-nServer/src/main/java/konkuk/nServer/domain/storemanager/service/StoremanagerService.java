@@ -48,8 +48,9 @@ public class StoremanagerService {
 
         if (accountType == AccountType.PASSWORD) {
             saveOauth(storemanager, accountType, form.getPassword());
-        } else {
-            String oauthId = oAuth2Provider.getOauthId(accountType, form.getCode());
+        }
+        else {
+            String oauthId = oAuth2Provider.getOauthId(Role.ROLE_STOREMANAGER, accountType, form.getCode());
             saveOauth(storemanager, accountType, oauthId);
         }
     }
@@ -62,7 +63,8 @@ public class StoremanagerService {
 
         if (accountType == AccountType.PASSWORD) {
             saveOauth(storemanager, accountType, form.getPassword());
-        } else {
+        }
+        else {
             saveOauth(storemanager, accountType, form.getOauthId());
         }
     }
@@ -72,15 +74,18 @@ public class StoremanagerService {
             Kakao kakao = new Kakao(id, storemanager);
             storemanager.setKakao(kakao);
             kakaoRepository.save(kakao);
-        } else if (accountType == AccountType.NAVER) {
+        }
+        else if (accountType == AccountType.NAVER) {
             Naver naver = new Naver(id, storemanager);
             storemanager.setNaver(naver);
             naverRepository.save(naver);
-        } else if (accountType == AccountType.GOOGLE) {
+        }
+        else if (accountType == AccountType.GOOGLE) {
             Google google = new Google(id, storemanager);
             storemanager.setGoogle(google);
             googleRepository.save(google);
-        } else if (accountType == AccountType.PASSWORD) {
+        }
+        else if (accountType == AccountType.PASSWORD) {
             validatePassword(id);
             Password password = new Password(passwordEncoder.encode(id), storemanager);
             storemanager.setPassword(password);
@@ -91,7 +96,7 @@ public class StoremanagerService {
     @Transactional(readOnly = true)
     public String oAuthLogin(String oauth, String code) {
         AccountType accountType = convertProvider.convertAccountType(oauth);
-        String oauthId = oAuth2Provider.getOauthId(accountType, code);
+        String oauthId = oAuth2Provider.getOauthId(Role.ROLE_STOREMANAGER, accountType, code);
         Storemanager storemanager = storemanagerFindDao.findStoremanagerByOauth(accountType, oauthId);
 
         String jwtToken = tokenProvider.createJwt(storemanager.getId(), storemanager.getRole());

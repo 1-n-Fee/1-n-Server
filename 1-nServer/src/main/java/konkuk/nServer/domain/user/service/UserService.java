@@ -55,8 +55,9 @@ public class UserService {
 
         if (accountType == AccountType.PASSWORD) {
             saveOauth(user, accountType, form.getPassword());
-        } else {
-            String oauthId = oAuth2Provider.getOauthId(accountType, form.getCode());
+        }
+        else {
+            String oauthId = oAuth2Provider.getOauthId(Role.ROLE_STUDENT, accountType, form.getCode());
             saveOauth(user, accountType, oauthId);
         }
     }
@@ -75,7 +76,8 @@ public class UserService {
 
         if (accountType == AccountType.PASSWORD) {
             saveOauth(user, accountType, form.getPassword());
-        } else {
+        }
+        else {
             saveOauth(user, accountType, form.getOauthId());
         }
     }
@@ -85,15 +87,18 @@ public class UserService {
             Kakao kakao = new Kakao(id, user);
             user.setKakao(kakao);
             kakaoRepository.save(kakao);
-        } else if (accountType == AccountType.NAVER) {
+        }
+        else if (accountType == AccountType.NAVER) {
             Naver naver = new Naver(id, user);
             user.setNaver(naver);
             naverRepository.save(naver);
-        } else if (accountType == AccountType.GOOGLE) {
+        }
+        else if (accountType == AccountType.GOOGLE) {
             Google google = new Google(id, user);
             user.setGoogle(google);
             googleRepository.save(google);
-        } else if (accountType == AccountType.PASSWORD) {
+        }
+        else if (accountType == AccountType.PASSWORD) {
             validatePassword(id);
             Password password = new Password(passwordEncoder.encode(id), user);
             user.setPassword(password);
@@ -134,7 +139,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public String oAuthLogin(String oauth, String code) {
         AccountType accountType = convertProvider.convertAccountType(oauth);
-        String oauthId = oAuth2Provider.getOauthId(accountType, code);
+        String oauthId = oAuth2Provider.getOauthId(Role.ROLE_STUDENT, accountType, code);
         User user = userFindDao.findUserByOauth(accountType, oauthId);
 
         String jwtToken = tokenProvider.createJwt(user.getId(), user.getRole());

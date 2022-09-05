@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import konkuk.nServer.domain.account.domain.AccountType;
 import konkuk.nServer.domain.account.dto.oauth.*;
+import konkuk.nServer.domain.user.domain.Role;
 import konkuk.nServer.exception.ApiException;
 import konkuk.nServer.exception.ExceptionEnum;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,9 @@ public class OAuth2Provider {
     @Value("${oauth2.kakao.redirect_uri}")
     private String kakaoRedirectUri;
 
+    @Value("${oauth2.kakao.manager.redirect_uri}")
+    private String kakaoManagerRedirectUri;
+
     @Value("${oauth2.naver.client_id}")
     private String naverClientId;
 
@@ -54,16 +58,33 @@ public class OAuth2Provider {
 
     @Value("${oauth2.google.client_secret}")
     private String googleClientSecret;
+
+    @Value("${oauth2.google.redirect_uri}")
+    private String googleRedirectUri;
+
+    @Value("${oauth2.google.manager.redirect_uri}")
+    private String googleManagerRedirectUri;
+
+
     private final ObjectMapper objectMapper;
 
-    public String getOauthId(AccountType accountType, String code) {
-        if (accountType == AccountType.KAKAO) return getKakaoId(code);
-        if (accountType == AccountType.NAVER) return getNaverId(code);
-        if (accountType == AccountType.GOOGLE) return getGoogleId(code);
-        throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+    public String getOauthId(Role role, AccountType accountType, String code) {
+        if (role == Role.ROLE_STUDENT) {
+            if (accountType == AccountType.KAKAO) return getKakaoId(code, kakaoRedirectUri);
+            if (accountType == AccountType.NAVER) return getNaverId(code);
+            if (accountType == AccountType.GOOGLE) return getGoogleId(code, googleRedirectUri);
+            throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+        }
+        else if (role == Role.ROLE_STOREMANAGER) {
+            if (accountType == AccountType.KAKAO) return getKakaoId(code, kakaoManagerRedirectUri);
+            if (accountType == AccountType.NAVER) return getNaverId(code);
+            if (accountType == AccountType.GOOGLE) return getGoogleId(code, googleManagerRedirectUri);
+            throw new ApiException(ExceptionEnum.INCORRECT_ACCOUNT_TYPE);
+        }
+        throw new ApiException(ExceptionEnum.FAIL_LOGIN);
     }
 
-    private String getKakaoId(String code) {
+    private String getKakaoId(String code, String redirectUri) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -72,7 +93,7 @@ public class OAuth2Provider {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoClientId);
-        params.add("redirect_uri", kakaoRedirectUri);
+        params.add("redirect_uri", redirectUri);
         params.add("code", code);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -133,7 +154,7 @@ public class OAuth2Provider {
         return naverProfile;
     }
 
-    private String getGoogleId(String authorizationCode) {
+    private String getGoogleId(String authorizationCode, String redirectUri) {
         // HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -143,7 +164,7 @@ public class OAuth2Provider {
         params.add("grant_type", "authorization_code");
         params.add("client_id", googleClientId);
         params.add("client_secret", googleClientSecret);
-        params.add("redirect_uri", "http://localhost:3000/auth/google");
+        params.add("redirect_uri", redirectUri);
         params.add("code", authorizationCode);
 
         // HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -192,7 +213,8 @@ public class OAuth2Provider {
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
                 return readBody(con.getInputStream());
-            } else { // 에러 발생
+            }
+            else { // 에러 발생
                 return readBody(con.getErrorStream());
             }
         } catch (IOException e) {
