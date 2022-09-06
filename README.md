@@ -35,7 +35,7 @@
 - **최용재 (Web Frontend)** : 메인 홈페이지, 일반 회원 로그인 페이지, 방 생성 페이지, 회원정보 조회/수정 페이지, 아이디/비밀번호 찾기 페이지
 - **고현호 (App Frontend)** : 채팅방,회원가입 페이지,로그인페이지
 - **황치현 (App Frontend)** : 회원가입 페이지 구현
-- **홍승택 (Backend)** : 모든 벡엔드 파트
+- **홍승택 (Backend, PM)** : 모든 벡엔드 파트
 
 </br>
 
@@ -105,6 +105,6 @@ docker run -p 8080:8080 ithinkso/1-nproject
 | 최정윤 | Web-FrontEnd | <a href="https://github.com/c-jeongyyun"><img src="https://img.shields.io/badge/cjeongyyun-80396a?style=flat-square&logo=github&logoColor=white&link=https://github.com/c-jeongyyun"/></a> |
 | 고현호 | App-FrontEnd |    <a href="https://github.com/zxver1000"><img src="https://img.shields.io/badge/zxver1000-d499d4?style=flat-square&logo=github&logoColor=white&link=https://github.com/zxver1000"/></a>     |
 | 황치현 | App-FrontEnd  |      <a href="https://github.com/clgusdl2"><img src="https://img.shields.io/badge/clgusdl2-339933?style=flat-square&logo=github&logoColor=white&link=https://github.com/clgusdl2"/></a>      |
-| 홍승택 | BackEnd  |        <a href="https://github.com/redcarrot1"><img src="https://img.shields.io/badge/IThinkSo-80c9f8?style=flat-square&logo=github&logoColor=white&link=https://github.com/redcarrot1"/></a>|
+| 홍승택 | BackEnd, PM |        <a href="https://github.com/redcarrot1"><img src="https://img.shields.io/badge/IThinkSo-80c9f8?style=flat-square&logo=github&logoColor=white&link=https://github.com/redcarrot1"/></a>|
 
 </div>
