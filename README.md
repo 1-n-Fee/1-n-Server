@@ -80,15 +80,15 @@
 ## **📃 사용 방법**
 
 ```
-# 웹 프론트
-git clone https://github.com/1-n-Fee/1-n-Web-Frontend.git 
-npm start 
+# 웹 프론트 (클라이언트 실행 전, 서버를 먼저 실행해야 합니다.)
+docker pull cjeongyyun/1-n-client
+docker run -p 3000:3000 cjeongyyun/1-n-client
 
 # 앱 프론트
 git clone https://github.com/1-n-Fee/1-n-App
 docker(준비중)
 
-# 백엔드
+# 백엔드(서버)
 docker pull ithinkso/1-nproject
 docker run -p 8080:8080 ithinkso/1-nproject
 ```
