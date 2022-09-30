@@ -35,7 +35,7 @@
 - **최용재 (Web Frontend)** : 메인 홈페이지, 일반 회원 로그인 페이지, 방 생성 페이지, 회원정보 조회/수정 페이지, 아이디/비밀번호 찾기 페이지
 - **고현호 (App Frontend)** : 채팅방,회원가입 페이지,로그인페이지
 - **황치현 (App Frontend)** : 회원가입 페이지 구현
-- **홍승택 (Backend, PM)** : 모든 벡엔드 파트
+- **홍승택 (PM, Backend)** : 프로젝트 매니저, 모든 벡엔드 파트
 
 </br>
 
@@ -53,7 +53,6 @@
 - **Language** : Flutter
 - **Library & Framework** :  FontAwesome, Firebase auth, provider, location, Intl, Dio, notification
 - **API** : KAKAO 소셜 로그인, Google 소셜 로그인 REST API, Naver 소셜 로그인, Google 지도 SDK
-- **Deploy** : Docker(준비중)
 
 <br>
 
@@ -70,8 +69,10 @@
 
 <p align="left">
 <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=GitHub&logoColor=white"/>
-<br>
+
 <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=white"/>
+
+<img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=Notion&logoColor=white"/>
 
 </p>
 
@@ -83,10 +84,6 @@
 # 웹 프론트 (클라이언트 실행 전, 서버를 먼저 실행해야 합니다.)
 docker pull cjeongyyun/1-n-client
 docker run -p 3000:3000 cjeongyyun/1-n-client
-
-# 앱 프론트
-git clone https://github.com/1-n-Fee/1-n-App
-docker(준비중)
 
 # 백엔드(서버)
 docker pull ithinkso/1-nproject
