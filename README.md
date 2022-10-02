@@ -18,7 +18,7 @@
 
 ## **📚 프로젝트 사용 방법**
 
-프로젝트의 사용 과정은 [여기](https://github.com/1-n-Fee/1-n-Server.wiki.git)을 통해 확인하실 수 있습니다.<br>
+프로젝트의 사용 과정은 [여기](https://github.com/1-n-Fee/1-n-Server/wiki)을 통해 확인하실 수 있습니다.<br>
 모든 코드는 [여기](https://github.com/1-n-Fee)를 통해 확인할 수 있습니다.
 
 </br>
@@ -44,7 +44,7 @@
 ### 🎨 Web Frontend 🎨
 - **Language** : JavaScript
 - **Library & Framework** : React, Axios, Styled-Components, Recoil, FontAwesome, react-router-dom, StompJS
-- **API**: KAKAO 소셜 로그인 REST API, Google 소셜 로그인 REST API, Naver 소셜 로그인 REST API, KAKAO 지도 SDK , 다음 우편주소 API
+- **API**: Kakao 소셜 로그인 REST API, Google 소셜 로그인 REST API, Naver 소셜 로그인 REST API, KAKAO 지도 SDK , 다음 우편주소 API
 - **Deploy**: Docker
 
 <br>
@@ -52,7 +52,7 @@
 ### 📱 App Frontend 📱
 - **Language** : Flutter
 - **Library & Framework** :  FontAwesome, Firebase auth, provider, location, Intl, Dio, notification
-- **API** : KAKAO 소셜 로그인, Google 소셜 로그인 REST API, Naver 소셜 로그인, Google 지도 SDK
+- **API** : Kakao 소셜 로그인, Google 소셜 로그인 REST API, Naver 소셜 로그인, Google 지도 SDK
 
 <br>
 
